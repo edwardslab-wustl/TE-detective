@@ -1,0 +1,18 @@
+Metadata-Version: 1.2
+Name: TE-detective
+Version: 0.1.0
+Summary: Finding Transposable Element Insertions
+Home-page: UNKNOWN
+Author: Manoj Singh
+Author-email: mksingh@wustl.edu
+Maintainer: John Edwards
+Maintainer-email: jredwards@wustl.edu
+License: GPLv3
+Description: TE-detective detects novel TE insertions in next-gen sequencing data
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Operating System :: POSIX
+Classifier: Topic :: Science/Engineering :: Bio-Informatics
+Classifier: Programming Language :: Python :: 3.5

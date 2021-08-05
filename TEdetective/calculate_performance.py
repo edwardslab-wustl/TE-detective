@@ -1,6 +1,10 @@
-#!/home/mksingh/anaconda3/bin/python
 
-def exec_evaluate_performance():
+import sys
+import os
+import argparse
+from datetime import datetime
+
+def exec_evaluate_performance(args):
         #
 	inp_ref_file = args.ref_file_inp
 	inp_pred_file = args.pred_file_inp
@@ -86,26 +90,37 @@ def exec_evaluate_performance():
 
 	output_file.close()
 	#
+
+def main(): 
+#	FUNCTION_MAP = {
+#			'evaluate_performance' : exec_evaluate_performance,
+#			}
+#
+#	parser = argparse.ArgumentParser()
+#	parser.add_argument('module', choices=FUNCTION_MAP.keys())
+#	subparsers = parser.add_subparsers()
+#
+#	sp_evaluate_performance = subparsers.add_parser('evaluate_performance_opt', help="extract reads argument")
+#	sp_evaluate_performance.add_argument('-ref', action='store', dest='ref_file_inp', required=True, help='Bam(.bam) file with full path')
+#	sp_evaluate_performance.add_argument('-pred', action='store', dest='pred_file_inp', required=True, help='region file with full path')
+#	sp_evaluate_performance.add_argument('-out', action='store', dest='out_file_inp', type=str, default='performance_evaluation_output.txt', help='region file with full path')
+#	sp_evaluate_performance.add_argument('-isz', action='store', dest='isz_inp', type=int, default=360, help='Read range')
+
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-ref', action='store', dest='ref_file_inp', required=True, help='Bam(.bam) file with full path')
+	parser.add_argument('-pred', action='store', dest='pred_file_inp', required=True, help='region file with full path')
+	parser.add_argument('-out', action='store', dest='out_file_inp', type=str, default='performance_evaluation_output.txt', help='region file with full path')
+	parser.add_argument('-isz', action='store', dest='isz_inp', type=int, default=360, help='Read range')
+
+	args = parser.parse_args()
+#	funct = FUNCTION_MAP[args.module]
+#	funct(args)
+	exec_evaluate_performance(args)
+
 if __name__ == '__main__':
 	import sys
 	import os
 	import argparse
 	from datetime import datetime
+	main()
 
-	FUNCTION_MAP = {
-			'evaluate_performance' : exec_evaluate_performance,
-			}
-
-	parser = argparse.ArgumentParser()
-	parser.add_argument('module', choices=FUNCTION_MAP.keys())
-	subparsers = parser.add_subparsers()
-
-	sp_evaluate_performance = subparsers.add_parser('evaluate_performance_opt', help="extract reads argument")
-	sp_evaluate_performance.add_argument('-ref', action='store', dest='ref_file_inp', help='Bam(.bam) file with full path')
-	sp_evaluate_performance.add_argument('-pred', action='store', dest='pred_file_inp', help='region file with full path')
-	sp_evaluate_performance.add_argument('-out', action='store', dest='out_file_inp', type=str, default='performance_evaluation_output.txt', help='region file with full path')
-	sp_evaluate_performance.add_argument('-isz', action='store', dest='isz_inp', type=int, default=360, help='Read range')
-
-	args = parser.parse_args()
-	funct = FUNCTION_MAP[args.module]
-	funct()

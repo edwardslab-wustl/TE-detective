@@ -1,5 +1,3 @@
-#!/home/mksingh/anaconda3/bin/python
-
 ################################################################
 # Python based tool to identify novel transposable element insertions from WGS data.
 # Contributors: Manoj Kumar Singh (manoj@wustl.edu),
@@ -9,6 +7,20 @@
 # External dependencies: censor, NCBI blast (provided with package)
 #
 ################################################################
+
+import sys
+import os
+import copy
+import pysam
+import numpy as np
+import argparse
+import re
+import subprocess
+from subprocess import Popen, PIPE
+from Bio.Seq import Seq
+from Bio.Sequencing.Applications import BwaIndexCommandline
+from Bio.Sequencing.Applications import BwaAlignCommandline
+from Bio.Sequencing.Applications import BwaSamseCommandline
 
 #--------------------------------------------------------------
 def check_file(file_name):
@@ -353,8 +365,7 @@ def check_uniq_mapping( read, args ):
 
 #--------------------------------------------------------------
 
-def exec_preprocess():
-
+def exec_preprocess(args):
 	bam_full = args.bam_inp
 	sys.stdout.write('Input bam file: '+str(bam_full)+'\n')
 	#
@@ -449,7 +460,7 @@ def exec_preprocess():
 
 #--------------------------------------------------------------
 
-def exec_discover():
+def exec_discover(args):
 	#
 	dir_path = os.getcwd() #os.path.dirname(os.path.realpath(__file__))
 	sys.stdout.write('Working directory: '+str(dir_path)+'\n')
@@ -778,7 +789,7 @@ def pat_check(inp_seq, query_len, mis_match):
 		#
 	return( polyAT_test_flag, polyAT_type )
 #--------------------------------------------------------------
-def exec_nadiscover():
+def exec_nadiscover(args):
 	#
 	dir_path = os.getcwd() #os.path.dirname(os.path.realpath(__file__))
 	sys.stdout.write('Working directory: '+str(dir_path)+'\n')
@@ -1325,7 +1336,7 @@ def exec_nadiscover():
 
 		read_positions_clusters_file.close()
 #--------------------------------------------------------------
-def exec_cluster2d():	
+def exec_cluster2d(args):	
 
 	dir_path = os.getcwd() #os.path.dirname(os.path.realpath(__file__))
 	bam_full = args.bam_inp
@@ -1390,7 +1401,7 @@ def exec_cluster2d():
 		del read_positions_clusters_nohicov[:]
 	read_positions_clusters_file.close()
 #--------------------------------------------------------------
-def exec_filter():
+def exec_filter(args):
 
 	input_file_name = args.ofa_inp
 	insert_size = args.isz_inp 
@@ -1532,7 +1543,7 @@ def exec_filter():
 		left_clipped_rd, right_clipped_rd, left_discord_rd, right_discord_rd, test_class_score = 0, 0, 0, 0, 0
 ##	
 #--------------------------------------------------------------
-def exec_filter_p():
+def exec_filter_p(args):
 
 	input_file_name = args.ofa_inp
 	insert_size = args.isz_inp
@@ -1789,7 +1800,7 @@ def find_clipped_ends( iterator_reads, insert_guess, args ):
 	#	
 	return(array_p_s, array_n_s)
 #--------------------------------------------------------------
-def exec_analyze():
+def exec_analyze(args):
 	#
 	dir_path = os.getcwd()
 	up_dir_path = os.path.dirname(os.path.realpath(dir_path))
@@ -2468,21 +2479,7 @@ def exec_analyze():
 		output_file.close()
 	final_output.close()	
 
-if __name__ == '__main__':
-	import sys
-	import os
-	import copy
-	import pysam
-	import numpy as np
-	import argparse
-	import re
-	import subprocess
-	from subprocess import Popen, PIPE
-	from Bio.Seq import Seq
-	from Bio.Sequencing.Applications import BwaIndexCommandline
-	from Bio.Sequencing.Applications import BwaAlignCommandline
-	from Bio.Sequencing.Applications import BwaSamseCommandline
-
+def main():
 	FUNCTION_MAP = {
 			'preprocess' : exec_preprocess, 
 			'discover' : exec_discover,
@@ -2494,11 +2491,10 @@ if __name__ == '__main__':
 			}
 
 	parser = argparse.ArgumentParser()
-	#parser.add_argument('module', choices=FUNCTION_MAP.keys())
-	subparsers = parser.add_subparsers(dest='command')
+	subparsers = parser.add_subparsers(dest='command', required=True)
 
 	sp_preprocess = subparsers.add_parser('preprocess', help="preprocess argument")
-	sp_preprocess.add_argument('-bam', action='store', dest='bam_inp', help='Bam(.bam) file with full path')
+	sp_preprocess.add_argument('-bam', action='store', dest='bam_inp', required=True, help='Bam(.bam) file with full path')
 	sp_preprocess.add_argument('-cll', action='store', dest='cll_inp', type=int, default=25, help='Minimum clipped length(bp)')
 	sp_preprocess.add_argument('-ref', action='store', dest='fofn_ref', help='FoFn for reference sequence')
 
@@ -2581,7 +2577,22 @@ if __name__ == '__main__':
 	sp_filter_p.add_argument('-isz', action='store', dest='isz_inp', type=int, default=369, help='insert Size estimate')
 
 	args = parser.parse_args()
-	#funct = FUNCTION_MAP[args.module]
 	funct = FUNCTION_MAP[args.command]
-	funct()
+	funct(args)
+
+if __name__ == '__main__':
+	import sys
+	import os
+	import copy
+	import pysam
+	import numpy as np
+	import argparse
+	import re
+	import subprocess
+	from subprocess import Popen, PIPE
+	from Bio.Seq import Seq
+	from Bio.Sequencing.Applications import BwaIndexCommandline
+	from Bio.Sequencing.Applications import BwaAlignCommandline
+	from Bio.Sequencing.Applications import BwaSamseCommandline
+	main() 
 

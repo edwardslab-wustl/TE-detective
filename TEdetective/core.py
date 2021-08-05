@@ -2495,8 +2495,8 @@ def main():
 
 	sp_preprocess = subparsers.add_parser('preprocess', help="preprocess argument")
 	sp_preprocess.add_argument('-bam', action='store', dest='bam_inp', required=True, help='Bam(.bam) file with full path')
+	sp_preprocess.add_argument('-ref', action='store', dest='fofn_ref', required=True,help='FoFn for reference sequence')
 	sp_preprocess.add_argument('-cll', action='store', dest='cll_inp', type=int, default=25, help='Minimum clipped length(bp)')
-	sp_preprocess.add_argument('-ref', action='store', dest='fofn_ref', help='FoFn for reference sequence')
 
 	sp_discover = subparsers.add_parser('discover', help="discover argument")
 	sp_discover.add_argument('-bam', action='store', dest='bam_inp', help='Bam(.bam) file with full path')

@@ -9,9 +9,12 @@
      *  biopython
 
 ## Installation
-Clone and install with pip.
-        git clone https://github.com/edwardslab-wustl/TE-detective.git
-        cd TE-detective
-        pip install .
+Clone and install with pip:
+
+````
+    git clone https://github.com/edwardslab-wustl/TE-detective.git
+    cd TE-detective
+    pip install .
+````
 
 ## Usage

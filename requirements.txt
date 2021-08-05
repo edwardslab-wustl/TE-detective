@@ -1,0 +1,5 @@
+#Requirements for TE-detective
+numpy
+pysam
+biopython
+

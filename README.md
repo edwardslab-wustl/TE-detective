@@ -20,6 +20,8 @@ Clone and install with pip:
 
 ## Usage
 
+### Input files
+
 ### Example
 
 ````

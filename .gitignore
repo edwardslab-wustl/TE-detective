@@ -1,5 +1,10 @@
 # pacakge specific
 example_data/preprocessed_files/
+example_data/final_results
+example_data/initial_predictions.txt
+example_data/initial_predictions_noalign.txt
+example_data/intermediate_files/
+example_data/recluster_initial_predictions.txt
 
 # # Byte-compiled / optimized / DLL files
 __pycache__/

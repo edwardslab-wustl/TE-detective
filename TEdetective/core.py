@@ -1810,10 +1810,12 @@ def exec_analyze(args):
 	bam_full = args.bam_inp
 	sys.stdout.write('Input bam file: '+bam_full+'\n')
 	#
-	discord_bam = up_dir_path+'/preprocessed_files/'+bam_full.split('/')[-1][:-4]+'_discord.bam'
+	#discord_bam = up_dir_path+'/preprocessed_files/'+bam_full.split('/')[-1][:-4]+'_discord.bam'
+	discord_bam = dir_path+'/preprocessed_files/'+bam_full.split('/')[-1][:-4]+'_discord.bam'
 	sys.stdout.write('Discordant bam file: '+discord_bam+'\n')
 	#
-	te_type_file = up_dir_path+'/preprocessed_files/te_ref_type.fa'
+	#te_type_file = up_dir_path+'/preprocessed_files/te_ref_type.fa'
+	te_type_file = dir_path+'/preprocessed_files/te_ref_type.fa'
 	#
 	sys.stdout.write('\n----Run parameters----\n')
 	#
@@ -2501,8 +2503,8 @@ def main():
 	sp_preprocess.add_argument('-cll', action='store', dest='cll_inp', type=int, default=25, help='Minimum clipped length(bp)')
 
 	sp_discover = subparsers.add_parser('discover', help="discover argument")
-	sp_discover.add_argument('-bam', action='store', dest='bam_inp', help='Bam(.bam) file with full path')
-	sp_discover.add_argument('-ref', action='store', dest='fofn_ref', help='FoFn for reference sequence')
+	sp_discover.add_argument('-bam', action='store', dest='bam_inp', required=True, help='Bam(.bam) file with full path')
+	sp_discover.add_argument('-ref', action='store', dest='fofn_ref', required=True, help='FoFn for reference sequence')
 	sp_discover.add_argument('-isz', action='store', dest='isz_inp', type=int, default=340, help='insert Size estimate')
 	sp_discover.add_argument('-rdl', action='store', dest='rdl_inp', type=int, default=150, help='Average read length')
 	sp_discover.add_argument('-drd', action='store', dest='drd_inp', type=int, default=10, help='discord read clust denst')
@@ -2512,9 +2514,9 @@ def main():
 	sp_discover.add_argument('-mpqu', action='store', dest='mpqu_inp', type=int, default=1, help='Minimum mapping quality')
 
 	sp_analyze = subparsers.add_parser('analyze', help="analyze argument")
-	sp_analyze.add_argument('-bam', action='store', dest='bam_inp', help='Bam(.bam) file with full path')
-	sp_analyze.add_argument('-ref', action='store', dest='fofn_ref', help='FoFn for reference sequence')
-	sp_analyze.add_argument('-inp', action='store', dest='list_inp', help='Input list of insertions')
+	sp_analyze.add_argument('-bam', action='store', dest='bam_inp', required=True, help='Bam(.bam) file with full path')
+	sp_analyze.add_argument('-ref', action='store', dest='fofn_ref', required=True, help='FoFn for reference sequence')
+	sp_analyze.add_argument('-inp', action='store', dest='list_inp', required=True, help='Input list of insertions')
 	sp_analyze.add_argument('-rdl', action='store', dest='rdl_inp', type=int, default=150, help='Average read length')
 	sp_analyze.add_argument('-cll', action='store', dest='cll_inp', type=int, default=25, help='Minimum clipped length(bp)')
 	sp_analyze.add_argument('-ahl', action='store', dest='ahl_inp', type=int, default=30, help='Minimum anchor length(bp)')
@@ -2530,8 +2532,8 @@ def main():
 	sp_analyze.add_argument('-flt', action='store_true', dest='flt_inp', default=False, help='Filter discord mate files')
 
 	sp_nadiscover = subparsers.add_parser('nadiscover', help="nadiscover argument")
-	sp_nadiscover.add_argument('-bam', action='store', dest='bam_inp', help='Bam(.bam) file with full path')
-	sp_nadiscover.add_argument('-ref', action='store', dest='fofn_ref', help='FoFn for reference sequence')
+	sp_nadiscover.add_argument('-bam', action='store', dest='bam_inp', required=True, help='Bam(.bam) file with full path')
+	sp_nadiscover.add_argument('-ref', action='store', dest='fofn_ref', required=True, help='FoFn for reference sequence')
 	sp_nadiscover.add_argument('-cll', action='store', dest='cll_inp', type=int, default=25, help='Minimum clipped length(bp)')
 	sp_nadiscover.add_argument('-isz', action='store', dest='isz_inp', type=int, default=340, help='insert Size estimate')
 	sp_nadiscover.add_argument('-rdl', action='store', dest='rdl_inp', type=int, default=150, help='Average read length')
@@ -2548,8 +2550,8 @@ def main():
 	sp_nadiscover.add_argument('-bed', action='store', dest='rmsk_bed', help='FoFn for existing repeat elements')
 
 	sp_cluster2d = subparsers.add_parser('cluster2d', help="cluster2d argument")
-	sp_cluster2d.add_argument('-bam', action='store', dest='bam_inp', help='Bam(.bam) file with full path')
-	sp_cluster2d.add_argument('-ref', action='store', dest='fofn_ref', help='FoFn for reference sequence')
+	sp_cluster2d.add_argument('-bam', action='store', dest='bam_inp', required=True, help='Bam(.bam) file with full path')
+	sp_cluster2d.add_argument('-ref', action='store', dest='fofn_ref', required=True, help='FoFn for reference sequence')
 	sp_cluster2d.add_argument('-isz', action='store', dest='isz_inp', type=int, default=340, help='insert Size estimate')
 	sp_cluster2d.add_argument('-rdl', action='store', dest='rdl_inp', type=int, default=150, help='Average read length')
 	sp_cluster2d.add_argument('-drd', action='store', dest='drd_inp', type=int, default=5, help='discord read clust denst')
@@ -2557,8 +2559,8 @@ def main():
 	sp_cluster2d.add_argument('-all', action='store_true', dest='flg_all', default=False, help='Only clipped or all?')
 
 	sp_filter = subparsers.add_parser('filter', help="Filter argument")
-	sp_filter.add_argument('-ofa', action='store', dest='ofa_inp', help='output file from analyze section')
-	sp_filter.add_argument('-bed', action='store', dest='fofn_bed', help='FoFn for existing repeat elements')
+	sp_filter.add_argument('-ofa', action='store', dest='ofa_inp', required=True, help='output file from analyze section')
+	sp_filter.add_argument('-bed', action='store', dest='fofn_bed', required=True, help='FoFn for existing repeat elements')
 	sp_filter.add_argument('-qlm', action='store', dest='qlm_inp', type=float, default=0.85, help='Lowest limit for alignment quality')
 	sp_filter.add_argument('-tcr', action='store', dest='tcr_inp', type=int, default=5, help='Minimum number of clipped reads')
 	sp_filter.add_argument('-trd', action='store', dest='trd_inp', type=int, default=10, help='Minimum total [clipped+discordant] reads')
@@ -2568,8 +2570,8 @@ def main():
 	sp_filter.add_argument('-isz', action='store', dest='isz_inp', type=int, default=340, help='insert Size estimate')
 
 	sp_filter_p = subparsers.add_parser('filter_p', help="Filter argument")
-	sp_filter_p.add_argument('-ofa', action='store', dest='ofa_inp', help='output file from analyze section')
-	sp_filter_p.add_argument('-bed', action='store', dest='fofn_bed', help='FoFn for existing repeat elements')
+	sp_filter_p.add_argument('-ofa', action='store', dest='ofa_inp', required=True, help='output file from analyze section')
+	sp_filter_p.add_argument('-bed', action='store', dest='fofn_bed', required=True, help='FoFn for existing repeat elements')
 	sp_filter_p.add_argument('-qlm', action='store', dest='qlm_inp', type=float, default=0.75, help='Lowest limit for alignment quality')
 	sp_filter_p.add_argument('-tcr', action='store', dest='tcr_inp', type=int, default=2, help='Minimum number of clipped reads')
 	sp_filter_p.add_argument('-trd', action='store', dest='trd_inp', type=int, default=5, help='Minimum total [clipped+discordant] reads')

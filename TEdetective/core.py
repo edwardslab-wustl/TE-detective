@@ -397,8 +397,9 @@ def exec_preprocess(args):
 				a.flag = read.flag
 				a.reference_id = read.reference_id
 				a.reference_start = read.reference_start
-				a.mapping_quality = read.mapping_quality
-				a.cigar = read.cigar
+				a.mapping_quality = 0 # read.mapping_quality
+				a.cigar = []
+				a.cigar.append((read.cigartuples[-1][0], read.cigartuples[-1][1]))
 				a.next_reference_id = read.next_reference_id
 				a.next_reference_start=read.next_reference_start
 				a.template_length=read.template_length
@@ -415,8 +416,9 @@ def exec_preprocess(args):
 				a.flag = read.flag
 				a.reference_id = read.reference_id
 				a.reference_start = read.reference_start
-				a.mapping_quality = read.mapping_quality
-				a.cigar = read.cigar
+				a.mapping_quality = 0 #read.mapping_quality
+				a.cigar = []
+				a.cigar.append((read.cigartuples[0][0], read.cigartuples[0][1])) 
 				a.next_reference_id = read.next_reference_id
 				a.next_reference_start=read.next_reference_start
 				a.template_length=read.template_length

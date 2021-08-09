@@ -31,6 +31,7 @@ Clone and install with pip:
     TE_detective analyze -bam test_sim.bam -ref ref_fofn -inp initial_predictions.txt
     TE_detective nadiscover -bam test_sim.bam -ref ref_fofn
     TE_detective cluster2d -bam test_sim.bam -ref ref_fofn
+    TE_detective filter -ofa final_results -bed rmsk_ucsc_mm10.bed
 ````
 
 ## License information

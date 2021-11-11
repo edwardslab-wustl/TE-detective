@@ -2495,7 +2495,8 @@ def main():
             }
 
     parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(dest='command', required=True)
+    #subparsers = parser.add_subparsers(dest='command', required=True)
+    subparsers = parser.add_subparsers(dest='command')
 
     sp_preprocess = subparsers.add_parser('preprocess', help="preprocess argument")
     sp_preprocess.add_argument('-bam', action='store', dest='bam_inp', required=True, help='Bam(.bam) file with full path')

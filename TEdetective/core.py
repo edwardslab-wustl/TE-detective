@@ -1874,8 +1874,8 @@ def exec_analyze(args):
         os.chdir(int_file_name)
         output_file = open(str(chrom)+'_'+str(lf_line.split()[2])+'.out', 'w')
         #    
-        #samfile = pysam.AlignmentFile(bam_full, 'rb')
-        samfile = pysam.AlignmentFile("../" + bam_full, 'rb')
+        samfile = pysam.AlignmentFile(bam_full, 'rb')
+        #samfile = pysam.AlignmentFile("../" + bam_full, 'rb')
         iterator_reads = samfile.fetch(chrom, insert_guess-(insert_size+insert_range), \
                         insert_guess+(insert_size+insert_range))
         #

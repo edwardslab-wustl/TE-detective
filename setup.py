@@ -3,8 +3,11 @@
 from setuptools import setup
 
 def readme():
-    with open('README.md') as f:
-        return f.read()
+#    with open('README.md') as f:
+#        return f.read()
+    with open('README.md', 'r', encoding="utf-8") as f:
+        content = f.read()
+    return content
 
 setup(name='TEdetective',
         version='0.1.0',

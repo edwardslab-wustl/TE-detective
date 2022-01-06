@@ -1876,7 +1876,7 @@ def exec_analyze(args):
         #    
         samfile = pysam.AlignmentFile(bam_full, 'rb')
         #samfile = pysam.AlignmentFile("../" + bam_full, 'rb')
-        iterator_reads = samfile.fetch(chrom, insert_guess-(insert_size+insert_range), \
+        iterator_reads = samfile.fetch(chrom, max( (insert_guess-(insert_size+insert_range)), 1), \
                         insert_guess+(insert_size+insert_range))
         #
         # Convert iterator to list for multiple usages

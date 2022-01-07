@@ -2252,7 +2252,7 @@ def exec_analyze(args):
         #
         samfile = pysam.AlignmentFile(bam_full, "rb")
         #samfile = pysam.AlignmentFile("../" + bam_full, "rb")
-        iterator_reads = samfile.fetch(chrom, insert_point-insert_size, insert_point+insert_size)
+        iterator_reads = samfile.fetch(chrom, max( (insert_point-insert_size), 1), insert_point+insert_size)
         iterator_reads_list = list( iterator_reads )
         samfile.close()
         #

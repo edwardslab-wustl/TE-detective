@@ -1,6 +1,7 @@
 # TEdetective
 
 ![Scheme_v1](images/Scheme_v1.png)
+![Scheme_v2](images/Scheme_v2.png)
 
 ## Requirements
  * [NCBI blast](https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download)

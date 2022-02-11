@@ -107,7 +107,7 @@ Clone and install with pip:
 	-pmm  : Maximum poly A/T mismatch (default=1)
 	-mpq  : Minimum mapping quality of a read. (default=30)
 	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads). This is value of MAPQ in sction of 3.3 of document. (default=1)
-	-bed  : BED file of existing repeat elements ( START	END	TE_CLASS ) 
+	-bed  : BED file of existing repeat elements ( CHROM	START	END	TE_CLASS ) 
 
 5. Cluster2D:
 
@@ -125,7 +125,7 @@ Clone and install with pip:
 	Filter output from detailed analysis section.
 
 	-ofa  : Output file from analyze section
-	-bed  : BED file of existing repeat elements ( START    END     TE_CLASS )
+	-bed  : BED file of existing repeat elements ( CHROM	START    END     TE_CLASS )
 	-qlm  : Lowest limit for Censor alignment quality (default=0.75)
 	-tcr  : Minimum number of clipped reads. (default=2)
 	-trd  : Minimum total reads (default=5)

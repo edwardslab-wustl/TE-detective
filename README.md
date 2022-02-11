@@ -48,65 +48,65 @@ Clone and install with pip:
 
 1. Preprocess:
 
-	This module processes the input files and create input files for next steps. 
+	This module processes the input files (indexed BAM file and indexed fasta file) and create input files for next steps. 
 
 	-bam  : Input indexed bam file (aligned with bwa -mem).
-	-ref  : File of file name of TE reference fasta file. Please provide file name with absolute path.
-	-cll  : Length of clipped reads to be extracted. 
+	-ref  : File of file name of TE reference fasta file (please refer to example data for file format) . Please provide file name with absolute path.
+	-cll  : minimum ength of clipped reads to be extracted. (default=25)
 
 2. Discover:
 	
-	This module makes initial list of candidate insertions. 	
+	This module uses output from preprocessing step and  makes initial list of candidate insertions. 	
 
 	-bam  : Input indexed bam file (aligned with bwa -mem).
-	-ref  : File of file name of TE reference fasta file. Please provide file name with absolute path.
-	-isz  : Insert size estimate. ( = mean_insert_size + 2 * insert_size_standard_deviation – read_length)
-	-rdl  : Average read length of bam file (can be estimated using picard).
-	-drd  : Number of supporting reads (discordant + clipped) for calling an insertion.
-	-cct  : A region with coverage more than this will be ignored from initial prediction. 
-	-ccl  : Minimum length of clipped read to be analyzed.
-	-mpq  : Minimum mapping quality of a read.
-	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads).
+	-ref  : File of file name of TE reference fasta file (please refer to example data for file format). Please provide file name with absolute path.
+	-isz  : Insert size estimate ( = mean_insert_size + 2 * insert_size_standard_deviation - read_length). Use picard to calculate these values.
+	-rdl  : Average read length of bam file (can be estimated using picard). (default=150)
+	-drd  : Minimum number of total supporting reads for calling an insertion. (default=10)
+	-cct  : A region with coverage more than this will be ignored from initial prediction. (default=200)
+	-ccl  : Minimum length of clipped read to be analyzed. (default=25)
+	-mpq  : Minimum mapping quality of a read. (default=30)
+	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads). This is value of MAPQ in sction of 3.3 of document. (default=1)
 
 3. Analyze:
 
-	Detailed analysis of initial list of candidate insertions. 	
+	Detailed analysis of initial list of candidate insertions from discover step. 	
 
 	-bam  : Input indexed bam file (aligned with bwa -mem).
-	-ref  : File of file name of TE reference fasta file. Please provide file name with absolute path.
+	-ref  : File of file name of TE reference fasta file (please refer to example data for file format). Please provide file name with absolute path.
 	-inp  : Initial prediction file from discover step.
-	-rdl  : Average read length of bam file.
-	-cll  : Minimum length of clipped read to be analyzed.
-	-ahl  : Minimum anchor length of clipped reads.
-	-cer  : Range of clipped reads ends to be put in a group.
-	-csi  : Clipped read search interval ( from initial prediction )
-	-mre  : Minimum reads to support a breakpoint (while determining exact insertion point.)
-	-mrh  : Minimum supporting reads to call hetrozygous insertion.
-	-isz  : Insert size estimate. ( = mean_insert_size + 2 * insert_size_standard_deviation – read_length)
-	-qii  : Interval for mapping quality of reads from Censor output.
-	-nii  : Number of intervals for mapping quality of reads from Censor output to be searched and printed.
-	-mpq  : Minimum mapping quality of a read.
-	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads).
+	-rdl  : Average read length of bam file (can be estimated using picard). (default=150)
+	-cll  : Minimum length of clipped read to be analyzed. (default=25) 
+	-ahl  : Minimum anchor length (mapped portion) of clipped reads. (default=30) 
+	-csi  : Clipped read search interval ( how far clipped read ends will be searched from initial prediction ) (default=20)
+	-cer  : Range of clipped reads ends to be put in a group for accurate insertion point determination. (default=5)
+	-mre  : Minimum number of reads to support a breakpoint (while determining accurate insertion point). (default=4)
+	-mrh  : Minimum supporting reads (reads crossing across insertion point) to call hetrozygous insertion. (default=3)
+	-isz  : Insert size estimate. ( = mean_insert_size + 2 * insert_size_standard_deviation - read_length) (default=340)
+	-qii  : Interval for mapping quality of reads from Censor output. (default=0.05)
+	-nii  : Number of intervals for mapping quality of reads from Censor output to be searched and printed. (default=6)
+	-mpq  : Minimum mapping quality of a read. (default=30)
+	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads). This is value of MAPQ in sction of 3.3 of document. (default=1)
 
 4. Nadiscover:
 
 	This module makes initial list of candidate insertions without use of bwa aligner. Instead, a bed file of masked regions are provided as input. 
 
 	-bam  : Input indexed bam file (aligned with bwa -mem).
-	-ref  : File of file name of TE reference fasta file. Please provide file name with absolute path.
-	-cll  : Minimum length of clipped read to be analyzed.
-	-isz  : Insert size estimate. ( = mean_insert_size + 2 * insert_size_standard_deviation – read_length)
-	-rdl  : Average read length of bam file.
-	-drd  : Number of supporting reads (discordant + clipped) for calling an insertion. 
-	-cct  : A region with coverage more than this will be ignored from prediction.
-	-all  : If set false, only clipped reads will be taken into consideration. 
-	-mrg  : Set true if you want to merge this part of analysis with alignment module of initial prediction.
-	-pat  : Include P/T analysis in prediction.  
-	-nas  : Non-alignment ref bam search
-	-mpq  : Minimum mapping quality of a read.
-	-pql  : Poly A/T Length
-	-pmm  : Maximum poly A/T mismatch
-	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads).
+	-ref  : File of file name of TE reference fasta file (please refer to example data for file format). Please provide file name with absolute path.
+	-cll  : Minimum length of clipped read to be analyzed. (default=25)
+	-isz  : Insert size estimate ( = mean_insert_size + 2 * insert_size_standard_deviation - read_length). (default=340)
+	-rdl  : Average read length of bam file (can be estimated using picard). (default=150)
+	-drd  : Number of supporting reads for calling an insertion. (default=10)
+	-cct  : A region with coverage more than this will be ignored from prediction. (default=200)
+	-all  : If set false, clipped reads will not be taken into consideration. ( default=false )
+	-mrg  : Flag to merge this part of analysis with alignment module of initial prediction.
+	-pat  : Flag to include P/T analysis in prediction. (default=false) 
+	-nas  : Non-alignment ref bam search. (don't change this parameter!) 
+	-pql  : Poly A/T Length (default=9)
+	-pmm  : Maximum poly A/T mismatch (default=1)
+	-mpq  : Minimum mapping quality of a read. (default=30)
+	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads). This is value of MAPQ in sction of 3.3 of document. (default=1)
 	-bed  : BED file of existing repeat elements ( START	END	TE_CLASS ) 
 
 5. Cluster2D:
@@ -114,12 +114,11 @@ Clone and install with pip:
 	Use this module if you want to change the clustering desnity for initial prediction. This module uses intermediate files from discover section and generates new prediction file.
 
 	-bam  : Input indexed bam file (aligned with bwa -mem).
-	-ref  : File of file name of TE reference fasta file. Please provide file name with absolute path.
-	-isz  : Insert size estimate. ( = mean_insert_size + 2 * insert_size_standard_deviation – read_length)
-	-rdl  : Average read length of bam file.
-	-drd  : Number of supporting reads (discordant + clipped) for calling an insertion.
-	-cct  : A region with coverage more than this will be ignored from prediction.
-	-all  : If set false, only clipped reads will be taken into consideration.
+	-ref  : File of file name of TE reference fasta file (please refer to example data for file format). Please provide file name with absolute path.
+	-isz  : Insert size estimate. ( = mean_insert_size + 2 * insert_size_standard_deviation - read_length). (default=340)
+	-rdl  : Average read length of bam file (can be estimated using picard). (default=150)
+	-drd  : Number of supporting reads for calling an insertion. (default=10)
+	-cct  : A region with coverage more than this will be ignored from prediction. (default=200)
 
 6. Filter:
 	
@@ -127,12 +126,11 @@ Clone and install with pip:
 
 	-ofa  : Output file from analyze section
 	-bed  : BED file of existing repeat elements ( START    END     TE_CLASS )
-	-qlm  : Lowest limit for Censor alignment quality
-	-tcr  : Minimum number of clipped reads
-	-trd  : Minimum total [clipped+discordant] reads
+	-qlm  : Lowest limit for Censor alignment quality (default=0.75)
+	-tcr  : Minimum number of clipped reads. (default=2)
+	-trd  : Minimum total reads (default=5)
 	-ref  : File of file name of TE reference fasta file. Please provide file name with absolute path.
-	-rp   : Supporting read percernt as a fraction of total read.
-	-rdl  : Average read length of bam file.
-	-isz  : Insert size estimate. ( = mean_insert_size + 2 * insert_size_standard_deviation – read_length)
+	-rdl  : Average read length of bam file (can be estimated using picard). (default=150)
+	-isz  : Insert size estimate. ( = mean_insert_size + 2 * insert_size_standard_deviation - read_length). (default=340)
 
 ````

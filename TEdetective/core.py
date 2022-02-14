@@ -1533,9 +1533,9 @@ def exec_filter(args):
 #        if total_clipped_rd >= 3 or ( total_clipped_rd >=2 and (total_clipped_rd + total_discord_rd >= 5)) or total_discord_rd >= 10: # and test_class_score == 4 \ LTR-SUB
 #        if total_clipped_rd >= 3 or ( total_clipped_rd >=2 and (total_clipped_rd + total_discord_rd >= 5)): # or total_discord_rd >= 25: # and test_class_score == 4 \ Ecat11
 #            and ((total_clipped_rd + total_discord_rd)*100/cnt_rd >= rp): # and total_rd_left > 0 and total_rd_right > 0:
-        if total_clipped_rd >= 3 or ( (total_clipped_rd >= 1) and ( (total_clipped_rd_wpat+total_discord_rd) >= 5) ):
+        if total_clipped_rd >= tcr or ( (total_clipped_rd >= mtcr ) and ( (total_clipped_rd_wpat+total_discord_rd) >= trd) ):
             filter_result = 'PASS'
-        elif total_discord_rd >= 10:
+        elif total_discord_rd >= odrd:
             filter_result = 'PASS_D'
 
         sys.stdout.write(filter_result+'\t'+te_loc+'\t'+line)
@@ -2563,8 +2563,10 @@ def main():
     sp_filter.add_argument('-ofa', action='store', dest='ofa_inp', required=True, help='output file from analyze section')
     sp_filter.add_argument('-bed', action='store', dest='fofn_bed', required=True, help='FoFn for existing repeat elements')
     sp_filter.add_argument('-qlm', action='store', dest='qlm_inp', type=float, default=0.85, help='Lowest limit for alignment quality')
-    sp_filter.add_argument('-tcr', action='store', dest='tcr_inp', type=int, default=5, help='Minimum number of clipped reads')
-    sp_filter.add_argument('-trd', action='store', dest='trd_inp', type=int, default=10, help='Minimum total [clipped+discordant] reads')
+    sp_filter.add_argument('-tcr', action='store', dest='tcr_inp', type=int, default=3, help='Minimum number of clipped reads')
+    sp_filter.add_argument('-trd', action='store', dest='trd_inp', type=int, default=5, help='Minimum total [clipped+discordant] reads')
+    sp_filter.add_argument('-mtcr', action='store', dest='trd_inp', type=int, default=1, help='Minimum total [clipped+discordant] reads')
+    sp_filter.add_argument('-odrd', action='store', dest='trd_inp', type=int, default=10, help='Minimum total [clipped+discordant] reads')
     sp_filter.add_argument('-ref', action='store', dest='fofn_ref', help='FoFn for reference sequence')
     sp_filter.add_argument('-rp', action='store', dest='rp_inp', type=float, default=10.0, help='read percent value')
     sp_filter.add_argument('-rdl', action='store', dest='rdl_inp', type=int, default=150, help='Average read length')

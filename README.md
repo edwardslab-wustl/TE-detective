@@ -125,12 +125,14 @@ Clone and install with pip:
 	Filter output from detailed analysis section.
 
 	# Filteration step code looks like this
-```
+
+````
         if total_clipped_rd >= tcr or ( (total_clipped_rd >= mtcr ) and ( (total_clipped_rd_wpat+total_discord_rd) >= trd ) ):
             filter_result = 'PASS'
         elif total_discord_rd >= odrd: 
             filter_result = 'PASS_D'
-```
+
+````
 	-ofa  : Output file from analyze section
 	-bed  : BED file of existing repeat elements ( CHROM	START    END     TE_CLASS )
 	-qlm  : Lowest limit for Censor alignment quality (default=0.75)

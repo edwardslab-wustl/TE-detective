@@ -124,11 +124,20 @@ Clone and install with pip:
 	
 	Filter output from detailed analysis section.
 
+	# Filteration step code looks like this
+
+        if total_clipped_rd >= tcr or ( (total_clipped_rd >= mtcr ) and ( (total_clipped_rd_wpat+total_discord_rd) >= trd ) ):
+            filter_result = 'PASS'
+        elif total_discord_rd >= odrd: 10
+            filter_result = 'PASS_D'
+
 	-ofa  : Output file from analyze section
 	-bed  : BED file of existing repeat elements ( CHROM	START    END     TE_CLASS )
 	-qlm  : Lowest limit for Censor alignment quality (default=0.75)
-	-tcr  : Minimum number of clipped reads. (default=2)
+	-tcr  : Minimum number of clipped reads. (default=3)
+	-mtcr : Minimum number of clipped reads. (default=1)
 	-trd  : Minimum total reads (default=5)
+	-otrd : Minimum total reads (default=10)
 	-ref  : File of file name of TE reference fasta file. Please provide file name with absolute path.
 	-rdl  : Average read length of bam file (can be estimated using picard). (default=150)
 	-isz  : Insert size estimate. ( = mean_insert_size + 2 * insert_size_standard_deviation - read_length). (default=340)

@@ -4,7 +4,7 @@
 
 ![Scheme_v2](images/Scheme_v2.png)
 
-*TE-Detective approach and modules.*
+*Figure 2: TE-Detective approach and modules.*
 
 ## Requirements
  * [NCBI blast](https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download)

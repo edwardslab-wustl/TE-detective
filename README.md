@@ -96,7 +96,7 @@ Clone and install with pip:
 		TE_detective analyze -bam $MASTER_DIR/NA12892/NA12892_hg19_sorted.bam -ref ref_fofn -inp $MASTER_DIR/NA12878/initial_predictions_NA12878.txt -rdl 100 -isz 439
 		cp final_result final_result_NA12878_NA12892.txt
 
-	4. Aplly filter on final_result_NA12878.txt, final_result_NA12891.txt, final_result_NA12892.txt, final_result_NA12878_NA12891.txt and final_result_NA12878_NA12892.txt. After applying filter, a new insertion in child (NA12878) would be those which are found in final_result_NA12878.txt but not in final_result_NA12878_NA12891.txt or final_result_NA12878_NA12892.txt.
+	5. Aplly filter on final_result_NA12878.txt, final_result_NA12891.txt, final_result_NA12892.txt, final_result_NA12878_NA12891.txt and final_result_NA12878_NA12892.txt. After applying filter, a new insertion in child (NA12878) would be those which are found in final_result_NA12878.txt but not in final_result_NA12878_NA12891.txt or final_result_NA12878_NA12892.txt.
 
 
 ## License information

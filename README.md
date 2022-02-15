@@ -95,7 +95,7 @@ Clone and install with pip:
 
 	Usages:
 	1. For transposable element insertion prediction withing a bam file, use same bam file using which initial prediction list was generated.
-	2. For polymorhic substracrtion, one run with bam file which generated initial prediction list, and other runs with bam files of parents (or such) will be required. 
+	2. For polymorhic substracrtion, one run with bam file which generated initial prediction list, and other runs with bam files of parents (or such) will be required. After filteration step, substraction can be performed (using MS Excel etc). 
 
 	-bam  : Input indexed bam file (aligned with bwa -mem). 
 	-ref  : File of file name of TE reference fasta file (please refer to example data for file format). Please provide file name with absolute path.

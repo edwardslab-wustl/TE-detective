@@ -91,9 +91,13 @@ Clone and install with pip:
 
 3. Analyze ( This is Realignment step from figure 2):
 
-	Detailed analysis of initial list of candidate insertions from discover step. 	
+	Detailed analysis of initial list of candidate insertions from discover step.
 
-	-bam  : Input indexed bam file (aligned with bwa -mem).
+	Usages:
+	1. For transposable element insertion prediction withing a bam file, use same bam file using which initial prediction list was generated.
+	2. For polymorhic substracrtion, one run with bam file which generated initial prediction list, and other runs with bam files of parents (or such) will be required. 
+
+	-bam  : Input indexed bam file (aligned with bwa -mem). 
 	-ref  : File of file name of TE reference fasta file (please refer to example data for file format). Please provide file name with absolute path.
 	-inp  : Initial prediction file from discover step.
 	-rdl  : Average read length of bam file (can be estimated using picard). (default=150)

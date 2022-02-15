@@ -2,6 +2,9 @@
 
 ![Scheme_v1](images/Scheme_v1.png)
 
+*Figure 1: Schematic representation of transposable element insertions.*
+
+
 ![Scheme_v2](images/Scheme_v2.png)
 
 *Figure 2: TE-Detective approach and modules.*

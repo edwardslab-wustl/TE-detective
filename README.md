@@ -2,6 +2,7 @@
 
 ![Scheme_v1](images/Scheme_v1.png)
 ![Scheme_v2](images/Scheme_v2.png)
+*TE-Detective approach and modules.*
 
 ## Requirements
  * [NCBI blast](https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download)
@@ -81,7 +82,7 @@ Clone and install with pip:
 	-mpq  : Minimum mapping quality of a read. (default=30)
 	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads). This is value of MAPQ in sction of 3.3 of document. (default=1)
 
-3. Analyze:
+3. Analyze ( This is Realignment step from figure 2):
 
 	Detailed analysis of initial list of candidate insertions from discover step. 	
 
@@ -103,7 +104,7 @@ Clone and install with pip:
 
 4. Nadiscover:
 
-	(No-alignment discovery step). This is same as discovery step, but without using BWA aligner for clipped and discordant read alignment to TE reference sequence. Instead, a bed file of masked regions is provided as input, and alignment information from input BAM file is used. 
+	(No-alignment discovery step). This module is optional. This is same as discovery step, but without using BWA aligner for clipped and discordant read alignment to TE reference sequence. Instead, a bed file of masked regions is provided as input, and alignment information from input BAM file is used. 
 
 	-bam  : Input indexed bam file (aligned with bwa -mem).
 	-ref  : File of file name of TE reference fasta file (please refer to example data for file format). Please provide file name with absolute path.
@@ -122,7 +123,7 @@ Clone and install with pip:
 
 5. Cluster2D:
 
-	Use this module if you want to change the clustering desnity for initial prediction. For example, if -drd was set to 10 for discovery step and user want to see predictions with -drd = 5, this module provides result withput running all the time consuming alignment steps of discovery step. This module uses intermediate files from discover section and generates new prediction file.
+	This module is optional. Use this module if you want to change the clustering desnity for initial prediction. For example, if -drd was set to 10 for discovery step and user want to see predictions with -drd = 5, this module provides result withput running all the time consuming alignment steps of discovery step. This module uses intermediate files from discover section and generates new prediction file.
 
 	-bam  : Input indexed bam file (aligned with bwa -mem).
 	-ref  : File of file name of TE reference fasta file (please refer to example data for file format). Please provide file name with absolute path.
@@ -134,7 +135,7 @@ Clone and install with pip:
 6. Filter:
 	
 	Filter output from detailed analysis section. 
-	( User can import output from detailed analysis section into MS Excel or any other tool, and create filter of their choice)
+	( User can import output from detailed analysis section (realignment step) into MS Excel or any other tool, and create filter of their own choice)
 
 	# Filteration step code looks like this
 

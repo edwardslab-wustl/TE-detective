@@ -67,7 +67,7 @@ Clone and install with pip:
 
 	-bam  : Input indexed bam file (aligned with bwa -mem).
 	-ref  : File of file name of TE reference fasta file (please refer to example data for file format) . Please provide file name with absolute path.
-	-cll  : minimum ength of clipped reads to be extracted. (default=25)
+	-cll  : minimum length of clipped reads to be extracted. (default=25)
 
 2. Discover:
 	

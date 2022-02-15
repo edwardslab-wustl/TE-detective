@@ -20,10 +20,25 @@ Clone and install with pip:
     cd TE-detective
     pip install .
 ````
+## Docker Image
+
+````
+    Docker image is available at https://hub.docker.com/r/edwardslab/te-detective
+
+````
 
 ## Usage
 
 ### Input files
+
+````
+    1. BAM file should preferably be prepared using following alignment command:
+	bwa mem -M -Y -R $RG_LINE ref.fa test_1.fq test_2.fq | samtools view -b -S - > test_ref.bam
+
+    2. Reference sequence of repeat elements:
+	Reference sequence of repeat elements can be obtained from Repbase(https://www.girinst.org/server/RepBase/index.php) or other resources.
+
+````
 
 ### Example
 
@@ -90,7 +105,7 @@ Clone and install with pip:
 
 4. Nadiscover:
 
-	This module makes initial list of candidate insertions without use of bwa aligner. Instead, a bed file of masked regions are provided as input. 
+	(No-alignment discovery step). This is same as discovery step, but without using BWA aligner for clipped and discordant read alignment to TE reference sequence. Instead, a bed file of masked regions is provided as input, and alignment information from input BAM file is used. 
 
 	-bam  : Input indexed bam file (aligned with bwa -mem).
 	-ref  : File of file name of TE reference fasta file (please refer to example data for file format). Please provide file name with absolute path.
@@ -103,15 +118,13 @@ Clone and install with pip:
 	-mrg  : Flag to merge this part of analysis with alignment module of initial prediction.
 	-pat  : Flag to include P/T analysis in prediction. (default=false) 
 	-nas  : Non-alignment ref bam search. (don't change this parameter!) 
-	-pql  : Poly A/T Length (default=9)
-	-pmm  : Maximum poly A/T mismatch (default=1)
 	-mpq  : Minimum mapping quality of a read. (default=30)
 	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads). This is value of MAPQ in sction of 3.3 of document. (default=1)
 	-bed  : BED file of existing repeat elements ( CHROM	START	END	TE_CLASS ) 
 
 5. Cluster2D:
 
-	Use this module if you want to change the clustering desnity for initial prediction. This module uses intermediate files from discover section and generates new prediction file.
+	Use this module if you want to change the clustering desnity for initial prediction. For example, if -drd was set to 10 for discovery step and user want to see predictions with -drd = 5, this module provides result withput running all the time consuming alignment steps of discovery step. This module uses intermediate files from discover section and generates new prediction file.
 
 	-bam  : Input indexed bam file (aligned with bwa -mem).
 	-ref  : File of file name of TE reference fasta file (please refer to example data for file format). Please provide file name with absolute path.
@@ -122,14 +135,15 @@ Clone and install with pip:
 
 6. Filter:
 	
-	Filter output from detailed analysis section.
+	Filter output from detailed analysis section. 
+	( User can import output from detailed analysis section into MS Excel or any other tool, and create filter of their choice)
 
 	# Filteration step code looks like this
 
         if total_clipped_rd >= tcr or ( (total_clipped_rd >= mtcr ) and ( (total_clipped_rd_wpat+total_discord_rd) >= trd ) ):
             filter_result = 'PASS'
         elif total_discord_rd >= odrd: 
-            filter_result = 'PASS_D'
+            filter_result = 'PASS_D' # This flag says passed based on only discordant reads.
 
 	-ofa  : Output file from analyze section
 	-bed  : BED file of existing repeat elements ( CHROM	START    END     TE_CLASS )
@@ -137,7 +151,7 @@ Clone and install with pip:
 	-tcr  : Minimum number of clipped reads. (default=3)
 	-mtcr : Minimum number of clipped reads. (default=1)
 	-trd  : Minimum total reads (default=5)
-	-otrd : Minimum total reads (default=10)
+	-otrd : Minimum total count of only discordant reads (default=10)
 	-ref  : File of file name of TE reference fasta file. Please provide file name with absolute path.
 	-rdl  : Average read length of bam file (can be estimated using picard). (default=150)
 	-isz  : Insert size estimate. ( = mean_insert_size + 2 * insert_size_standard_deviation - read_length). (default=340)

@@ -23,7 +23,7 @@ Clone and install with pip:
 ## Docker Image
 
 ````
-    Docker image is available at https://hub.docker.com/r/edwardslab/te-detective
+ * [Docker image is available here.](https://hub.docker.com/r/edwardslab/te-detective)
 
 ````
 

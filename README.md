@@ -78,7 +78,7 @@ Clone and install with pip:
 		TE_detective analyze -bam $MASTER_DIR/NA12891/NA12891_hg19_sorted.bam -ref ref_fofn -inp initial_predictions_NA12891.txt -rdl 100 -isz 439
 		cp final_result final_result_NA12891.txt
 
-        3. Insertion prediction in other parent (NA12892).
+	3. Insertion prediction in other parent (NA12892).
 
 		$MASTER_DIR/NA12892/
 		TE_detective preprocess -bam $MASTER_DIR/NA12892/NA12892_hg19_sorted.bam -ref ref_fofn

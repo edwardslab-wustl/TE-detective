@@ -22,10 +22,8 @@ Clone and install with pip:
 ````
 ## Docker Image
 
-````
- * [Docker image is available here.](https://hub.docker.com/r/edwardslab/te-detective)
+   [TE-Detective Docker image](https://hub.docker.com/r/edwardslab/te-detective)
 
-````
 
 ## Usage
 

@@ -71,7 +71,7 @@ Clone and install with pip:
 
 	2. Insertion prediction in one parent (NA12891).
 
-		$MASTER_DIR/NA12891/
+		cd $MASTER_DIR/NA12891/
 		TE_detective preprocess -bam $MASTER_DIR/NA12891/NA12891_hg19_sorted.bam -ref ref_fofn
 		TE_detective discover -bam $MASTER_DIR/NA12891/NA12891_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 439 ( this step will generate initial_predictions.txt )
 		cp initial_predictions.txt initial_predictions_NA12891.txt
@@ -80,7 +80,7 @@ Clone and install with pip:
 
 	3. Insertion prediction in other parent (NA12892).
 
-		$MASTER_DIR/NA12892/
+		cd $MASTER_DIR/NA12892/
 		TE_detective preprocess -bam $MASTER_DIR/NA12892/NA12892_hg19_sorted.bam -ref ref_fofn
 		TE_detective discover -bam $MASTER_DIR/NA12892/NA12892_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 439 ( this step will generate initial_predictions.txt )
 		cp initial_predictions.txt initial_predictions_NA12892.txt

@@ -1,7 +1,9 @@
 # TEdetective
 
 ![Scheme_v1](images/Scheme_v1.png)
+
 ![Scheme_v2](images/Scheme_v2.png)
+
 *TE-Detective approach and modules.*
 
 ## Requirements

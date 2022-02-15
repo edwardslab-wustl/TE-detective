@@ -4,6 +4,8 @@
 
 *Figure 1: Schematic representation of transposable element insertions.*
 
+```````
+```````
 
 ![Scheme_v2](images/Scheme_v2.png)
 

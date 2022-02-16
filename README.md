@@ -156,7 +156,7 @@ Clone and install with pip:
 
 4. Nadiscover:
 
-	(No-alignment discovery step). This module is an alternate to discovery step. This is same as discovery step, but without using BWA aligner for clipped and discordant read alignment to TE reference sequence. Instead, a bed file of masked regions is provided as input, and alignment information from input BAM file is used. 
+	(No-alignment discovery step). This module is an alternative to discovery step. This is same as discovery step, but without using BWA aligner for clipped and discordant read alignment to TE reference sequence. Instead, a bed file of masked regions is provided as input, and alignment information from input BAM file is used. 
 
 	-bam  : Input indexed bam file (aligned with bwa -mem).
 	-ref  : File of file name of TE reference fasta file (please refer to example data for file format). Please provide file name with absolute path.

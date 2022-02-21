@@ -170,9 +170,9 @@ Clone and install with pip:
 	-cct  : A region with coverage more than this will be ignored from prediction. (default=200)
 	-all  : If set false, clipped reads will not be taken into consideration. ( default=false )
 	-mrg  : Flag to merge this part of analysis with alignment module of initial prediction.
-	-pat  : Flag to include P/T analysis in prediction. (default=false). 
-	-nas  : Non-alignment search of transposable elements. If this flag is used, intermedeate file generated from discover step will be overwritten. 
-	-mpq  : Minimum mapping quality of a read. (default=30)
+	-pat  : Flag to include P/T analysis in prediction. (default=false)
+	-nas  : Non-alignment search of transposable elements. If this flag is used, intermedeate file generated from discover step will be overwritten. (default=false) 
+	-mpq  : Minimum mapping quality of a read. (default=30).
 	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads). This is value of MAPQ in sction of 3.3 of document. (default=1)
 	-bed  : BED file of existing repeat elements ( CHROM	START	END	TE_CLASS ) 
 

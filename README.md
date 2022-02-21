@@ -52,8 +52,8 @@ Clone and install with pip:
     cd example_data
     TE_detective preprocess -bam test_sim.bam -ref ref_fofn
     TE_detective discover -bam test_sim.bam -ref ref_fofn
+    TE_detective nadiscover -bam test_sim.bam -ref ref_fofn -pat -drd 5 ( adds Poly A/T information to initial prediction) 
     TE_detective analyze -bam test_sim.bam -ref ref_fofn -inp initial_predictions.txt
-    TE_detective nadiscover -bam test_sim.bam -ref ref_fofn
     TE_detective cluster2d -bam test_sim.bam -ref ref_fofn
     TE_detective filter -ofa final_results -bed rmsk_ucsc_mm10.bed
 ````
@@ -65,7 +65,8 @@ Clone and install with pip:
 		cd $MASTER_DIR/NA12878/
 		TE_detective preprocess -bam $MASTER_DIR/NA12878/NA12878_hg19_sorted.bam -ref ref_fofn
 		TE_detective discover -bam $MASTER_DIR/NA12878/NA12878_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 383 ( this step will generate initial_predictions.txt )
-		cp initial_predictions.txt initial_predictions_NA12878.txt
+		TE_detective nadiscover -bam $MASTER_DIR/NA12878/NA12878_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 383 -pat ( this step will add Poly A/T information and will generate initial_predictions_noalign.txt ) 
+		cp initial_predictions_noalign.txt initial_predictions_NA12878.txt
 		TE_detective analyze -bam $MASTER_DIR/NA12878/NA12878_hg19_sorted.bam -ref ref_fofn -inp initial_predictions_NA12878.txt -rdl 100 -isz 383
 		cp final_result final_result_NA12878.txt
 
@@ -74,7 +75,8 @@ Clone and install with pip:
 		cd $MASTER_DIR/NA12891/
 		TE_detective preprocess -bam $MASTER_DIR/NA12891/NA12891_hg19_sorted.bam -ref ref_fofn
 		TE_detective discover -bam $MASTER_DIR/NA12891/NA12891_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 439 ( this step will generate initial_predictions.txt )
-		cp initial_predictions.txt initial_predictions_NA12891.txt
+		TE_detective nadiscover -bam $MASTER_DIR/NA12878/NA12891_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 439 -pat ( this step will generate initial_predictions_noalign.txt )
+		cp initial_predictions_noalign.txt initial_predictions_NA12891.txt
 		TE_detective analyze -bam $MASTER_DIR/NA12891/NA12891_hg19_sorted.bam -ref ref_fofn -inp initial_predictions_NA12891.txt -rdl 100 -isz 439
 		cp final_result final_result_NA12891.txt
 
@@ -83,7 +85,8 @@ Clone and install with pip:
 		cd $MASTER_DIR/NA12892/
 		TE_detective preprocess -bam $MASTER_DIR/NA12892/NA12892_hg19_sorted.bam -ref ref_fofn
 		TE_detective discover -bam $MASTER_DIR/NA12892/NA12892_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 439 ( this step will generate initial_predictions.txt )
-		cp initial_predictions.txt initial_predictions_NA12892.txt
+		TE_detective nadiscover -bam $MASTER_DIR/NA12878/NA12892_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 439 -pat ( this step will generate initial_predictions_noalign.txt )
+		cp initial_predictions_noalign.txt initial_predictions_NA12892.txt
 		TE_detective analyze -bam $MASTER_DIR/NA12892/NA12892_hg19_sorted.bam -ref ref_fofn -inp initial_predictions_NA12892.txt -rdl 100 -isz 439
 		cp final_result final_result_NA12892.txt
 
@@ -156,7 +159,7 @@ Clone and install with pip:
 
 4. Nadiscover:
 
-	(No-alignment discovery step). This module is an alternative to discovery step. This is same as discovery step, but without using BWA aligner for clipped and discordant read alignment to TE reference sequence. Instead, a bed file of masked regions is provided as input, and alignment information from input BAM file is used. 
+	(Performes non alignment part of discovery step). One of the main tasks of this module is to add poly A/T information into prediction made by discovery step. This module performes initial searches as well, but without using BWA aligner for clipped and discordant read alignment to TE reference sequence. Instead, a bed file of masked regions is provided as input, and alignment information from input BAM file is used. 
 
 	-bam  : Input indexed bam file (aligned with bwa -mem).
 	-ref  : File of file name of TE reference fasta file (please refer to example data for file format). Please provide file name with absolute path.
@@ -167,8 +170,8 @@ Clone and install with pip:
 	-cct  : A region with coverage more than this will be ignored from prediction. (default=200)
 	-all  : If set false, clipped reads will not be taken into consideration. ( default=false )
 	-mrg  : Flag to merge this part of analysis with alignment module of initial prediction.
-	-pat  : Flag to include P/T analysis in prediction. (default=false) 
-	-nas  : Non-alignment ref bam search. (don't change this parameter!) 
+	-pat  : Flag to include P/T analysis in prediction. (default=false). 
+	-nas  : Non-alignment search of transposable elements. If this flag is used, intermedeate file generated from discover step will be overwritten. 
 	-mpq  : Minimum mapping quality of a read. (default=30)
 	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads). This is value of MAPQ in sction of 3.3 of document. (default=1)
 	-bed  : BED file of existing repeat elements ( CHROM	START	END	TE_CLASS ) 

@@ -168,13 +168,13 @@ Clone and install with pip:
 	-rdl  : Average read length of bam file (can be estimated using picard). (default=150)
 	-drd  : Number of supporting reads for calling an insertion. (default=10)
 	-cct  : A region with coverage more than this will be ignored from prediction. (default=200)
-	-all  : If set false, clipped reads will not be taken into consideration. ( default=false )
-	-mrg  : Flag to merge this part of analysis with alignment module of initial prediction.
 	-pat  : Flag to include P/T analysis in prediction. (default=false)
 	-nas  : Non-alignment search of transposable elements. If this flag is used, intermedeate file generated from discover step will be overwritten. (default=false) 
+	-all  : If set false, clipped reads will not be taken into consideration. ( default=false; works with -nas )
+	-mrg  : Flag to merge this part of analysis with alignment module of initial prediction. (works with -nas )
+	-bed  : BED file of existing repeat elements ( CHROM	START	END	TE_CLASS ). (needed with -nas ) 
 	-mpq  : Minimum mapping quality of a read. (default=30).
 	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads). This is value of MAPQ in sction of 3.3 of document. (default=1)
-	-bed  : BED file of existing repeat elements ( CHROM	START	END	TE_CLASS ) 
 
 5. Cluster2D:
 

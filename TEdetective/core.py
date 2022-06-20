@@ -21,7 +21,7 @@ from Bio.Sequencing.Applications import BwaIndexCommandline
 from Bio.Sequencing.Applications import BwaAlignCommandline
 from Bio.Sequencing.Applications import BwaSamseCommandline
 
- def eprint(*args, **kwargs):
+def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 #--------------------------------------------------------------
 def check_file(file_name):

@@ -1,7 +1,6 @@
 ################################################################
 # Python based tool to identify novel transposable element insertions from WGS data.
 # Contributors: Manoj Kumar Singh (manoj@wustl.edu),
-#        Rachel Dreher (r.d.dreher@wustl.edu)
 #        and John Edwards (jredwards@wustl.edu)
 #
 # External dependencies: censor, NCBI blast (provided with package)
@@ -21,6 +20,7 @@ from Bio.Seq import Seq
 from Bio.Sequencing.Applications import BwaIndexCommandline
 from Bio.Sequencing.Applications import BwaAlignCommandline
 from Bio.Sequencing.Applications import BwaSamseCommandline
+from io_functions import eprint
 
 #--------------------------------------------------------------
 def check_file(file_name):
@@ -393,17 +393,18 @@ def exec_preprocess(args):
                 a = pysam.AlignedSegment()
                 a.query_name = read.query_name
                 a.query_sequence=read.query_sequence[read.infer_query_length() \
-                            - read.cigartuples[-1][1]:read.infer_query_length()]
+                            - read.cigartuples[-1][1]-1:read.infer_query_length()]
                 a.flag = read.flag
                 a.reference_id = read.reference_id
                 a.reference_start = read.reference_start
-                a.mapping_quality = read.mapping_quality
-                a.cigar = [ (read.cigartuples[-1][0], read.cigartuples[-1][1]) ]
+                a.mapping_quality = 0 # read.mapping_quality
+                a.cigar = []
+                a.cigar.append((read.cigartuples[-1][0], read.cigartuples[-1][1]))
                 a.next_reference_id = read.next_reference_id
                 a.next_reference_start=read.next_reference_start
                 a.template_length=read.template_length
                 a.query_qualities = read.query_qualities[read.infer_query_length() \
-                            - read.cigartuples[-1][1]:read.infer_query_length()]
+                            - read.cigartuples[-1][1]-1:read.infer_query_length()]
                 a.tags = read.tags
                 newsam_c.write(a)
 
@@ -411,16 +412,17 @@ def exec_preprocess(args):
                     ( (read.cigartuples[-1][0] == 4 and read.cigartuples[-1][1] > 5) != True ):
                 a = pysam.AlignedSegment()
                 a.query_name = read.query_name
-                a.query_sequence=read.query_sequence[0:read.cigartuples[0][1]]
+                a.query_sequence=read.query_sequence[0:read.cigartuples[0][1]-1]
                 a.flag = read.flag
                 a.reference_id = read.reference_id
                 a.reference_start = read.reference_start
-                a.mapping_quality = read.mapping_quality
-                a.cigar = [ (read.cigartuples[0][0], read.cigartuples[0][1]) ]
+                a.mapping_quality = 0 #read.mapping_quality
+                a.cigar = []
+                a.cigar.append((read.cigartuples[0][0], read.cigartuples[0][1])) 
                 a.next_reference_id = read.next_reference_id
                 a.next_reference_start=read.next_reference_start
                 a.template_length=read.template_length
-                a.query_qualities=read.query_qualities[0:read.cigartuples[0][1]]
+                a.query_qualities=read.query_qualities[0:read.cigartuples[0][1]-1]
                 a.tags = read.tags
                 newsam_c.write(a)
     newsam_d.close()
@@ -1533,9 +1535,9 @@ def exec_filter(args):
 #        if total_clipped_rd >= 3 or ( total_clipped_rd >=2 and (total_clipped_rd + total_discord_rd >= 5)) or total_discord_rd >= 10: # and test_class_score == 4 \ LTR-SUB
 #        if total_clipped_rd >= 3 or ( total_clipped_rd >=2 and (total_clipped_rd + total_discord_rd >= 5)): # or total_discord_rd >= 25: # and test_class_score == 4 \ Ecat11
 #            and ((total_clipped_rd + total_discord_rd)*100/cnt_rd >= rp): # and total_rd_left > 0 and total_rd_right > 0:
-        if total_clipped_rd >= tcr or ( (total_clipped_rd >= mtcr ) and ( (total_clipped_rd_wpat+total_discord_rd) >= trd) ):
+        if total_clipped_rd >= 3 or ( (total_clipped_rd >= 1) and ( (total_clipped_rd_wpat+total_discord_rd) >= 5) ):
             filter_result = 'PASS'
-        elif total_discord_rd >= odrd:
+        elif total_discord_rd >= 10:
             filter_result = 'PASS_D'
 
         sys.stdout.write(filter_result+'\t'+te_loc+'\t'+line)
@@ -1874,9 +1876,9 @@ def exec_analyze(args):
         os.chdir(int_file_name)
         output_file = open(str(chrom)+'_'+str(lf_line.split()[2])+'.out', 'w')
         #    
-        samfile = pysam.AlignmentFile(bam_full, 'rb')
-        #samfile = pysam.AlignmentFile("../" + bam_full, 'rb')
-        iterator_reads = samfile.fetch(chrom, max( (insert_guess-(insert_size+insert_range)), 1), \
+        #samfile = pysam.AlignmentFile(bam_full, 'rb')
+        samfile = pysam.AlignmentFile("../" + bam_full, 'rb')
+        iterator_reads = samfile.fetch(chrom, insert_guess-(insert_size+insert_range), \
                         insert_guess+(insert_size+insert_range))
         #
         # Convert iterator to list for multiple usages
@@ -1940,22 +1942,33 @@ def exec_analyze(args):
         # find insertion point *NEAREST* to provided guess
         insert_point = 0
         gap_ends = 0 # make first gap_end = max_tsd + 2*range of clipped read search (2*5)
-        while (insert_point == 0):
-            if gap_ends < 2*insert_range:
-                gap_ends += clipped_search_interval
-            pend = 0
-            nstrt = 0
-            gap = insert_range
-            for i in clipped_ends_p:
-                for j in clipped_ends_n:
-                    if abs(j-i) < gap_ends:
-                        if abs(insert_guess-(abs(j+i)/2)) <= gap:
-                            gap = abs(insert_guess-(abs(j-i)/2))
-                            pend = i
-                            nstrt = j
+        loop_counter = 0
+        insert_point_set_flag = 0
+        while loop_counter < 1000:
+            loop_counter += 1
+            while (insert_point == 0):
+                if gap_ends < 2*insert_range:
+                    gap_ends += clipped_search_interval
+                pend = 0
+                nstrt = 0
+                gap = insert_range
+                for i in clipped_ends_p:
+                    for j in clipped_ends_n:
+                        if abs(j-i) < gap_ends:
+                            if abs(insert_guess-(abs(j+i)/2)) <= gap:
+                                gap = abs(insert_guess-(abs(j-i)/2))
+                                pend = i
+                                nstrt = j
             insert_point = round((pend+nstrt)/2)
             insert_point_out = pend
-
+            insert_point_set_flag = 1
+        if insert_point_set_flag == 0:
+            insert_point_out = insert_guess
+            insert_point = insert_guess
+            warning = "WARNING: timed out estimating insertion point for " + str(chrom) + "_" + str(insert_guess)
+            eprint(warning)
+            output_file.write(warning)
+            
         output_file.write('TE insertion point closest to provided guess is: ' + \
                     str(insert_point_out) + ', which is (+)cluster ' + str(pend)+'\n')
         #----------------------------------------------------------------------------------------
@@ -2250,9 +2263,9 @@ def exec_analyze(args):
         #
         output_file = open(str(chrom)+'_'+str(insert_guess)+'.out', 'a+')
         #
-        samfile = pysam.AlignmentFile(bam_full, "rb")
-        #samfile = pysam.AlignmentFile("../" + bam_full, "rb")
-        iterator_reads = samfile.fetch(chrom, max( (insert_point-insert_size), 1), insert_point+insert_size)
+        #samfile = pysam.AlignmentFile(bam_full, "rb")
+        samfile = pysam.AlignmentFile("../" + bam_full, "rb")
+        iterator_reads = samfile.fetch(chrom, insert_point-insert_size, insert_point+insert_size)
         iterator_reads_list = list( iterator_reads )
         samfile.close()
         #
@@ -2495,8 +2508,7 @@ def main():
             }
 
     parser = argparse.ArgumentParser()
-    #subparsers = parser.add_subparsers(dest='command', required=True)
-    subparsers = parser.add_subparsers(dest='command')
+    subparsers = parser.add_subparsers(dest='command', required=True)
 
     sp_preprocess = subparsers.add_parser('preprocess', help="preprocess argument")
     sp_preprocess.add_argument('-bam', action='store', dest='bam_inp', required=True, help='Bam(.bam) file with full path')
@@ -2508,11 +2520,11 @@ def main():
     sp_discover.add_argument('-ref', action='store', dest='fofn_ref', required=True, help='FoFn for reference sequence')
     sp_discover.add_argument('-isz', action='store', dest='isz_inp', type=int, default=340, help='insert Size estimate')
     sp_discover.add_argument('-rdl', action='store', dest='rdl_inp', type=int, default=150, help='Average read length')
-    sp_discover.add_argument('-drd', action='store', dest='drd_inp', type=int, default=10, help='read clust denst')
+    sp_discover.add_argument('-drd', action='store', dest='drd_inp', type=int, default=10, help='discord read clust denst')
     sp_discover.add_argument('-cct', action='store', dest='cct_inp', type=int, default=200, help='Coverage cutoff input')
     sp_discover.add_argument('-cll', action='store', dest='cll_inp', type=int, default=25, help='Minimum clipped length(bp)')
     sp_discover.add_argument('-mpq', action='store', dest='mpq_inp', type=int, default=30, help='Minimum mapping quality')
-    sp_discover.add_argument('-mpqu', action='store', dest='mpqu_inp', type=int, default=1, help='Minimum mapping quality for uniq test of clipped reads')
+    sp_discover.add_argument('-mpqu', action='store', dest='mpqu_inp', type=int, default=1, help='Minimum mapping quality')
 
     sp_analyze = subparsers.add_parser('analyze', help="analyze argument")
     sp_analyze.add_argument('-bam', action='store', dest='bam_inp', required=True, help='Bam(.bam) file with full path')
@@ -2529,7 +2541,7 @@ def main():
     sp_analyze.add_argument('-qii', action='store', dest='qii_inp', type=float, default=0.05, help='Interval for mapping quality')
     sp_analyze.add_argument('-nii', action='store', dest='nii_inp', type=int, default=6, help='Number of intervals')
     sp_analyze.add_argument('-mpq', action='store', dest='mpq_inp', type=int, default=30, help='Minimum mapping quality')
-    sp_analyze.add_argument('-mpqu', action='store', dest='mpqu_inp', type=int, default=1, help='Minimum mapping quality uniq test of clipped reads')
+    sp_analyze.add_argument('-mpqu', action='store', dest='mpqu_inp', type=int, default=1, help='Minimum mapping quality uniq test')
     sp_analyze.add_argument('-flt', action='store_true', dest='flt_inp', default=False, help='Filter discord mate files')
 
     sp_nadiscover = subparsers.add_parser('nadiscover', help="nadiscover argument")
@@ -2538,7 +2550,7 @@ def main():
     sp_nadiscover.add_argument('-cll', action='store', dest='cll_inp', type=int, default=25, help='Minimum clipped length(bp)')
     sp_nadiscover.add_argument('-isz', action='store', dest='isz_inp', type=int, default=340, help='insert Size estimate')
     sp_nadiscover.add_argument('-rdl', action='store', dest='rdl_inp', type=int, default=150, help='Average read length')
-    sp_nadiscover.add_argument('-drd', action='store', dest='drd_inp', type=int, default=5, help='read clust denst')
+    sp_nadiscover.add_argument('-drd', action='store', dest='drd_inp', type=int, default=5, help='discord read clust denst')
     sp_nadiscover.add_argument('-cct', action='store', dest='cct_inp', type=int, default=200, help='Coverage cutoff input')
     sp_nadiscover.add_argument('-all', action='store_true', dest='flg_all', default=False, help='Only clipped or all?')
     sp_nadiscover.add_argument('-mrg', action='store_true', dest='merged', default=False, help='Merge aligned predictions?')
@@ -2547,7 +2559,7 @@ def main():
     sp_nadiscover.add_argument('-mpq', action='store', dest='mpq_inp', type=int, default=30, help='Minimum mapping quality')
     sp_nadiscover.add_argument('-pql', action='store', dest='pql_inp', type=int, default=9, help='poly A/T Length')
     sp_nadiscover.add_argument('-pmm', action='store', dest='pmm_inp', type=int, default=1, help='poly A/T mismatch')
-    sp_nadiscover.add_argument('-mpqu', action='store', dest='mpqu_inp', type=int, default=1, help='Minimum mapping quality uniq test of clipped reads')
+    sp_nadiscover.add_argument('-mpqu', action='store', dest='mpqu_inp', type=int, default=1, help='Minimum mapping quality uniq test')
     sp_nadiscover.add_argument('-bed', action='store', dest='rmsk_bed', help='FoFn for existing repeat elements')
 
     sp_cluster2d = subparsers.add_parser('cluster2d', help="cluster2d argument")
@@ -2555,7 +2567,7 @@ def main():
     sp_cluster2d.add_argument('-ref', action='store', dest='fofn_ref', required=True, help='FoFn for reference sequence')
     sp_cluster2d.add_argument('-isz', action='store', dest='isz_inp', type=int, default=340, help='insert Size estimate')
     sp_cluster2d.add_argument('-rdl', action='store', dest='rdl_inp', type=int, default=150, help='Average read length')
-    sp_cluster2d.add_argument('-drd', action='store', dest='drd_inp', type=int, default=5, help='read clust denst')
+    sp_cluster2d.add_argument('-drd', action='store', dest='drd_inp', type=int, default=5, help='discord read clust denst')
     sp_cluster2d.add_argument('-cct', action='store', dest='cct_inp', type=int, default=200, help='Coverage cutoff input')
     sp_cluster2d.add_argument('-all', action='store_true', dest='flg_all', default=False, help='Only clipped or all?')
 
@@ -2563,10 +2575,8 @@ def main():
     sp_filter.add_argument('-ofa', action='store', dest='ofa_inp', required=True, help='output file from analyze section')
     sp_filter.add_argument('-bed', action='store', dest='fofn_bed', required=True, help='FoFn for existing repeat elements')
     sp_filter.add_argument('-qlm', action='store', dest='qlm_inp', type=float, default=0.85, help='Lowest limit for alignment quality')
-    sp_filter.add_argument('-tcr', action='store', dest='tcr_inp', type=int, default=3, help='Minimum number of clipped reads')
-    sp_filter.add_argument('-trd', action='store', dest='trd_inp', type=int, default=5, help='Minimum total [clipped+discordant] reads')
-    sp_filter.add_argument('-mtcr', action='store', dest='trd_inp', type=int, default=1, help='Minimum total [clipped+discordant] reads')
-    sp_filter.add_argument('-odrd', action='store', dest='trd_inp', type=int, default=10, help='Minimum total [clipped+discordant] reads')
+    sp_filter.add_argument('-tcr', action='store', dest='tcr_inp', type=int, default=5, help='Minimum number of clipped reads')
+    sp_filter.add_argument('-trd', action='store', dest='trd_inp', type=int, default=10, help='Minimum total [clipped+discordant] reads')
     sp_filter.add_argument('-ref', action='store', dest='fofn_ref', help='FoFn for reference sequence')
     sp_filter.add_argument('-rp', action='store', dest='rp_inp', type=float, default=10.0, help='read percent value')
     sp_filter.add_argument('-rdl', action='store', dest='rdl_inp', type=int, default=150, help='Average read length')

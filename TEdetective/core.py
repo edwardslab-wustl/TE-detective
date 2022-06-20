@@ -20,8 +20,9 @@ from Bio.Seq import Seq
 from Bio.Sequencing.Applications import BwaIndexCommandline
 from Bio.Sequencing.Applications import BwaAlignCommandline
 from Bio.Sequencing.Applications import BwaSamseCommandline
-from io_functions import eprint
 
+ def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 #--------------------------------------------------------------
 def check_file(file_name):
     if os.path.isfile(file_name) and os.path.getsize(file_name) > 0:

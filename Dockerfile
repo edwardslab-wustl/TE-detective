@@ -17,11 +17,17 @@ RUN git clone https://github.com/lh3/bwa.git
 WORKDIR /usr/local/bwa
 RUN make
 #
-COPY blast-2.2.26/ /usr/local/blast-2.2.26/
-WORKDIR /usr/local/blast-2.2.26
+#COPY blast-2.2.26/ /usr/local/blast-2.2.26/
+#WORKDIR /usr/local/blast-2.2.26
+WORKDIR /usr/local
+COPY externals/blast-2.2.26-x64-linux.tar.gz /usr/local/blast-2.2.26-x64-linux.tar.gz
+RUN tar -xzf blast-2.2.26-x64-linux.tar.gz
 ENV BLASTDIR=/usr/local/blast-2.2.26/bin
 #
-COPY censor-4.2.29/ /usr/local/censor-4.2.29/
+#COPY censor-4.2.29/ /usr/local/censor-4.2.29/
+WORKDIR /usr/local
+COPY externals/censor-4.2.29.tar.gz /usr/local/censor-4.2.29.tar.gz
+RUN tar -xzf censor-4.2.29.tar.gz
 WORKDIR /usr/local/censor-4.2.29
 RUN sh ./configure
 RUN make && make install && make clean

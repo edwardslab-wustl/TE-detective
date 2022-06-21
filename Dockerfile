@@ -35,9 +35,8 @@ RUN make && make install && make clean
 RUN pip install pysam
 #
 WORKDIR /usr/local
-#RUN git clone https://github.com/edwardslab-wustl/TE-detective.git
-#WORKDIR ./TE-detective 
-#RUN pip install .
-RUN /opt/anaconda3/bin/python3 -m pip install git+https://github.com/edwardslab-wustl/TE-detective.git
-
+RUN git clone https://github.com/edwardslab-wustl/TE-detective.git
+WORKDIR ./TE-detective 
+RUN pip install .
+#RUN /opt/anaconda3/bin/python3 -m pip install git+https://github.com/edwardslab-wustl/TE-detective.git
 #ENV PATH=/opt/conda/bin:/usr/local/utils/:$BLASTDIR:/usr/local/bwa/$PATH

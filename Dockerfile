@@ -35,6 +35,7 @@ RUN make && make install && make clean
 RUN pip install pysam
 #
 WORKDIR /usr/local
+WORKDIR /usr/local
 RUN git clone https://github.com/edwardslab-wustl/TE-detective.git
 WORKDIR ./TE-detective 
 RUN pip install .

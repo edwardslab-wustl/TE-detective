@@ -1816,7 +1816,7 @@ def exec_analyze(args):
     discord_bam = dir_path+'/preprocessed_files/'+bam_full.split('/')[-1][:-4]+'_discord.bam'
     sys.stdout.write('Discordant bam file: '+discord_bam+'\n')
     if not check_file(discord_bam + ".bai"):
-        sys.stdout.write('no index for: '+discord_bam+', making now\n')
+        sys.stderr.write('cannot find index for: '+discord_bam+', making now\n')
         pysam.index(discord_bam)
     #
     #te_type_file = up_dir_path+'/preprocessed_files/te_ref_type.fa'
@@ -1868,6 +1868,7 @@ def exec_analyze(args):
     inp_file.close()
     #
     #
+    eprint("----------\n"  + "remap and find insertion points\n" + "----------\n")
     for lf_line in inp_file_lines:
         #
         if lf_line.startswith('#'):
@@ -2102,7 +2103,7 @@ def exec_analyze(args):
         output_file.write(''.join(output_write_lines))
         del output_write_lines[:]
         #
-        # Remove intermedeate files
+        # Remove intermediate files
         subprocess.run(['rm' , '-rf' , '*.fa.*' , 'censor.ncbi.*' , 'error.log' , 'formatdb.log'])
         #call(['rm' , '-rf' , '*.fa.map' , 'censor.ncbi.*' , '*.log'])
         #os.chdir('..')
@@ -2176,6 +2177,7 @@ def exec_analyze(args):
     #---------------------------------------------------------------------------------------------------------------------------
     # Het vs Hom
     #---------------------------------------------------------------------------------------------------------------------------
+        #eprint("----------\n"  + "determining if het or not\n" + "----------\n")
         cnt_het = 0
         for read in iterator_reads_list:
             if read.cigartuples != None:  # prevents accidental kill. remember, read.reference_start is 0 based.
@@ -2197,6 +2199,7 @@ def exec_analyze(args):
     #----------------------------------------------------------------------------------------------------------------------------
     # Poly A/T
     #----------------------------------------------------------------------------------------------------------------------------
+       # eprint("----------\n"  + "determining polyA\n" + "----------\n")
     # 1. p-end    
         pat_test_out_p = analysis_pat_check( int_file_name+'_reads_p.fa', int_file_name+'_reads_p.fa.map' )
         # num_pa_p = sum(x.count('A') for x in pat_test_out_p)        
@@ -2255,6 +2258,7 @@ def exec_analyze(args):
     #*****************************************************************************************************************************
     #Discordant mate pair analysis
     #
+    eprint("----------\n"  + "discordant mate pair analysis\n" + "----------\n")
     samfile_idx = pysam.AlignmentFile(discord_bam, "rb")
     id_index = pysam.IndexedReads(samfile_idx)
     id_index.build()
@@ -2489,6 +2493,7 @@ def exec_analyze(args):
     samfile_idx.close()
     #--------------------------------------------------------------------------------------------------------------
     # Write combined output file.
+    eprint("----------\n"  + "writing output files\n" + "----------\n")
     final_output = open('final_results', 'w')
     final_output.write("# Chromosome \t Initial_Guess \t Actual_insertion_point \t Hetrozygous/Homozygous \t \
             #reads_forHet \t TSD_length \t (+)clipped_type \t (+)clipped_type_quality \t \

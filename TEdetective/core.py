@@ -2278,7 +2278,12 @@ def exec_analyze(args):
         #
         samfile = pysam.AlignmentFile(bam_full, "rb")
         #samfile = pysam.AlignmentFile("../" + bam_full, "rb")
-        iterator_reads = samfile.fetch(chrom, insert_point-insert_size, insert_point+insert_size)
+        #iterator_reads = samfile.fetch(chrom, insert_point-insert_size, insert_point+insert_size)
+        insert_point_start = insert_point-insert_size 
+        insert_point_end = insert_point+insert_size 
+        if insert_point_start < 1:
+            insert_point_start = 1
+        iterator_reads = samfile.fetch(chrom, insert_point_start, insert_point_end)
         iterator_reads_list = list( iterator_reads )
         samfile.close()
         #
@@ -2295,10 +2300,12 @@ def exec_analyze(args):
                 #
                 write_flag = check_uniq_mapping( read, args )
                 #    
-                if read.get_reference_positions()[0] in range(insert_point-insert_size, insert_point) and write_flag == 'y':
+                #if read.get_reference_positions()[0] in range(insert_point-insert_size, insert_point) and write_flag == 'y':
+                if read.get_reference_positions()[0] in range(insert_point_start, insert_point) and write_flag == 'y':
                     file_discord_p.write(read.query_name + '\t' + str(read.flag) + '\t' + str(read.reference_start) + '\t' + str(read.reference_end) + '\n')        
                 #
-                if read.get_reference_positions()[-1] in range(insert_point, insert_point+insert_size+1) and write_flag == 'y':
+                #if read.get_reference_positions()[-1] in range(insert_point, insert_point+insert_size+1) and write_flag == 'y':
+                if read.get_reference_positions()[-1] in range(insert_point, insert_point_end+1) and write_flag == 'y':
                     file_discord_n.write(read.query_name + '\t' + str(read.flag) + '\t' + str(read.reference_start) + '\t' + str(read.reference_end) + '\n')
         #    
         file_discord_p.close()

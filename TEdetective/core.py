@@ -1815,6 +1815,9 @@ def exec_analyze(args):
     #discord_bam = up_dir_path+'/preprocessed_files/'+bam_full.split('/')[-1][:-4]+'_discord.bam'
     discord_bam = dir_path+'/preprocessed_files/'+bam_full.split('/')[-1][:-4]+'_discord.bam'
     sys.stdout.write('Discordant bam file: '+discord_bam+'\n')
+    if not check_file(discord_bam + ".bai"):
+        sys.stdout.write('no index for: '+discord_bam+', making now\n')
+        pysam.index(discord_bam)
     #
     #te_type_file = up_dir_path+'/preprocessed_files/te_ref_type.fa'
     te_type_file = dir_path+'/preprocessed_files/te_ref_type.fa'

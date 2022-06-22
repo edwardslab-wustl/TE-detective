@@ -2219,14 +2219,24 @@ def exec_analyze(args):
         output_file.write( het_hom +'\t'+ str(cnt_het) +'\t'+ str(tsd_length) +'\t' )
         #
         if clipped_read_p_flag == 'y':
-            output_file.write(str(type_clipped_p[0][0])+'\t'+ str(type_clipped_p[0][1])+'\t'+ \
-                str(type_clipped_p[0][2]) +'\t'+ str(float("{0:.2f}".format((type_clipped_p[0][2]/cnt_rd_p)*100)))+'\t')
+            if cnt_rd_p > 0:
+                type_c_p_out = str(float("{0:.2f}".format((type_clipped_p[0][2]/cnt_rd_p)*100)))
+            else:
+                type_c_p_out = 'na'
+            #output_file.write(str(type_clipped_p[0][0])+'\t'+ str(type_clipped_p[0][1])+'\t'+ \
+            #    str(type_clipped_p[0][2]) +'\t'+ str(float("{0:.2f}".format((type_clipped_p[0][2]/cnt_rd_p)*100)))+'\t')
+            output_file.write(str(type_clipped_p[0][0])+'\t'+ str(type_clipped_p[0][1])+'\t'+ type_c_p_out +'\t')
         if clipped_read_p_flag == 'n':
             output_file.write("NA\tNA\t0\t0\t")
         #
         if clipped_read_n_flag == 'y':
-            output_file.write(str(type_clipped_n[0][0])+'\t'+ str(type_clipped_n[0][1])+'\t'+ \
-                str(type_clipped_n[0][2]) +'\t'+ str(float("{0:.2f}".format((type_clipped_n[0][2]/cnt_rd_n)*100)))+'\t')
+            if cnt_rd_n > 0:
+                type_c_n_out = str(float("{0:.2f}".format((type_clipped_n[0][2]/cnt_rd_n)*100)))
+            else:
+                type_c_n_out = 'na'
+            #output_file.write(str(type_clipped_n[0][0])+'\t'+ str(type_clipped_n[0][1])+'\t'+ \
+            #    str(type_clipped_n[0][2]) +'\t'+ str(float("{0:.2f}".format((type_clipped_n[0][2]/cnt_rd_n)*100)))+'\t')
+            output_file.write(str(type_clipped_n[0][0])+'\t'+ str(type_clipped_n[0][1])+'\t'+ type_c_n_out + '\t')
         if clipped_read_n_flag == 'n':
             output_file.write("NA\tNA\t0\t0\t")
         #

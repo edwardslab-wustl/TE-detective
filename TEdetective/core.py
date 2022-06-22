@@ -2225,7 +2225,7 @@ def exec_analyze(args):
                 type_c_p_out = 'na'
             #output_file.write(str(type_clipped_p[0][0])+'\t'+ str(type_clipped_p[0][1])+'\t'+ \
             #    str(type_clipped_p[0][2]) +'\t'+ str(float("{0:.2f}".format((type_clipped_p[0][2]/cnt_rd_p)*100)))+'\t')
-            output_file.write(str(type_clipped_p[0][0])+'\t'+ str(type_clipped_p[0][1])+'\t'+ type_c_p_out +'\t')
+            output_file.write(str(type_clipped_p[0][0])+'\t'+ str(type_clipped_p[0][1])+'\t'+  str(type_clipped_p[0][2]) +'\t'+ type_c_p_out +'\t')
         if clipped_read_p_flag == 'n':
             output_file.write("NA\tNA\t0\t0\t")
         #
@@ -2236,7 +2236,7 @@ def exec_analyze(args):
                 type_c_n_out = 'na'
             #output_file.write(str(type_clipped_n[0][0])+'\t'+ str(type_clipped_n[0][1])+'\t'+ \
             #    str(type_clipped_n[0][2]) +'\t'+ str(float("{0:.2f}".format((type_clipped_n[0][2]/cnt_rd_n)*100)))+'\t')
-            output_file.write(str(type_clipped_n[0][0])+'\t'+ str(type_clipped_n[0][1])+'\t'+ type_c_n_out + '\t')
+            output_file.write(str(type_clipped_n[0][0])+'\t'+ str(type_clipped_n[0][1])+'\t'+ str(type_clipped_n[0][2]) +'\t' + type_c_n_out + '\t')
         if clipped_read_n_flag == 'n':
             output_file.write("NA\tNA\t0\t0\t")
         #
@@ -2505,7 +2505,7 @@ def exec_analyze(args):
     # Write combined output file.
     eprint("----------\n"  + "writing output files\n" + "----------\n")
     final_output = open('final_results', 'w')
-    final_output.write("# Chromosome \t Initial_Guess \t Actual_insertion_point \t Hetrozygous/Homozygous \t \
+    final_output.write("Type\t# Chromosome \t Initial_Guess \t Actual_insertion_point \t Hetrozygous/Homozygous \t \
             #reads_forHet \t TSD_length \t (+)clipped_type \t (+)clipped_type_quality \t \
             #reads_supporting_(+)clipped_type \t %reads_supporting_(+)clipped_type \t (-)clipped_type \t \
             (-)clipped_type_quality \t #reads_supporting_(-)clipped_type \t %reads_supporting_(-)clipped_type \t \

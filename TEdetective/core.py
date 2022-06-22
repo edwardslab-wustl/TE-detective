@@ -23,8 +23,7 @@ from Bio.Sequencing.Applications import BwaAlignCommandline
 from Bio.Sequencing.Applications import BwaSamseCommandline
 from TEdetective.io_functions import eprint
 
-#def eprint(*args, **kwargs):
-#    print(*args, file=sys.stderr, **kwargs)
+
 #--------------------------------------------------------------
 def check_file(file_name):
     if os.path.isfile(file_name) and os.path.getsize(file_name) > 0:
@@ -1950,21 +1949,29 @@ def exec_analyze(args):
         gap_ends = 0 # make first gap_end = max_tsd + 2*range of clipped read search (2*5)
         loop_counter = 0
         insert_point_set_flag = 0
-        while loop_counter < 1000:
-            loop_counter += 1
-            while (insert_point == 0):
-                if gap_ends < 2*insert_range:
-                    gap_ends += clipped_search_interval
-                pend = 0
-                nstrt = 0
-                gap = insert_range
-                for i in clipped_ends_p:
-                    for j in clipped_ends_n:
-                        if abs(j-i) < gap_ends:
-                            if abs(insert_guess-(abs(j+i)/2)) <= gap:
-                                gap = abs(insert_guess-(abs(j-i)/2))
-                                pend = i
-                                nstrt = j
+        break_flag = 0
+        while (insert_point == 0):
+            if break_flag:
+                break
+            if gap_ends < 2*insert_range:
+                gap_ends += clipped_search_interval
+            pend = 0
+            nstrt = 0
+            gap = insert_range
+            for i in clipped_ends_p:
+                if break_flag:
+                    break
+                for j in clipped_ends_n:
+                    loop_counter += 1
+                    if loop_counter > 1000:
+                        break_flag = 1
+                        break
+                    if abs(j-i) < gap_ends:
+                        if abs(insert_guess-(abs(j+i)/2)) <= gap:
+                            gap = abs(insert_guess-(abs(j-i)/2))
+                            pend = i
+                            nstrt = j
+            if pend != 0:
                 insert_point = round((pend+nstrt)/2)
                 insert_point_out = pend
                 insert_point_set_flag = 1

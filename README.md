@@ -79,7 +79,7 @@ Clone and install with pip:
 		TE_detective nadiscover -bam $MASTER_DIR/NA12878/NA12878_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 383 -pat ( this step will add Poly A/T information and will generate initial_predictions_noalign.txt ) 
 		cp initial_predictions_noalign.txt initial_predictions_NA12878.txt
 		TE_detective analyze -bam $MASTER_DIR/NA12878/NA12878_hg19_sorted.bam -ref ref_fofn -inp initial_predictions_NA12878.txt -rdl 100 -isz 383
-		cp final_result final_result_NA12878.txt
+		cp final_results final_result_NA12878.txt
 
 	2. Insertion prediction in one parent (NA12891).
 
@@ -89,7 +89,7 @@ Clone and install with pip:
 		TE_detective nadiscover -bam $MASTER_DIR/NA12878/NA12891_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 439 -pat ( this step will generate initial_predictions_noalign.txt )
 		cp initial_predictions_noalign.txt initial_predictions_NA12891.txt
 		TE_detective analyze -bam $MASTER_DIR/NA12891/NA12891_hg19_sorted.bam -ref ref_fofn -inp initial_predictions_NA12891.txt -rdl 100 -isz 439
-		cp final_result final_result_NA12891.txt
+		cp final_results final_result_NA12891.txt
 
 	3. Insertion prediction in other parent (NA12892).
 
@@ -99,16 +99,16 @@ Clone and install with pip:
 		TE_detective nadiscover -bam $MASTER_DIR/NA12878/NA12892_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 439 -pat ( this step will generate initial_predictions_noalign.txt )
 		cp initial_predictions_noalign.txt initial_predictions_NA12892.txt
 		TE_detective analyze -bam $MASTER_DIR/NA12892/NA12892_hg19_sorted.bam -ref ref_fofn -inp initial_predictions_NA12892.txt -rdl 100 -isz 439
-		cp final_result final_result_NA12892.txt
+		cp final_results final_result_NA12892.txt
 
 	4. Polymorphic insertion prediciton in child:
 	
 		mkdir $MASTER_DIR/polymorph
 		cd $MASTER_DIR/polymorph	
 		TE_detective analyze -bam $MASTER_DIR/NA12891/NA12891_hg19_sorted.bam -ref ref_fofn -inp $MASTER_DIR/NA12878/initial_predictions_NA12878.txt -rdl 100 -isz 439
-		cp final_result final_result_NA12878_NA12891.txt
+		cp final_results final_result_NA12878_NA12891.txt
 		TE_detective analyze -bam $MASTER_DIR/NA12892/NA12892_hg19_sorted.bam -ref ref_fofn -inp $MASTER_DIR/NA12878/initial_predictions_NA12878.txt -rdl 100 -isz 439
-		cp final_result final_result_NA12878_NA12892.txt
+		cp final_results final_result_NA12878_NA12892.txt
 
 	5. Aplly filter on final_result_NA12878.txt, final_result_NA12891.txt, final_result_NA12892.txt, final_result_NA12878_NA12891.txt and final_result_NA12878_NA12892.txt. After applying filter, a new insertion in child (NA12878) would be those which are found in final_result_NA12878.txt but not in final_result_NA12878_NA12891.txt or final_result_NA12878_NA12892.txt.
 

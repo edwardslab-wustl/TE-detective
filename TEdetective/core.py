@@ -2266,8 +2266,8 @@ def exec_analyze(args):
         #
         output_file = open(str(chrom)+'_'+str(insert_guess)+'.out', 'a+')
         #
-        #samfile = pysam.AlignmentFile(bam_full, "rb")
-        samfile = pysam.AlignmentFile("../" + bam_full, "rb")
+        samfile = pysam.AlignmentFile(bam_full, "rb")
+        #samfile = pysam.AlignmentFile("../" + bam_full, "rb")
         iterator_reads = samfile.fetch(chrom, insert_point-insert_size, insert_point+insert_size)
         iterator_reads_list = list( iterator_reads )
         samfile.close()

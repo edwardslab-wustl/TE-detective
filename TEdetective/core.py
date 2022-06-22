@@ -1962,9 +1962,9 @@ def exec_analyze(args):
                                 gap = abs(insert_guess-(abs(j-i)/2))
                                 pend = i
                                 nstrt = j
-            insert_point = round((pend+nstrt)/2)
-            insert_point_out = pend
-            insert_point_set_flag = 1
+                insert_point = round((pend+nstrt)/2)
+                insert_point_out = pend
+                insert_point_set_flag = 1
         if insert_point_set_flag == 0:
             insert_point_out = insert_guess
             insert_point = insert_guess

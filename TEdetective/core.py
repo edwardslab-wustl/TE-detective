@@ -1881,8 +1881,11 @@ def exec_analyze(args):
         #    
         samfile = pysam.AlignmentFile(bam_full, 'rb')
         #samfile = pysam.AlignmentFile("../" + bam_full, 'rb')
-        iterator_reads = samfile.fetch(chrom, insert_guess-(insert_size+insert_range), \
-                        insert_guess+(insert_size+insert_range))
+        insert_guess_start_range = insert_guess-(insert_size+insert_range)
+        insert_guess_end_range = insert_guess+(insert_size+insert_range)
+        if insert_guess_start_range < 1:
+            insert_guess_start_range = 1
+        iterator_reads = samfile.fetch(chrom, insert_guess_start_range, insert_guess_end_range)
         #
         # Convert iterator to list for multiple usages
         iterator_reads_list = list( iterator_reads )

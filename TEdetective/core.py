@@ -274,22 +274,26 @@ def te_type_setup(file_name_p, file_name_n, type_p, type_n, cnt_p, cnt_n, args):
     output_file_lines = []
     #
     if check_file(file_name_p) == True and check_file(file_name_n) == True:
+        ratio_p ='na'
+        ratio_n = 'na'
+        if cnt_p > 0:
+            ratio_p = str(float("{0:.2f}".format((type_p[0][2]/cnt_p)*100)))
+        if cnt_n > 0:
+            ratio_n = str(float("{0:.2f}".format((type_n[0][2]/cnt_n)*100))) 
         if type_p[0][0] == 'NA' or type_n[0][0] == 'NA' or (type_p[0][0] != type_n[0][0]):
             output_file_lines.append("%s (%s percent) reads at 5'-end support %s with quality >=%s, \
                 and %s (%s percent) reads at 3'-end support %s with quality >=%s.\
                 Will not go for class and length determination.\n" \
-                % (str(type_p[0][2]), str(float("{0:.2f}".format((type_p[0][2]/cnt_p)*100))), \
-                str(type_p[0][0]), str(type_n[0][1]), str(type_n[0][2]), \
-                str(float("{0:.2f}".format((type_n[0][2]/cnt_n)*100))), \
+                % (str(type_p[0][2]), ratio_p, \
+                str(type_p[0][0]), str(type_n[0][1]), str(type_n[0][2]), ratio_n, \
                 str(type_n[0][0]), str(type_n[0][1])))
             flag_value = 'n'
         else:
             output_file_lines.append("%s (%s percent) reads at 5'-end support %s with quality >=%s, \
                 and %s (%s percent) reads at 3'-end support %s with quality >=%s.\
                 Going for class and length(for clipped only) determination.\n" \
-                % (str(type_p[0][2]), str(float("{0:.2f}".format((type_p[0][2]/cnt_p)*100))), \
-                str(type_p[0][0]), str(type_n[0][1]), str(type_n[0][2]), \
-                str(float("{0:.2f}".format((type_n[0][2]/cnt_n)*100))), \
+                % (str(type_p[0][2]), ratio_p, \
+                str(type_p[0][0]), str(type_n[0][1]), str(type_n[0][2]), ratio_n, \
                 str(type_n[0][0]), str(type_n[0][1])))
             flag_value = 'y'
             #
@@ -2505,16 +2509,16 @@ def exec_analyze(args):
     # Write combined output file.
     eprint("----------\n"  + "writing output files\n" + "----------\n")
     final_output = open('final_results', 'w')
-    final_output.write("Type\t# Chromosome \t Initial_Guess \t Actual_insertion_point \t Hetrozygous/Homozygous \t \
-            #reads_forHet \t TSD_length \t (+)clipped_type \t (+)clipped_type_quality \t \
-            #reads_supporting_(+)clipped_type \t %reads_supporting_(+)clipped_type \t (-)clipped_type \t \
-            (-)clipped_type_quality \t #reads_supporting_(-)clipped_type \t %reads_supporting_(-)clipped_type \t \
-            Estimated_TE_class \t Both_clipped_end_support \t Estimated_TE_Length(bp) \t gap_bw_ends \t \
-            num_pat_p \t num_pat_n \t \
-            (+)discord_mate_type \t (+)discord_mate_type_quality \t #reads_supporting_(+)discord_mate_typet \t \
-            %reads_supporting_(+)discord_mate_type \t (-)discord_mate_type \t (-)discord_mate_type_quality \t \
-            #reads_supporting_(-)discord_mate_type \t %reads_supporting_(-)discord_mate_type \t \
-            Estimated_TE_class-discord\tBoth_end_discord_mate_support\tspecial_comment\n")
+    final_output.write("Type\t# Chromosome\tInitial_Guess\tActual_insertion_point\tHetrozygous/Homozygous\t"
+            + "#reads_forHet\tTSD_length\t(+)clipped_type\t(+)clipped_type_quality\t"
+            + "#reads_supporting_(+)clipped_type\t%reads_supporting_(+)clipped_type\t(-)clipped_type\t"
+            + "(-)clipped_type_quality\t#reads_supporting_(-)clipped_type\t%reads_supporting_(-)clipped_type\t"
+            + "Estimated_TE_class\tBoth_clipped_end_support\tEstimated_TE_Length(bp)\tgap_bw_ends\t"
+            + "num_pat_p\tnum_pat_n\t"
+            + "(+)discord_mate_type\t(+)discord_mate_type_quality\t#reads_supporting_(+)discord_mate_typet\t"
+            + "%reads_supporting_(+)discord_mate_type\t(-)discord_mate_type\t(-)discord_mate_type_quality\t"
+            + "#reads_supporting_(-)discord_mate_type\t%reads_supporting_(-)discord_mate_type\t"
+            + "Estimated_TE_class-discord\tBoth_end_discord_mate_support\tspecial_comment\n")
 
     for lf_line in inp_file_lines:
         #

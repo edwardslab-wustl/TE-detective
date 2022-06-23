@@ -381,7 +381,7 @@ def exec_preprocess(args):
     fofn_ref_file = args.fofn_ref
     sys.stdout.write('FoFn reference sequence: '+str(fofn_ref_file)+'\n')
     #
-    sys.stdout.write('working directory: '+str(os.getcwd)+'\n')
+    sys.stdout.write('working directory: '+os.getcwd()+'\n')
 
     discord_bam = bam_full.split('/')[-1][:-4]+'_discord.bam'
     clipped_bam = bam_full.split('/')[-1][:-4]+'_clipped.bam'

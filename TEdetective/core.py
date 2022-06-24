@@ -10,7 +10,7 @@
 import sys
 import os
 import copy
-from tkinter import W
+#from tkinter import W
 import pysam
 import numpy as np
 import argparse

@@ -49,11 +49,16 @@ Clone and install with pip:
 ### Input files
 
 ````
-    1. BAM file should preferably be prepared using following alignment command:
+    1. BAM file
+	preferably prepared using following alignment command:
 	bwa mem -M -Y -R $RG_LINE ref.fa test_1.fq test_2.fq | samtools view -b -S - > test_ref.bam
 
-    2. Reference sequence of repeat elements:
-	Reference sequence of repeat elements can be obtained from Repbase(https://www.girinst.org/server/RepBase/index.php) or other resources.
+    2. Reference file specifying repeat to be examined (e.g. LINE) and location of Reference sequence of repeat elements:
+	file can be space- or tab-delimited
+	first field is the repeat name
+	second field is the full path to a fasta file containing the reference sequences for the repeat element
+	Reference sequences of repeat elements can be obtained from Repbase(https://www.girinst.org/server/RepBase/index.php) or other resources.
+	See example file fofn_ref in the example_data folder.
 
 ````
 
@@ -66,7 +71,7 @@ Clone and install with pip:
     TE_detective nadiscover -bam test_sim.bam -ref ref_fofn -pat -drd 5 ( adds Poly A/T information to initial prediction) 
     TE_detective analyze -bam test_sim.bam -ref ref_fofn -inp initial_predictions.txt
     TE_detective cluster2d -bam test_sim.bam -ref ref_fofn
-    TE_detective filter -ofa final_results -bed rmsk_ucsc_mm10.bed
+    TE_detective filter -ofa final_results.tsv -bed rmsk_ucsc_mm10.bed
 ````
 
 ### CEU-Trio use case example.
@@ -79,7 +84,7 @@ Clone and install with pip:
 		TE_detective nadiscover -bam $MASTER_DIR/NA12878/NA12878_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 383 -pat ( this step will add Poly A/T information and will generate initial_predictions_noalign.txt ) 
 		cp initial_predictions_noalign.txt initial_predictions_NA12878.txt
 		TE_detective analyze -bam $MASTER_DIR/NA12878/NA12878_hg19_sorted.bam -ref ref_fofn -inp initial_predictions_NA12878.txt -rdl 100 -isz 383
-		cp final_results final_result_NA12878.txt
+		cp final_results.tsv final_result_NA12878.txt
 
 	2. Insertion prediction in one parent (NA12891).
 
@@ -89,7 +94,7 @@ Clone and install with pip:
 		TE_detective nadiscover -bam $MASTER_DIR/NA12878/NA12891_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 439 -pat ( this step will generate initial_predictions_noalign.txt )
 		cp initial_predictions_noalign.txt initial_predictions_NA12891.txt
 		TE_detective analyze -bam $MASTER_DIR/NA12891/NA12891_hg19_sorted.bam -ref ref_fofn -inp initial_predictions_NA12891.txt -rdl 100 -isz 439
-		cp final_results final_result_NA12891.txt
+		cp final_results.tsv final_result_NA12891.txt
 
 	3. Insertion prediction in other parent (NA12892).
 
@@ -99,16 +104,16 @@ Clone and install with pip:
 		TE_detective nadiscover -bam $MASTER_DIR/NA12878/NA12892_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 439 -pat ( this step will generate initial_predictions_noalign.txt )
 		cp initial_predictions_noalign.txt initial_predictions_NA12892.txt
 		TE_detective analyze -bam $MASTER_DIR/NA12892/NA12892_hg19_sorted.bam -ref ref_fofn -inp initial_predictions_NA12892.txt -rdl 100 -isz 439
-		cp final_results final_result_NA12892.txt
+		cp final_results.tsv final_result_NA12892.txt
 
 	4. Polymorphic insertion prediciton in child:
 	
 		mkdir $MASTER_DIR/polymorph
 		cd $MASTER_DIR/polymorph	
 		TE_detective analyze -bam $MASTER_DIR/NA12891/NA12891_hg19_sorted.bam -ref ref_fofn -inp $MASTER_DIR/NA12878/initial_predictions_NA12878.txt -rdl 100 -isz 439
-		cp final_results final_result_NA12878_NA12891.txt
+		cp final_results.tsv final_result_NA12878_NA12891.txt
 		TE_detective analyze -bam $MASTER_DIR/NA12892/NA12892_hg19_sorted.bam -ref ref_fofn -inp $MASTER_DIR/NA12878/initial_predictions_NA12878.txt -rdl 100 -isz 439
-		cp final_results final_result_NA12878_NA12892.txt
+		cp final_results.tsv final_result_NA12878_NA12892.txt
 
 	5. Aplly filter on final_result_NA12878.txt, final_result_NA12891.txt, final_result_NA12892.txt, final_result_NA12878_NA12891.txt and final_result_NA12878_NA12892.txt. After applying filter, a new insertion in child (NA12878) would be those which are found in final_result_NA12878.txt but not in final_result_NA12878_NA12891.txt or final_result_NA12878_NA12892.txt.
 
@@ -129,6 +134,7 @@ Clone and install with pip:
 	-bam  : Input indexed bam file (aligned with bwa -mem).
 	-ref  : File of file name of TE reference fasta file (please refer to example data for file format) . Please provide file name with absolute path.
 	-cll  : minimum length of clipped reads to be extracted. (default=25)
+	'-p', '--preprocess_dir' : directory used to store preprocessing and intermediate output files (default: preprocessed_files)
 
 2. Discover:
 	
@@ -143,6 +149,7 @@ Clone and install with pip:
 	-ccl  : Minimum length of clipped read to be analyzed. (default=25)
 	-mpq  : Minimum mapping quality of a read. (default=30)
 	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads). This is value of MAPQ in sction of 3.3 of document. (default=1)
+	'-p', '--preprocess_dir' : directory used to store intermediate output files, and pull in preprocessing files. Must be same as that used in prior steps (default: preprocessed_files)
 
 3. Analyze ( This is Realignment step from figure 2):
 
@@ -167,6 +174,7 @@ Clone and install with pip:
 	-nii  : Number of intervals for mapping quality of reads from Censor output to be searched and printed. (default=6)
 	-mpq  : Minimum mapping quality of a read. (default=30)
 	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads). This is value of MAPQ in sction of 3.3 of document. (default=1)
+	'-p', '--preprocess_dir' : directory used to store intermediate output files, and pull in preprocessing files. Must be same as that used in prior steps (default: preprocessed_files)
 
 4. Nadiscover:
 
@@ -186,6 +194,7 @@ Clone and install with pip:
 	-bed  : BED file of existing repeat elements ( CHROM	START	END	TE_CLASS ). (needed with -nas ) 
 	-mpq  : Minimum mapping quality of a read. (default=30).
 	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads). This is value of MAPQ in sction of 3.3 of document. (default=1)
+	'-p', '--preprocess_dir' : directory used to store intermediate output files, and pull in preprocessing files. Must be same as that used in prior steps (default: preprocessed_files)
 
 5. Cluster2D:
 
@@ -197,6 +206,7 @@ Clone and install with pip:
 	-rdl  : Average read length of bam file (can be estimated using picard). (default=150)
 	-drd  : Number of supporting reads for calling an insertion. (default=10)
 	-cct  : A region with coverage more than this will be ignored from prediction. (default=200)
+	'-p', '--preprocess_dir' : directory used to store intermediate output files, and pull in preprocessing files. Must be same as that used in prior steps (default: preprocessed_files)
 
 6. Filter:
 	
@@ -220,5 +230,6 @@ Clone and install with pip:
 	-ref  : File of file name of TE reference fasta file. Please provide file name with absolute path.
 	-rdl  : Average read length of bam file (can be estimated using picard). (default=150)
 	-isz  : Insert size estimate. ( = mean_insert_size + 2 * insert_size_standard_deviation - read_length). (default=340)
+	'-p', '--preprocess_dir' : directory used to store intermediate output files, and pull in preprocessing files. Must be same as that used in prior steps (default: preprocessed_files)
 
 ````

@@ -140,3 +140,4 @@ dmypy.json
 #other files
 .DS_Store
 TEdetective/core.old.py
+.vscode/

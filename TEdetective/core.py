@@ -1163,7 +1163,8 @@ def exec_nadiscover(args):
         #
         # nas condition done
         #
-    read_positions_clusters_file = open('initial_predictions_noalign.txt', 'w')
+    #read_positions_clusters_file = open('initial_predictions_noalign.txt', 'w')
+    read_positions_clusters_file = open(args.ouput_file, 'w')
     #
     for cnt_1 in range( len(ref_type_file_name) ):
         #
@@ -2779,6 +2780,9 @@ def main():
     #sp_nadiscover.add_argument('-ref', action='store', dest='fofn_ref', required=True, help='FoFn for reference sequence')
     sp_nadiscover.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
         help='File with reference sequence paths, see README.md for more info')
+    sp_analyze.add_argument('-o', '--output_file', action='store',
+        dest='output_file', default='initial_predictions_noalign.txt',
+        help='Tab-delimited output file of initial set of TE insertions (default: initial_predictions_noalign.txt)')
     sp_nadiscover.add_argument('-p', '--preprocess_dir', action='store',
         dest='preprocess_dir', default='preprocessed_files',
         help='directory used to store preprocessing output files (default: preprocessed_files)')

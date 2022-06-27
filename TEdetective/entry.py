@@ -83,7 +83,8 @@ def main():
         help='input Bam(.bam) file of aligned reads')
     sp_analyze_required.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
         help='File with reference sequence paths, see README.md for more info')
-    sp_analyze_required.add_argument('--inp', action='store', dest='list_inp', required=True, help='Input list of insertions')
+    sp_analyze_required.add_argument('--inp', action='store', dest='list_inp', required=True, 
+        help='Input list of insertions')
     sp_analyze.add_argument('-p', '--preprocess_dir', action='store',
         dest='preprocess_dir', default='preprocessed_files',
         help='directory used to store preprocessing output files (default: preprocessed_files)')
@@ -194,7 +195,8 @@ def main():
 
     sp_filter = subparsers.add_parser('filter', help="Filter argument")
     sp_filter_required = sp_filter.add_argument_group('required arguments')
-    sp_filter_required.add_argument('-i', '--input_file', action='store', dest='ofa_inp', required=True, help='use the output file from analyze section as input')
+    sp_filter_required.add_argument('-i', '--input_file', action='store', dest='ofa_inp', required=True,
+        help='use the output file from analyze section as input')
     sp_filter_required.add_argument('-b', '--bed', action='store', dest='fofn_bed', required=True, 
         help='File containg a list of files to existing repeat elements. List the full path for each file. See example in example_data')
     sp_filter.add_argument('-p', '--preprocess_dir', action='store',
@@ -219,7 +221,8 @@ def main():
 
     sp_filter_p = subparsers.add_parser('filter_p', help="Filter argument")
     sp_filter_p_required = sp_filter_p.add_argument_group('required arguments')
-    sp_filter_p_required.add_argument('-i', '--input_file', action='store', dest='ofa_inp', required=True, help='use the output file from analyze section as input')
+    sp_filter_p_required.add_argument('-i', '--input_file', action='store', dest='ofa_inp', required=True,
+        help='use the output file from analyze section as input')
     sp_filter_p_required.add_argument('-b', '--bed', action='store', dest='fofn_bed', required=True, 
         help='File containg a list of files to existing repeat elements. List the full path for each file. See example in example_dir')
     sp_filter_p.add_argument('-p', '--preprocess_dir', action='store',

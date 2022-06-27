@@ -7,21 +7,7 @@
 #
 ################################################################
 
-#import sys
-#import os
-#import copy
-#from tkinter import W
-#import pysam
-#import numpy as np
 import argparse
-#import re
-#import subprocess
-#from subprocess import Popen, PIPE
-#from Bio.Seq import Seq
-#from Bio.Sequencing.Applications import BwaIndexCommandline
-#from Bio.Sequencing.Applications import BwaAlignCommandline
-#from Bio.Sequencing.Applications import BwaSamseCommandline
-from TEdetective.io_functions import eprint
 from TEdetective.preprocess import exec_preprocess
 from TEdetective.discover import exec_discover
 from TEdetective.nadiscover import exec_nadiscover
@@ -185,6 +171,9 @@ def main():
         help='input Bam(.bam) file of aligned reads')
     sp_cluster2d_required.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
         help='File with reference sequence paths, see README.md for more info')
+    sp_cluster2d.add_argument('-o', '--output_file', action='store',
+        dest='output_file', default='recluster_initial_predictions.txt',
+        help='Tab-delimited file of initial set of TE insertions (default: recluster_initial_predictions.txt)')
     sp_cluster2d.add_argument('-p', '--preprocess_dir', action='store',
         dest='preprocess_dir', default='preprocessed_files',
         help='directory used to store preprocessing output files (default: preprocessed_files)')
@@ -258,20 +247,7 @@ def main():
     funct(args)
 
 if __name__ == '__main__':
-#    import sys
-#    import os
-#    import copy
-#    import pysam
-#    import numpy as np
     import argparse
-#    import re
-#    import subprocess
-#    from subprocess import Popen, PIPE
-#    from Bio.Seq import Seq
-#    from Bio.Sequencing.Applications import BwaIndexCommandline
-#    from Bio.Sequencing.Applications import BwaAlignCommandline
-#    from Bio.Sequencing.Applications import BwaSamseCommandline
-    #from TEdetective.io_functions import eprint
     from TEdetective.preprocess import exec_preprocess
     from TEdetective.discover import exec_discover
     from TEdetective.nadiscover import exec_nadiscover

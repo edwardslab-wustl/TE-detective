@@ -15,6 +15,8 @@ def exec_cluster2d(args):
     dir_path = os.getcwd()
     log_FH.write('working directory: '+ dir_path +'\n')
     #
+    log_FH.write('Writing recluster initial predictions to: '+ args.output_file +'\n')
+    #
     bam_full = args.bam_inp
     insert_size = args.isz_inp
     discord_rd_clust_denst = args.drd_inp
@@ -25,7 +27,8 @@ def exec_cluster2d(args):
         for line in ref_type_file_file:
             ref_type_file_name.append([line.split()[0], line.split()[1]])
 
-    read_positions_clusters_file = open('recluster_initial_predictions.txt', 'w')
+    #read_positions_clusters_file = open('recluster_initial_predictions.txt', 'w')
+    read_positions_clusters_file = open(args.output_file, 'w')
     for cnt_1 in range(0, len(ref_type_file_name)):
         flag_read_position = 'y'
         read_positions = []

@@ -47,6 +47,8 @@ def exec_discover(args):
     clipped_length = args.cll_inp
     log_FH.write('Minimum clipped length: '+str(clipped_length)+'\n')
     #
+    log_FH.write('Writing initial predictions to: '+ args.output_file +'\n')
+    #
     subprocess.run(['mkdir' , '-p' , preprocess_dir_realpath])
     #
     reference_genome = preprocess_dir_realpath+'/te_ref_type_bwa.fa'
@@ -229,7 +231,8 @@ def exec_discover(args):
         mate_out_file.close()
     samfile_idx.close()
     
-    read_positions_clusters_file = open('initial_predictions.txt', 'w')
+    #read_positions_clusters_file = open('initial_predictions.txt', 'w')
+    read_positions_clusters_file = open(args.output_file, 'w')
     for cnt_1 in range( len(ref_type_file_name) ):
         flag_read_position = 'y'
         read_positions = []

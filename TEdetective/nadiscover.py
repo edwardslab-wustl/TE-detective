@@ -45,16 +45,12 @@ def exec_nadiscover(args):
     clipped_length = args.cll_inp
     log_FH.write('Minimum clipped length: '+str(clipped_length)+'\n')
     #
+    log_FH.write('Writing initial predictions noalign to: '+ args.output_file +'\n')
+    #
     pat_query_len = args.pql_inp
-    
-    #
     pat_mis_match = args.pmm_inp
-
-    #
     rmsk_bed = args.rmsk_bed
-    #
     read_bam_clipped = preprocess_dir_realpath +'/'+bam_short_name+'_clipped.bam'
-    #
     #
     
     if args.pat_inp:

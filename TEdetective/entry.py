@@ -66,6 +66,9 @@ def main():
         help='Input Bam(.bam) file of aligned reads')
     sp_discover_required.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
         help='File with reference sequence paths, see README.md for more info')
+    sp_discover.add_argument('-o', '--output_file', action='store',
+        dest='output_file', default='initial_predictions.txt',
+        help='Tab-delimited file of initial set of TE insertions (default: initial_predictions.txt)')
     sp_discover.add_argument('-p', '--preprocess_dir', action='store',
         dest='preprocess_dir', default='preprocessed_files',
         help='directory used to store preprocessing output files (default: preprocessed_files)')

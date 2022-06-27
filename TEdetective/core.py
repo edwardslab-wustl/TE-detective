@@ -391,23 +391,13 @@ def exec_preprocess(args):
     clipped_length = args.cll_inp
     sys.stdout.write('Minimum clipped length: '+str(clipped_length)+'\n')
     #
-    #fofn_ref_file = args.fofn_ref
-    #sys.stdout.write('FoFn reference sequence: '+str(fofn_ref_file)+'\n')
-    #
     sys.stdout.write('working directory: '+os.getcwd()+'\n')
 
-    #discord_bam = bam_full.split('/')[-1][:-4]+'_discord.bam'
-    #clipped_bam = bam_full.split('/')[-1][:-4]+'_clipped.bam'
     discord_bam = bam_short_name+'_discord.bam'
     clipped_bam = bam_short_name+'_clipped.bam'
-    #subprocess.run(['mkdir' , '-p' , args.preprocess_outdir ])
     subprocess.run(['mkdir' , '-p' , preprocess_dir_realpath ])
 
     samfile = pysam.AlignmentFile(bam_full, "rb")
-    #newsam_d = pysam.AlignmentFile('./preprocessed_files/'+discord_bam, 'wb', template=samfile)
-    #newsam_c = pysam.AlignmentFile('./preprocessed_files/'+clipped_bam, 'wb', template=samfile)
-    #newsam_d = pysam.AlignmentFile(args.preprocess_outdir + '/' + discord_bam, 'wb', template=samfile)
-    #newsam_c = pysam.AlignmentFile(args.preprocess_outdir + '/' + clipped_bam, 'wb', template=samfile)
     newsam_d = pysam.AlignmentFile(preprocess_dir_realpath + '/' + discord_bam, 'wb', template=samfile)
     newsam_c = pysam.AlignmentFile(preprocess_dir_realpath + '/' + clipped_bam, 'wb', template=samfile)
 
@@ -456,29 +446,16 @@ def exec_preprocess(args):
     newsam_c.close()
     samfile.close()
 
-    #pysam.index('./preprocessed_files/'+discord_bam)
-    #pysam.index('./preprocessed_files/'+clipped_bam)
-    #sys.stdout.write('Created ./preprocessed_files/%s\n' % discord_bam)
-    #sys.stdout.write('Created ./preprocessed_files/%s\n' % clipped_bam)
-    #pysam.index(args.preprocess_outdir + '/' + discord_bam)
-    #pysam.index(args.preprocess_outdir + '/' + clipped_bam)
-    #sys.stdout.write('Created %s/%s\n' % (args.preprocess_outdir,discord_bam))
-    #sys.stdout.write('Created %s/%s\n' % (args.preprocess_outdir,clipped_bam))
     pysam.index(preprocess_dir_realpath + '/' + discord_bam)
     pysam.index(preprocess_dir_realpath + '/' + clipped_bam)
     sys.stdout.write('Created %s/%s\n' % (preprocess_dir_realpath,discord_bam))
     sys.stdout.write('Created %s/%s\n' % (preprocess_dir_realpath,clipped_bam))
 
     ref_type_file_name = []
-#    with open(fofn_ref_file, 'r') as ref_type_file_file:
     with open(fofn_ref_realpath, 'r') as ref_type_file_file:
         for line in ref_type_file_file:
             ref_type_file_name.append([line.split()[0], line.split()[1]])
 
-    #type_file_all = open('./preprocessed_files/te_ref_type.fa', 'w')
-    #type_file_all_bwa = open('./preprocessed_files/te_ref_type_bwa.fa', 'w')
-#    type_file_all = open(args.preprocess_outdir + '/te_ref_type.fa', 'w')
-#    type_file_all_bwa = open(args.preprocess_outdir + '/te_ref_type_bwa.fa', 'w')
     type_file_all = open(preprocess_dir_realpath + '/te_ref_type.fa', 'w')
     type_file_all_bwa = open(preprocess_dir_realpath + '/te_ref_type_bwa.fa', 'w')
     for cnt in range(0, len(ref_type_file_name)):
@@ -497,10 +474,6 @@ def exec_preprocess(args):
     type_file_all.close()
     type_file_all_bwa.close()
 
-    #sys.stdout.write('Created ./preprocessed_files/te_ref_type.fa\n')
-    #sys.stdout.write('Created ./preprocessed_files/te_ref_type_bwa.fa\n')
-    #sys.stdout.write('Created ' + args.preprocess_outdir + '/te_ref_type.fa\n')
-    #sys.stdout.write('Created ' + args.preprocess_outdir + '/te_ref_type_bwa.fa\n')
     sys.stdout.write('Created ' + preprocess_dir_realpath + '/te_ref_type.fa\n')
     sys.stdout.write('Created ' + preprocess_dir_realpath + '/te_ref_type_bwa.fa\n')
 
@@ -541,51 +514,36 @@ def exec_discover(args):
     min_mapq_uniq = args.mpqu_inp
     sys.stdout.write('minimum mapping quality: '+str(min_mapq_uniq)+'\n')
     #    
-    #fofn_ref_file = args.fofn_ref
-    #sys.stdout.write('FoFn reference sequence: '+str(fofn_ref_file)+'\n\n')
-    #
     clipped_length = args.cll_inp
     sys.stdout.write('Minimum clipped length: '+str(clipped_length)+'\n')
     #
-    #subprocess.run(['mkdir' , '-p' , 'intermediate_files'])
     subprocess.run(['mkdir' , '-p' , preprocess_dir_realpath])
     #
-    #reference_genome = dir_path+'/preprocessed_files/te_ref_type_bwa.fa'
-    #reference_genome = args.preprocess_dir+'/te_ref_type_bwa.fa'
     reference_genome = preprocess_dir_realpath+'/te_ref_type_bwa.fa'
     index_cmd = BwaIndexCommandline(infile=reference_genome, algorithm='bwtsw')
     index_cmd()
     #
-    #read_bam = dir_path+'/preprocessed_files/'+bam_full.split('/')[-1][:-4]+'_discord.bam'
-    #read_bam = args.preprocess_dir + '/'+bam_full.split('/')[-1][:-4]+'_discord.bam'
     read_bam = preprocess_dir_realpath + '/'+bam_short_name+'_discord.bam'
-    #output_sai_file = dir_path+'/intermediate_files/aligned_reads.sai'
     output_sai_file = preprocess_dir_realpath + '/aligned_reads.sai'
     read_group='@RG ID:foo  SM:bar'
     align_cmd = BwaAlignCommandline(reference=reference_genome, b='b', read_file=read_bam)
     align_cmd(stdout=output_sai_file)
     #
-    #output_sam_file = dir_path+'/intermediate_files/aligned_reads.sam'
     output_sam_file = preprocess_dir_realpath + '/aligned_reads.sam'
     samse_cmd = BwaSamseCommandline(reference=reference_genome, read_file=read_bam, sai_file=output_sai_file)
     samse_cmd(stdout=output_sam_file)
     #
-    #read_bam_clipped = dir_path+'/preprocessed_files/'+bam_full.split('/')[-1][:-4]+'_clipped.bam'
-    #read_bam_clipped = args.preprocess_dir+'/'+bam_short_name+'_clipped.bam'
     read_bam_clipped = preprocess_dir_realpath+'/'+bam_short_name+'_clipped.bam'
-    #output_sai_file_clipped = dir_path+'/intermediate_files/aligned_reads_clipped.sai'
     output_sai_file_clipped = preprocess_dir_realpath+ '/aligned_reads_clipped.sai'
     read_group='@RG ID:foo  SM:bar'
     align_cmd_clipped = BwaAlignCommandline(reference=reference_genome, b='b', read_file=read_bam_clipped)
     align_cmd_clipped(stdout=output_sai_file_clipped)
     #
-    #output_sam_file_clipped = dir_path+'/intermediate_files/aligned_reads_clipped.sam'
     output_sam_file_clipped = preprocess_dir_realpath + '/aligned_reads_clipped.sam'
     samse_cmd_clipped = BwaSamseCommandline(reference=reference_genome, read_file=read_bam_clipped, sai_file=output_sai_file_clipped)
     samse_cmd_clipped(stdout=output_sam_file_clipped)    
     #
     ref_type_file_name = []
-    #with open(fofn_ref_file, 'r') as ref_type_file_file:
     with open(fofn_ref_realpath, 'r') as ref_type_file_file:
         for line in ref_type_file_file:
             ref_type_file_name.append([line.split()[0], line.split()[1]])
@@ -611,7 +569,6 @@ def exec_discover(args):
     del output_sam_file_fl_lines[:]
     #
     for cnt_1 in range( len(ref_type_file_name) ):
-        #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_ref-aligned_line-num_id.dat', 'w') as temp_fl:
         with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_ref-aligned_line-num_id.dat', 'w') as temp_fl:
             temp_fl.write('\n'.join(dict_aof[ref_type_file_name[cnt_1][0]]))    
         temp_fl.close
@@ -638,7 +595,6 @@ def exec_discover(args):
     del output_sam_file_clipped_fl_lines[:]
     #
     for cnt_1 in range( len(ref_type_file_name) ):
-        #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_clipped_ref-aligned_line-num_id.dat', 'w') as temp_fl:
         with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_clipped_ref-aligned_line-num_id.dat', 'w') as temp_fl:
             temp_fl.write('\n'.join(dict_aofc[ref_type_file_name[cnt_1][0]]))
         temp_fl.close
@@ -647,7 +603,6 @@ def exec_discover(args):
     # Extract ids of mapped discordant reads.
     for cnt_1 in range( len(ref_type_file_name) ):
         line_number = 0
-        #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_ref-aligned_line-num_id.dat', 'r') as rali:
         with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_ref-aligned_line-num_id.dat', 'r') as rali:
             rali_lines = rali.readlines()
         rali.close()
@@ -665,7 +620,6 @@ def exec_discover(args):
             except KeyError:
                 continue
         samfile.close()
-        #raw_out_file = open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_read-bam_id_flag.dat','w')
         raw_out_file = open(preprocess_dir_realpath +'/'+ref_type_file_name[cnt_1][0]+'_read-bam_id_flag.dat','w')
         raw_out_file.write('\n'.join(raw_out_file_line))
         del raw_out_file_line[:]
@@ -675,7 +629,6 @@ def exec_discover(args):
 #    Extract ids of uniquly mapped clipped reads
     for cnt_1 in range( len(ref_type_file_name) ):
         line_number = 0
-        #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_clipped_ref-aligned_line-num_id.dat', 'r') as crali:
         with open(preprocess_dir_realpath +'/'+ref_type_file_name[cnt_1][0]+'_clipped_ref-aligned_line-num_id.dat', 'r') as crali:
             crali_lines = crali.readlines()
         crali.close()
@@ -707,7 +660,6 @@ def exec_discover(args):
             except KeyError:
                 continue
         samfile.close()
-        #raw_out_file = open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_clipped_read-bam_id_flag.dat','w')
         raw_out_file = open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_clipped_read-bam_id_flag.dat','w')
         raw_out_file.write('\n'.join(raw_out_file_line))
         del raw_out_file_line[:]
@@ -721,7 +673,6 @@ def exec_discover(args):
 
     for cnt_1 in range( len(ref_type_file_name) ):
         ##
-        #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_read-bam_id_flag.dat' ,'r') as read_bam_dat:
         with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_read-bam_id_flag.dat' ,'r') as read_bam_dat:
             read_bam_dat_lines = read_bam_dat.readlines()
         read_bam_dat.close
@@ -742,7 +693,6 @@ def exec_discover(args):
         del read_bam_dat_lines[:]
         read_bam_dat.close()
 
-        #mate_out_file = open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_read-bam_mate_id_pos.dat', 'w')
         mate_out_file = open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_read-bam_mate_id_pos.dat', 'w')
         mate_out_file.write('\n'.join(mate_out_file_line))
         del mate_out_file_line[:]
@@ -753,7 +703,6 @@ def exec_discover(args):
     for cnt_1 in range( len(ref_type_file_name) ):
         flag_read_position = 'y'
         read_positions = []
-        #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_read-bam_mate_id_pos.dat', 'r') as mate_id_dat:
         with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_read-bam_mate_id_pos.dat', 'r') as mate_id_dat:
             mate_id_dat_lines = mate_id_dat.readlines()
         mate_id_dat.close()
@@ -762,7 +711,6 @@ def exec_discover(args):
             read_positions.append((line.split()[2], int(line.split()[3])))
         del mate_id_dat_lines[:]
 
-        #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_clipped_read-bam_id_flag.dat', 'r') as read_id_dat:
         with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_clipped_read-bam_id_flag.dat', 'r') as read_id_dat:
             read_id_dat_lines = read_id_dat.readlines() 
         read_id_dat.close()
@@ -895,9 +843,6 @@ def exec_nadiscover(args):
     coverage_cutoff = args.cct_inp
     sys.stdout.write('Coverage cutoff to skip a region: '+str(coverage_cutoff)+'\n')
     #
-    #fofn_ref_file = args.fofn_ref
-    #sys.stdout.write('FoFn reference sequence: '+str(fofn_ref_file)+'\n\n')
-    #
     min_mapq = args.mpq_inp
     sys.stdout.write('minimum mapping quality: '+str(min_mapq)+'\n')
     #
@@ -915,8 +860,6 @@ def exec_nadiscover(args):
     #
     rmsk_bed = args.rmsk_bed
     #
-    #read_bam_clipped = dir_path+'/preprocessed_files/'+bam_full.split('/')[-1][:-4]+'_clipped.bam'
-    #read_bam_clipped = args.preprocess_dir +'/'+bam_full.split('/')[-1][:-4]+'_clipped.bam'
     read_bam_clipped = preprocess_dir_realpath +'/'+bam_short_name+'_clipped.bam'
     #
     #
@@ -961,7 +904,6 @@ def exec_nadiscover(args):
         samfile_clipped.close()
         #
         #    
-        #pat_out_file = open(dir_path+'/intermediate_files/pat_clipped_read-bam_id_flag.dat','w')
         pat_out_file = open(preprocess_dir_realpath+'/pat_clipped_read-bam_id_flag.dat','w')
         pat_out_file.write('\n'.join(pat_out_file_lines))
         #del pat_out_file_lines[:]
@@ -971,7 +913,6 @@ def exec_nadiscover(args):
     #sys.exit()        
     #
     ref_type_file_name = []
-    #with open(fofn_ref_file, 'r') as ref_type_file_file:
     with open(fofn_ref_realpath, 'r') as ref_type_file_file:
         for line in ref_type_file_file:
             ref_type_file_name.append([line.split()[0], line.split()[1]])
@@ -999,7 +940,6 @@ def exec_nadiscover(args):
                 rmsk_bed_items.append( prev_chr +'\t'+ str(prev_start) +'\t'+ str(prev_end) +'\t'+ prev_type +'\n' )
                 #rmsk_bed_items.append( items[0] +'\t'+ items[1] +'\t'+ items[2] +'\t'+ items[3] +'\n' )
                 prev_chr, prev_start, prev_end, prev_type = items[0], int(items[1]), int(items[2]), items[3]
-        #open(dir_path+'/intermediate_files/rmsk_cons.bed', 'w').write(''.join(rmsk_bed_items))
         open(preprocess_dir_realpath+'/rmsk_cons.bed', 'w').write(''.join(rmsk_bed_items))
         #
         # Indexing
@@ -1029,8 +969,6 @@ def exec_nadiscover(args):
                         pos_track = pos_track + 1
         #
         discord_pos_list = []
-        #discord_bam = dir_path+'/preprocessed_files/'+bam_full.split('/')[-1][:-4]+'_discord.bam'
-        #discord_bam = args.preprocess_dir + '/'+bam_full.split('/')[-1][:-4]+'_discord.bam'
         discord_bam = preprocess_dir_realpath + '/'+bam_short_name+'_discord.bam'
         sys.stdout.write('Discordant bam file: '+discord_bam+'\n')
         #
@@ -1041,13 +979,10 @@ def exec_nadiscover(args):
         #
         samfile_discord.close()
         #
-        #open(dir_path+'/intermediate_files/discord_pos_list.txt', 'w').write(''.join(discord_pos_list))
         open(preprocess_dir_realpath+'/discord_pos_list.txt', 'w').write(''.join(discord_pos_list))
         #
         if args.flg_all:
             clipped_pos_list = []
-            #clipped_bam = dir_path+'/preprocessed_files/'+bam_full.split('/')[-1][:-4]+'_clipped.bam'
-            #clipped_bam = args.preprocess_dir + '/'+bam_full.split('/')[-1][:-4]+'_clipped.bam'
             clipped_bam = preprocess_dir_realpath + '/'+bam_short_name+'_clipped.bam'
             sys.stdout.write('Clipped bam file: '+clipped_bam+'\n')
             #
@@ -1064,7 +999,6 @@ def exec_nadiscover(args):
                         clipped_pos_list.append( read.query_name +'\t'+ str(read.flag) +'\t'+ read.reference_name +'\t'+ \
                             str(read.reference_start) +'\t'+ str(read.reference_end) +'\t'+ chrom +'\t'+ str(clp_start) +'\t'+ str(clp_end) +'\n' )
 
-            #open(dir_path+'/intermediate_files/clipped_pos_list.txt', 'w').write(''.join(clipped_pos_list))
             open(preprocess_dir_realpath+'/clipped_pos_list.txt', 'w').write(''.join(clipped_pos_list))
             samfile_clipped.close()
         #
@@ -1090,10 +1024,8 @@ def exec_nadiscover(args):
         #
         for cnt_1 in range(0, len(ref_type_file_name)):
             try:
-                #open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_noalign_read-bam_id_flag.dat', 'w').write(''.join(dict_discord[ref_type_file_name[cnt_1][0]]))
                 open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_read-bam_id_flag.dat', 'w').write(''.join(dict_discord[ref_type_file_name[cnt_1][0]]))
             except KeyError:
-                #open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_noalign_read-bam_id_flag.dat', 'w').write('')
                 open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_read-bam_id_flag.dat', 'w').write('')
         #
         #
@@ -1119,10 +1051,8 @@ def exec_nadiscover(args):
             #
             for cnt_1 in range(0, len(ref_type_file_name)):
                 try:
-                    #open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_noalign_clipped_read-bam_id_flag.dat', 'w').write(''.join(dict_clipped[ref_type_file_name[cnt_1][0]]))
                     open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_clipped_read-bam_id_flag.dat', 'w').write(''.join(dict_clipped[ref_type_file_name[cnt_1][0]]))
                 except KeyError:
-                    #open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_noalign_clipped_read-bam_id_flag.dat', 'w').write('')
                     open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_clipped_read-bam_id_flag.dat', 'w').write('')
             #
         #
@@ -1133,7 +1063,6 @@ def exec_nadiscover(args):
         #
         for cnt_1 in range( len(ref_type_file_name) ):
             ##
-            #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_noalign_read-bam_id_flag.dat' ,'r') as read_bam_dat:
             with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_read-bam_id_flag.dat' ,'r') as read_bam_dat:
                 read_bam_dat_lines = read_bam_dat.readlines()
             read_bam_dat.close
@@ -1154,7 +1083,6 @@ def exec_nadiscover(args):
             del read_bam_dat_lines[:]
             read_bam_dat.close()
             #
-            #mate_out_file = open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_noalign_read-bam_mate_id_pos.dat', 'w')
             mate_out_file = open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_read-bam_mate_id_pos.dat', 'w')
             mate_out_file.write('\n'.join(mate_out_file_line))
             del mate_out_file_line[:]
@@ -1163,7 +1091,6 @@ def exec_nadiscover(args):
         #
         # nas condition done
         #
-    #read_positions_clusters_file = open('initial_predictions_noalign.txt', 'w')
     read_positions_clusters_file = open(args.ouput_file, 'w')
     #
     for cnt_1 in range( len(ref_type_file_name) ):
@@ -1174,14 +1101,12 @@ def exec_nadiscover(args):
         # nas condition
         if args.nas_inp:
             #
-            #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_noalign_read-bam_mate_id_pos.dat', 'r') as noalign_mate_id_dat:
             with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_read-bam_mate_id_pos.dat', 'r') as noalign_mate_id_dat:
                 noalign_mate_id_dat_lines = noalign_mate_id_dat.readlines()
             noalign_mate_id_dat.close()
             #
             if args.merged:
                 #
-                #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_read-bam_mate_id_pos.dat', 'r') as align_mate_id_dat:
                 with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_read-bam_mate_id_pos.dat', 'r') as align_mate_id_dat:
                     align_mate_id_dat_lines = align_mate_id_dat.readlines()
                 align_mate_id_dat.close()
@@ -1224,7 +1149,6 @@ def exec_nadiscover(args):
                 #
                 # Clipped
                 #
-                #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_clipped_read-bam_id_flag.dat', 'r') as align_id_dat:
                 with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_clipped_read-bam_id_flag.dat', 'r') as align_id_dat:
                     align_id_dat_lines = align_id_dat.readlines()
                 align_id_dat.close()
@@ -1246,7 +1170,6 @@ def exec_nadiscover(args):
                 noalign_read_positions = []
                 if args.flg_all:
                     #
-                    #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_noalign_clipped_read-bam_id_flag.dat', 'r') as noalign_id_dat:
                     with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_clipped_read-bam_id_flag.dat', 'r') as noalign_id_dat:
                         noalign_id_dat_lines = noalign_id_dat.readlines()
                     noalign_id_dat.close()
@@ -1287,7 +1210,6 @@ def exec_nadiscover(args):
                 clpd_read_positions = []
                 if args.flg_all:
                     #
-                    #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_noalign_clipped_read-bam_id_flag.dat', 'r') as noalign_id_dat:
                     with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_clipped_read-bam_id_flag.dat', 'r') as noalign_id_dat:
                         noalign_id_dat_lines = noalign_id_dat.readlines()
                     noalign_id_dat.close()
@@ -1308,7 +1230,6 @@ def exec_nadiscover(args):
         if not args.nas_inp:
             print(args.nas_inp)
             #    
-            #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_read-bam_mate_id_pos.dat', 'r') as mate_id_dat:
             with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_read-bam_mate_id_pos.dat', 'r') as mate_id_dat:
                 mate_id_dat_lines = mate_id_dat.readlines()
             mate_id_dat.close()
@@ -1317,7 +1238,6 @@ def exec_nadiscover(args):
                 read_positions.append((line.strip().split()[2], int(line.strip().split()[3])))
             del mate_id_dat_lines[:]
             #
-            #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_clipped_read-bam_id_flag.dat', 'r') as clpd_read_id_dat:
             with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_clipped_read-bam_id_flag.dat', 'r') as clpd_read_id_dat:
                 clpd_read_id_dat_lines = clpd_read_id_dat.readlines()
             clpd_read_id_dat.close()
@@ -1463,9 +1383,7 @@ def exec_cluster2d(args):
     discord_rd_clust_denst = args.drd_inp
     read_length = args.rdl_inp
     coverage_cutoff    = args.cct_inp
-    #fofn_ref_file = args.fofn_ref
     ref_type_file_name = []
-    #with open(fofn_ref_file, 'r') as ref_type_file_file:
     with open(fofn_ref_realpath, 'r') as ref_type_file_file:
         for line in ref_type_file_file:
             ref_type_file_name.append([line.split()[0], line.split()[1]])
@@ -1476,7 +1394,6 @@ def exec_cluster2d(args):
         read_positions = []
         #
         if args.flg_all:
-            #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_read-bam_mate_id_pos.dat', 'r') as mate_id_dat:
             with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_read-bam_mate_id_pos.dat', 'r') as mate_id_dat:
                 mate_id_dat_lines = mate_id_dat.readlines()
             mate_id_dat.close()
@@ -1485,7 +1402,6 @@ def exec_cluster2d(args):
                 read_positions.append((line.split()[2], int(line.split()[3])))
             del mate_id_dat_lines[:]
         #
-        #with open(dir_path+'/intermediate_files/'+ref_type_file_name[cnt_1][0]+'_clipped_read-bam_id_flag.dat', 'r') as read_id_dat:
         with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_clipped_read-bam_id_flag.dat', 'r') as read_id_dat:
             read_id_dat_lines = read_id_dat.readlines()
         read_id_dat.close()
@@ -1527,9 +1443,6 @@ def exec_filter(args):
     #
     preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)
     sys.stdout.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
-    #
-    #fofn_ref_realpath = os.path.realpath(args.fofn_ref)
-    #sys.stdout.write('fofn_ref file: '+ fofn_ref_realpath +'\n')
     #
     dir_path = os.getcwd()
     sys.stdout.write('working directory: '+ dir_path +'\n')
@@ -1682,9 +1595,6 @@ def exec_filter_p(args):
     #
     preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)
     sys.stdout.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
-    #
-    #fofn_ref_realpath = os.path.realpath(args.fofn_ref)
-    #sys.stdout.write('fofn_ref file: '+ fofn_ref_realpath +'\n')
     #
     dir_path = os.getcwd()
     sys.stdout.write('working directory: '+ dir_path +'\n')
@@ -1966,18 +1876,12 @@ def exec_analyze(args):
     bam_short_name = bam_full.split('/')[-1][:-4]
     sys.stdout.write('bam short name: '+ bam_short_name +'\n')
     #
-    #discord_bam = up_dir_path+'/preprocessed_files/'+bam_full.split('/')[-1][:-4]+'_discord.bam'
-    #discord_bam = dir_path+'/preprocessed_files/'+bam_full.split('/')[-1][:-4]+'_discord.bam'
-    #discord_bam = args.preprocess_dir + '/'+bam_full.split('/')[-1][:-4]+'_discord.bam'
     discord_bam = preprocess_dir_realpath + '/'+bam_short_name+'_discord.bam'
     sys.stdout.write('Discordant bam file: '+discord_bam+'\n')
     if not check_file(discord_bam + ".bai"):
         sys.stderr.write('cannot find index for: '+discord_bam+', making now\n')
         pysam.index(discord_bam)
     #
-    #te_type_file = up_dir_path+'/preprocessed_files/te_ref_type.fa'
-    #te_type_file = dir_path+'/preprocessed_files/te_ref_type.fa'
-    #preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)
     te_type_file = preprocess_dir_realpath + '/te_ref_type.fa'
     #
     sys.stdout.write('\n----Run parameters----\n')
@@ -2259,7 +2163,6 @@ def exec_analyze(args):
         del output_write_lines[:]
         #
         len_calc_flag = 'n'
-        #fofn_ref_filename = dir_path + "/" + args.fofn_ref
         len_calc_flag, te_class_file, output_write_lines = te_type_setup( int_file_name+'_reads_p.fa.map', \
             int_file_name+'_reads_n.fa.map', type_clipped_p, type_clipped_n, cnt_rd_p, cnt_rd_n, fofn_ref_realpath)
         output_file.write(''.join(output_write_lines))
@@ -2385,8 +2288,6 @@ def exec_analyze(args):
                 type_c_p_out = str(float("{0:.2f}".format((type_clipped_p[0][2]/cnt_rd_p)*100)))
             else:
                 type_c_p_out = 'NA'
-            #output_file.write(str(type_clipped_p[0][0])+'\t'+ str(type_clipped_p[0][1])+'\t'+ \
-            #    str(type_clipped_p[0][2]) +'\t'+ str(float("{0:.2f}".format((type_clipped_p[0][2]/cnt_rd_p)*100)))+'\t')
             output_file.write(str(type_clipped_p[0][0])+'\t'+ str(type_clipped_p[0][1])+'\t'+  str(type_clipped_p[0][2]) +'\t'+ type_c_p_out +'\t')
         if clipped_read_p_flag == 'n':
             output_file.write("NA\tNA\t0\t0\t")
@@ -2396,8 +2297,6 @@ def exec_analyze(args):
                 type_c_n_out = str(float("{0:.2f}".format((type_clipped_n[0][2]/cnt_rd_n)*100)))
             else:
                 type_c_n_out = 'NA'
-            #output_file.write(str(type_clipped_n[0][0])+'\t'+ str(type_clipped_n[0][1])+'\t'+ \
-            #    str(type_clipped_n[0][2]) +'\t'+ str(float("{0:.2f}".format((type_clipped_n[0][2]/cnt_rd_n)*100)))+'\t')
             output_file.write(str(type_clipped_n[0][0])+'\t'+ str(type_clipped_n[0][1])+'\t'+ str(type_clipped_n[0][2]) +'\t' + type_c_n_out + '\t')
         if clipped_read_n_flag == 'n':
             output_file.write("NA\tNA\t0\t0\t")

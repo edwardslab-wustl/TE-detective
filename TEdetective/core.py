@@ -373,25 +373,33 @@ def check_uniq_mapping( read, args ):
 
 def exec_preprocess(args):
     #
+    log_FH=open(args.log_file, 'w')
     dir_path = os.getcwd()
-    sys.stdout.write('working directory: '+ dir_path +'\n')
+    #log_FH.write('working directory: '+ dir_path +'\n')
+    log_FH.write('working directory: '+ dir_path +'\n')
     #
     preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)
-    sys.stdout.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
+    #log_FH.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
+    log_FH.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
     #
     fofn_ref_realpath = os.path.realpath(args.fofn_ref)
-    sys.stdout.write('fofn_ref file: '+ fofn_ref_realpath +'\n')
+    #log_FH.write('fofn_ref file: '+ fofn_ref_realpath +'\n')
+    log_FH.write('fofn_ref file: '+ fofn_ref_realpath +'\n')
     #
     bam_full = os.path.realpath(args.bam_inp)
-    sys.stdout.write('Input bam file: '+str(bam_full)+'\n')
+    #log_FH.write('Input bam file: '+str(bam_full)+'\n')
+    log_FH.write('Input bam file: '+str(bam_full)+'\n')
     #
     bam_short_name = bam_full.split('/')[-1][:-4]
-    sys.stdout.write('bam short name: '+ bam_short_name +'\n')
+    #log_FH.write('bam short name: '+ bam_short_name +'\n')
+    log_FH.write('bam short name: '+ bam_short_name +'\n')
     #
     clipped_length = args.cll_inp
-    sys.stdout.write('Minimum clipped length: '+str(clipped_length)+'\n')
+    #log_FH.write('Minimum clipped length: '+str(clipped_length)+'\n')
+    log_FH.write('Minimum clipped length: '+str(clipped_length)+'\n')
     #
-    sys.stdout.write('working directory: '+os.getcwd()+'\n')
+    #log_FH.write('working directory: '+os.getcwd()+'\n')
+    log_FH.write('working directory: '+os.getcwd()+'\n')
 
     discord_bam = bam_short_name+'_discord.bam'
     clipped_bam = bam_short_name+'_clipped.bam'
@@ -448,8 +456,10 @@ def exec_preprocess(args):
 
     pysam.index(preprocess_dir_realpath + '/' + discord_bam)
     pysam.index(preprocess_dir_realpath + '/' + clipped_bam)
-    sys.stdout.write('Created %s/%s\n' % (preprocess_dir_realpath,discord_bam))
-    sys.stdout.write('Created %s/%s\n' % (preprocess_dir_realpath,clipped_bam))
+    #log_FH.write('Created %s/%s\n' % (preprocess_dir_realpath,discord_bam))
+    #log_FH.write('Created %s/%s\n' % (preprocess_dir_realpath,clipped_bam))
+    log_FH.write('Created %s/%s\n' % (preprocess_dir_realpath,discord_bam))
+    log_FH.write('Created %s/%s\n' % (preprocess_dir_realpath,clipped_bam))
 
     ref_type_file_name = []
     with open(fofn_ref_realpath, 'r') as ref_type_file_file:
@@ -474,48 +484,50 @@ def exec_preprocess(args):
     type_file_all.close()
     type_file_all_bwa.close()
 
-    sys.stdout.write('Created ' + preprocess_dir_realpath + '/te_ref_type.fa\n')
-    sys.stdout.write('Created ' + preprocess_dir_realpath + '/te_ref_type_bwa.fa\n')
+    log_FH.write('Created ' + preprocess_dir_realpath + '/te_ref_type.fa\n')
+    log_FH.write('Created ' + preprocess_dir_realpath + '/te_ref_type_bwa.fa\n')
+    log_FH.close()
 
 #--------------------------------------------------------------
 
 def exec_discover(args):
     #
+    log_FH=open(args.log_file, 'w')
     dir_path = os.getcwd() #os.path.dirname(os.path.realpath(__file__))
-    sys.stdout.write('Working directory: '+str(dir_path)+'\n')
+    log_FH.write('Working directory: '+str(dir_path)+'\n')
     #
     preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)
-    sys.stdout.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
+    log_FH.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
     #
     fofn_ref_realpath = os.path.realpath(args.fofn_ref)
-    sys.stdout.write('fofn_ref file: '+ fofn_ref_realpath +'\n')
+    log_FH.write('fofn_ref file: '+ fofn_ref_realpath +'\n')
     #
     bam_full = os.path.realpath(args.bam_inp)
-    sys.stdout.write('bam file name: '+str(bam_full)+'\n')
+    log_FH.write('bam file name: '+str(bam_full)+'\n')
     #
     bam_short_name = bam_full.split('/')[-1][:-4]
-    sys.stdout.write('bam short name: '+ bam_short_name +'\n')
+    log_FH.write('bam short name: '+ bam_short_name +'\n')
     #
     insert_size = args.isz_inp
-    sys.stdout.write('Insert size estimate: '+str(insert_size)+'\n')
+    log_FH.write('Insert size estimate: '+str(insert_size)+'\n')
     #
     discord_rd_clust_denst = args.drd_inp # <--change this variable name, confusing.
-    sys.stdout.write('Number of reads in a cluster to call it insertion: '+str(discord_rd_clust_denst)+'\n')
+    log_FH.write('Number of reads in a cluster to call it insertion: '+str(discord_rd_clust_denst)+'\n')
     #
     read_length = args.rdl_inp
-    sys.stdout.write('Average read length: '+str(read_length)+'\n')
+    log_FH.write('Average read length: '+str(read_length)+'\n')
     #
     coverage_cutoff    = args.cct_inp
-    sys.stdout.write('Coverage cutoff to skip a region: '+str(coverage_cutoff)+'\n')
+    log_FH.write('Coverage cutoff to skip a region: '+str(coverage_cutoff)+'\n')
     #
     min_mapq = args.mpq_inp
-    sys.stdout.write('minimum mapping quality: '+str(min_mapq)+'\n')
+    log_FH.write('minimum mapping quality: '+str(min_mapq)+'\n')
     #
     min_mapq_uniq = args.mpqu_inp
-    sys.stdout.write('minimum mapping quality: '+str(min_mapq_uniq)+'\n')
+    log_FH.write('minimum mapping quality: '+str(min_mapq_uniq)+'\n')
     #    
     clipped_length = args.cll_inp
-    sys.stdout.write('Minimum clipped length: '+str(clipped_length)+'\n')
+    log_FH.write('Minimum clipped length: '+str(clipped_length)+'\n')
     #
     subprocess.run(['mkdir' , '-p' , preprocess_dir_realpath])
     #
@@ -751,6 +763,7 @@ def exec_discover(args):
         del read_positions_clusters_nohicov[:]
 
     read_positions_clusters_file.close()
+    log_FH.close()
 #--------------------------------------------------------------
 def alt_mapped_pos( read, args):
     #
@@ -816,41 +829,42 @@ def pat_check(inp_seq, query_len, mis_match):
 #--------------------------------------------------------------
 def exec_nadiscover(args):
     #
+    log_FH=open(args.log_file, 'w')
     dir_path = os.getcwd() #os.path.dirname(os.path.realpath(__file__))
-    sys.stdout.write('Working directory: '+str(dir_path)+'\n')
+    log_FH.write('Working directory: '+str(dir_path)+'\n')
     #
     preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)
-    sys.stdout.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
+    log_FH.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
     #
     fofn_ref_realpath = os.path.realpath(args.fofn_ref)
-    sys.stdout.write('fofn_ref file: '+ fofn_ref_realpath +'\n')
+    log_FH.write('fofn_ref file: '+ fofn_ref_realpath +'\n')
     #
     bam_full = args.bam_inp
-    sys.stdout.write('bam file name: '+str(bam_full)+'\n')
+    log_FH.write('bam file name: '+str(bam_full)+'\n')
     #
     bam_short_name = bam_full.split('/')[-1][:-4]
-    sys.stdout.write('bam short name: '+ bam_short_name +'\n')
+    log_FH.write('bam short name: '+ bam_short_name +'\n')
     #
     insert_size = args.isz_inp
-    sys.stdout.write('Insert size estimate: '+str(insert_size)+'\n')
+    log_FH.write('Insert size estimate: '+str(insert_size)+'\n')
     #
     discord_rd_clust_denst = args.drd_inp
-    sys.stdout.write('Number of reads in a cluster to call it insertion: '+str(discord_rd_clust_denst)+'\n')
+    log_FH.write('Number of reads in a cluster to call it insertion: '+str(discord_rd_clust_denst)+'\n')
     #
     read_length = args.rdl_inp
-    sys.stdout.write('Average read length: '+str(read_length)+'\n')
+    log_FH.write('Average read length: '+str(read_length)+'\n')
     #
     coverage_cutoff = args.cct_inp
-    sys.stdout.write('Coverage cutoff to skip a region: '+str(coverage_cutoff)+'\n')
+    log_FH.write('Coverage cutoff to skip a region: '+str(coverage_cutoff)+'\n')
     #
     min_mapq = args.mpq_inp
-    sys.stdout.write('minimum mapping quality: '+str(min_mapq)+'\n')
+    log_FH.write('minimum mapping quality: '+str(min_mapq)+'\n')
     #
     min_mapq_uniq = args.mpqu_inp
-    sys.stdout.write('minimum mapping quality: '+str(min_mapq_uniq)+'\n')
+    log_FH.write('minimum mapping quality: '+str(min_mapq_uniq)+'\n')
     #
     clipped_length = args.cll_inp
-    sys.stdout.write('Minimum clipped length: '+str(clipped_length)+'\n')
+    log_FH.write('Minimum clipped length: '+str(clipped_length)+'\n')
     #
     pat_query_len = args.pql_inp
     
@@ -970,7 +984,7 @@ def exec_nadiscover(args):
         #
         discord_pos_list = []
         discord_bam = preprocess_dir_realpath + '/'+bam_short_name+'_discord.bam'
-        sys.stdout.write('Discordant bam file: '+discord_bam+'\n')
+        log_FH.write('Discordant bam file: '+discord_bam+'\n')
         #
         samfile_discord = pysam.AlignmentFile(discord_bam, 'rb')
         #
@@ -984,7 +998,7 @@ def exec_nadiscover(args):
         if args.flg_all:
             clipped_pos_list = []
             clipped_bam = preprocess_dir_realpath + '/'+bam_short_name+'_clipped.bam'
-            sys.stdout.write('Clipped bam file: '+clipped_bam+'\n')
+            log_FH.write('Clipped bam file: '+clipped_bam+'\n')
             #
             samfile_clipped = pysam.AlignmentFile(clipped_bam, 'rb')
             for read in samfile_clipped.fetch():
@@ -1091,7 +1105,7 @@ def exec_nadiscover(args):
         #
         # nas condition done
         #
-    read_positions_clusters_file = open(args.ouput_file, 'w')
+    read_positions_clusters_file = open(args.output_file, 'w')
     #
     for cnt_1 in range( len(ref_type_file_name) ):
         #
@@ -1366,17 +1380,19 @@ def exec_nadiscover(args):
         del read_positions_clusters_nohicov[:]
 
         read_positions_clusters_file.close()
+    log_FH.close()
 #--------------------------------------------------------------
 def exec_cluster2d(args):    
     #
+    log_FH=open(args.log_file, 'w')
     preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)
-    sys.stdout.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
+    log_FH.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
     #
     fofn_ref_realpath = os.path.realpath(args.fofn_ref)
-    sys.stdout.write('fofn_ref file: '+ fofn_ref_realpath +'\n')
+    log_FH.write('fofn_ref file: '+ fofn_ref_realpath +'\n')
     #
     dir_path = os.getcwd()
-    sys.stdout.write('working directory: '+ dir_path +'\n')
+    log_FH.write('working directory: '+ dir_path +'\n')
     #
     bam_full = args.bam_inp
     insert_size = args.isz_inp
@@ -1438,20 +1454,22 @@ def exec_cluster2d(args):
         del read_positions_clusters[:]
         del read_positions_clusters_nohicov[:]
     read_positions_clusters_file.close()
+    log_FH.close()
 #--------------------------------------------------------------
 def exec_filter(args):
     #
+    log_FH=open(args.log_file, 'w')
     preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)
-    sys.stdout.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
+    log_FH.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
     #
     dir_path = os.getcwd()
-    sys.stdout.write('working directory: '+ dir_path +'\n')
+    log_FH.write('working directory: '+ dir_path +'\n')
     #
     fofn_bed_file = os.path.realpath(args.fofn_bed)
-    sys.stdout.write('fofn_bed file: '+ fofn_bed_file +'\n')
+    log_FH.write('fofn_bed file: '+ fofn_bed_file +'\n')
     #
     input_file_name = args.ofa_inp
-    sys.stdout.write('input file name: '+ input_file_name +'\n')
+    log_FH.write('input file name: '+ input_file_name +'\n')
     #
     insert_size = args.isz_inp 
     read_length = args.rdl_inp
@@ -1586,24 +1604,26 @@ def exec_filter(args):
         elif total_discord_rd >= 10:
             filter_result = 'PASS_D'
 
-        sys.stdout.write(filter_result+'\t'+te_loc+'\t'+line)
+        log_FH.write(filter_result+'\t'+te_loc+'\t'+line)
 
         left_clipped_rd, right_clipped_rd, left_discord_rd, right_discord_rd, test_class_score = 0, 0, 0, 0, 0
+    log_FH.close()
 ##    
 #--------------------------------------------------------------
 def exec_filter_p(args):
     #
+    log_FH=open(args.log_file, 'w')
     preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)
-    sys.stdout.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
+    log_FH.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
     #
     dir_path = os.getcwd()
-    sys.stdout.write('working directory: '+ dir_path +'\n')
+    log_FH.write('working directory: '+ dir_path +'\n')
     #
     input_file_name = args.ofa_inp
-    sys.stdout.write('input file: '+ input_file_name +'\n')
+    log_FH.write('input file: '+ input_file_name +'\n')
     #
     fofn_bed_file = os.path.realpath(args.fofn_bed)
-    sys.stdout.write('fofn_bed file: '+ fofn_bed_file +'\n')
+    log_FH.write('fofn_bed file: '+ fofn_bed_file +'\n')
     #
     insert_size = args.isz_inp
     read_length = args.rdl_inp
@@ -1738,9 +1758,12 @@ def exec_filter_p(args):
         elif ( total_discord_rd >= 3 ):
             filter_result = 'PASS_D'
 
+        #log_FH.write(filter_result+'\t'+te_loc+'\t'+line) #+'\t'+str(cnt_rd))
         sys.stdout.write(filter_result+'\t'+te_loc+'\t'+line) #+'\t'+str(cnt_rd))
+        
 
         left_clipped_rd, right_clipped_rd, left_discord_rd, right_discord_rd, test_class_score = 0, 0, 0, 0, 0
+    log_FH.close()
 
 #--------------------------------------------------------------
 
@@ -1860,67 +1883,68 @@ def find_clipped_ends( iterator_reads, insert_guess, args ):
 #--------------------------------------------------------------
 def exec_analyze(args):
     #
+    log_FH=open(args.log_file, 'w')
     preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)
-    sys.stdout.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
+    log_FH.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
     #
     fofn_ref_realpath = os.path.realpath(args.fofn_ref)
-    sys.stdout.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
+    log_FH.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
     #
     dir_path = os.getcwd()
-    sys.stdout.write('working directory: '+ dir_path +'\n')
+    log_FH.write('working directory: '+ dir_path +'\n')
     #up_dir_path = os.path.dirname(os.path.realpath(dir_path))
     #
     bam_full = args.bam_inp
-    sys.stdout.write('Input bam file: '+bam_full+'\n')
+    log_FH.write('Input bam file: '+bam_full+'\n')
     #
     bam_short_name = bam_full.split('/')[-1][:-4]
-    sys.stdout.write('bam short name: '+ bam_short_name +'\n')
+    log_FH.write('bam short name: '+ bam_short_name +'\n')
     #
     discord_bam = preprocess_dir_realpath + '/'+bam_short_name+'_discord.bam'
-    sys.stdout.write('Discordant bam file: '+discord_bam+'\n')
+    log_FH.write('Discordant bam file: '+discord_bam+'\n')
     if not check_file(discord_bam + ".bai"):
-        sys.stderr.write('cannot find index for: '+discord_bam+', making now\n')
+        log_FH.write('cannot find index for: '+discord_bam+', making now\n')
         pysam.index(discord_bam)
     #
     te_type_file = preprocess_dir_realpath + '/te_ref_type.fa'
     #
-    sys.stdout.write('\n----Run parameters----\n')
+    log_FH.write('\n----Run parameters----\n')
     #
     insert_range = args.rdl_inp # =read_length
-    sys.stdout.write('Input read length: '+str(insert_range)+'\n')    
+    log_FH.write('Input read length: '+str(insert_range)+'\n')    
     #
     clipped_length = args.cll_inp
-    sys.stdout.write('Minimum clipped read length: '+str(clipped_length)+'\n')
+    log_FH.write('Minimum clipped read length: '+str(clipped_length)+'\n')
     #
     anchor_length = args.ahl_inp
-    sys.stdout.write('Minimum anchor read length: '+str(anchor_length)+'\n')
+    log_FH.write('Minimum anchor read length: '+str(anchor_length)+'\n')
     #
     cliped_end_range = args.cer_inp
-    sys.stdout.write('Range to put clipped read in group: '+str(cliped_end_range)+'\n')
+    log_FH.write('Range to put clipped read in group: '+str(cliped_end_range)+'\n')
     #
     clipped_search_interval = args.csi_inp
-    sys.stdout.write('Clipped search interval: '+str(clipped_search_interval)+'\n')    
+    log_FH.write('Clipped search interval: '+str(clipped_search_interval)+'\n')    
     #
     min_reads_het = args.mrh_inp
-    sys.stdout.write('Minimum reads to call hetrozygous: '+str(min_reads_het)+'\n')
+    log_FH.write('Minimum reads to call hetrozygous: '+str(min_reads_het)+'\n')
     #
     insert_size = args.isz_inp
-    sys.stdout.write('Insert size estimate: '+str(insert_size)+'\n')
+    log_FH.write('Insert size estimate: '+str(insert_size)+'\n')
     #
     min_reads_ends = args.mre_inp
-    sys.stdout.write('Minimum read at each end: '+str(min_reads_ends)+'\n') # ??
+    log_FH.write('Minimum read at each end: '+str(min_reads_ends)+'\n') # ??
     #
     qual_interval_inp = args.qii_inp
-    sys.stdout.write('Mapping quality gap: '+str(qual_interval_inp)+'\n')
+    log_FH.write('Mapping quality gap: '+str(qual_interval_inp)+'\n')
     #
     num_interval_inp = args.nii_inp
-    sys.stdout.write('Number of quality gap searchs: '+str(num_interval_inp)+'\n')
+    log_FH.write('Number of quality gap searchs: '+str(num_interval_inp)+'\n')
     #
     min_mapq = args.mpq_inp
-    sys.stdout.write('minimum mapping quality: '+str(min_mapq)+'\n')
+    log_FH.write('minimum mapping quality: '+str(min_mapq)+'\n')
     #
     min_mapq_uniq = args.mpqu_inp
-    sys.stdout.write('minimum mapping quality for uniq test: '+str(min_mapq_uniq)+'\n\n')
+    log_FH.write('minimum mapping quality for uniq test: '+str(min_mapq_uniq)+'\n\n')
     #
     list_file = args.list_inp
     #
@@ -1930,7 +1954,8 @@ def exec_analyze(args):
     inp_file.close()
     #
     #
-    eprint("----------\n"  + "remap and find insertion points\n" + "----------\n")
+    #eprint("----------\n"  + "remap and find insertion points\n" + "----------\n")
+    log_FH("----------\n"  + "remap and find insertion points\n" + "----------\n")
     for lf_line in inp_file_lines:
         #
         if lf_line.startswith('#'):
@@ -2048,7 +2073,8 @@ def exec_analyze(args):
             insert_point_out = insert_guess
             insert_point = insert_guess
             warning = "WARNING: timed out estimating insertion point for " + str(chrom) + "_" + str(insert_guess)
-            eprint(warning)
+            #eprint(warning)
+            log_FH.write(warning + "\n")
             output_file.write(warning)
             
         output_file.write('TE insertion point closest to provided guess is: ' + \
@@ -2330,7 +2356,8 @@ def exec_analyze(args):
     #*****************************************************************************************************************************
     #Discordant mate pair analysis
     #
-    eprint("----------\n"  + "discordant mate pair analysis\n" + "----------\n")
+    #eprint("----------\n"  + "discordant mate pair analysis\n" + "----------\n")
+    log_FH.write("----------\n"  + "discordant mate pair analysis\n" + "----------\n")
     samfile_idx = pysam.AlignmentFile(discord_bam, "rb")
     id_index = pysam.IndexedReads(samfile_idx)
     id_index.build()
@@ -2569,7 +2596,8 @@ def exec_analyze(args):
     samfile_idx.close()
     #--------------------------------------------------------------------------------------------------------------
     # Write combined output file.
-    eprint("----------\n"  + "writing output files\n" + "----------\n")
+    #eprint("----------\n"  + "writing output files\n" + "----------\n")
+    log_FH.write("----------\n"  + "writing output files\n" + "----------\n")
     #final_output = open('final_results.tsv', 'w')
     with open(args.output_file, 'w') as final_output:
         final_output.write("Type\t# Chromosome\tInitial_Guess\tActual_insertion_point\tHetrozygous/Homozygous\t"
@@ -2602,6 +2630,7 @@ def exec_analyze(args):
             #
             output_file.close()
         final_output.close()    
+    log_FH.close()
 
 def main():
     FUNCTION_MAP = {
@@ -2629,6 +2658,9 @@ def main():
         help='directory to store preprocessing output files (default: preprocessed_files)')
     sp_preprocess.add_argument('--min_clipped_len', action='store', dest='cll_inp', type=int, default=25,
         help='Minimum clipped length(bp) (default: 25)')
+    sp_preprocess.add_argument('--log_file', action='store',
+        dest='log_file', default='preprocess.log',
+        help='run log file (default: preprocess.log)')
     sp_preprocess._action_groups.reverse()
 
     sp_discover = subparsers.add_parser('discover', help="discover argument")
@@ -2654,6 +2686,9 @@ def main():
         help='Minimum mapping quality (default: 30)')
     sp_discover.add_argument('--map_qual_uniq', action='store', dest='mpqu_inp', type=int, default=1, 
         help='Minimum mapping quality (default: 1)')
+    sp_discover.add_argument('--log_file', action='store',
+        dest='log_file', default='discover.log',
+        help='run log file (default: discover.log)')
     sp_discover._action_groups.reverse()
 
     sp_analyze = subparsers.add_parser('analyze', help="analyze argument")
@@ -2695,6 +2730,9 @@ def main():
         help='Minimum mapping quality uniq test (default: 1)')
     sp_analyze.add_argument('--filter_discord_mates', action='store_true', dest='flt_inp', default=False,
         help='Filter discord mate files (default: False)')
+    sp_analyze.add_argument('--log_file', action='store',
+        dest='log_file', default='analyze.log',
+        help='run log file (default: analyze.log)')
     sp_analyze._action_groups.reverse()
 
     sp_nadiscover = subparsers.add_parser('nadiscover', help="nadiscover argument")
@@ -2736,6 +2774,9 @@ def main():
         help='poly A/T Length (default: 9)')
     sp_nadiscover.add_argument('--polyA_mismatch', action='store', dest='pmm_inp', type=int, default=1,
         help='poly A/T mismatch (default: 1)')
+    sp_nadiscover.add_argument('--log_file', action='store',
+        dest='log_file', default='nadiscover.log',
+        help='run log file (default: nadiscover.log)')
     sp_nadiscover._action_groups.reverse()
 
     sp_cluster2d = subparsers.add_parser('cluster2d', help="cluster2d argument")
@@ -2757,13 +2798,16 @@ def main():
         help='Coverage cutoff input (default: 200)')
     sp_cluster2d.add_argument('--all', action='store_true', dest='flg_all', default=False, 
         help='use all reads instead of only clipped (default: False)')
+    sp_cluster2d.add_argument('--log_file', action='store',
+        dest='log_file', default='cluster2d.log',
+        help='run log file (default: cluster2d.log)')
     sp_cluster2d._action_groups.reverse()
 
     sp_filter = subparsers.add_parser('filter', help="Filter argument")
     sp_filter_required = sp_filter.add_argument_group('required arguments')
     sp_filter_required.add_argument('-i', '--input_file', action='store', dest='ofa_inp', required=True, help='use the output file from analyze section as input')
     sp_filter_required.add_argument('-b', '--bed', action='store', dest='fofn_bed', required=True, 
-        help='File containg a list of files to existing repeat elements. List the full path for each file. See example in example_dir')
+        help='File containg a list of files to existing repeat elements. List the full path for each file. See example in example_data')
     sp_filter.add_argument('-p', '--preprocess_dir', action='store',
         dest='preprocess_dir', default='preprocessed_files',
         help='directory used to store preprocessing output files (default: preprocessed_files)')
@@ -2779,6 +2823,9 @@ def main():
         help='Average read length (default: 150)')
     sp_filter.add_argument('--insert_size_est', action='store', dest='isz_inp', type=int, default=340, 
         help='insert Size estimate (default: 340)')
+    sp_filter.add_argument('--log_file', action='store',
+        dest='log_file', default='filter.log',
+        help='run log file (default: filter.log)')
     sp_filter._action_groups.reverse()
 
     sp_filter_p = subparsers.add_parser('filter_p', help="Filter argument")
@@ -2801,6 +2848,9 @@ def main():
         help='Average read length (default: 100)')
     sp_filter_p.add_argument('--insert_size_est', action='store', dest='isz_inp', type=int, default=369, 
         help='insert Size estimate (default: 369)')
+    sp_filter_p.add_argument('--log_file', action='store',
+        dest='log_file', default='filter_p.log',
+        help='run log file (default: filter_p.log)')
     sp_filter_p._action_groups.reverse()
 
     args = parser.parse_args()

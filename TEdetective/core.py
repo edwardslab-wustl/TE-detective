@@ -2716,27 +2716,28 @@ def main():
             }
 
     parser = argparse.ArgumentParser()
-    #subparsers = parser.add_subparsers(dest='command', required=True)
     subparsers = parser.add_subparsers(dest='command')
     subparsers.required = True
 
     sp_preprocess = subparsers.add_parser('preprocess', help="preprocess argument")
-    sp_preprocess.add_argument('-i', '--input_bam', action='store', dest='bam_inp', required=True,
+    sp_preprocess_required = sp_preprocess.add_argument_group('required arguments')
+    sp_preprocess_required.add_argument('-i', '--input_bam', action='store', dest='bam_inp', required=True,
         help='input Bam(.bam) file of aligned reads')
-    sp_preprocess.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
+    sp_preprocess_required.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
         help='File with reference sequence paths, see README.md for more info')
     sp_preprocess.add_argument('-p', '--preprocess_dir', action='store',
         dest='preprocess_dir', default='preprocessed_files',
         help='directory to store preprocessing output files (default: preprocessed_files)')
     sp_preprocess.add_argument('--cll', action='store', dest='cll_inp', type=int, default=25, help='Minimum clipped length(bp)')
+    sp_preprocess._action_groups.reverse()
 
     sp_discover = subparsers.add_parser('discover', help="discover argument")
-    sp_discover.add_argument('-i', '--input_bam', action='store', dest='bam_inp', required=True, 
-        help='input Bam(.bam) file of aligned reads')
-    #sp_discover.add_argument('-ref', action='store', dest='fofn_ref', required=True, help='FoFn for reference sequence')
-    sp_discover.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
+    sp_discover_required = sp_discover.add_argument_group('required arguments')
+    sp_discover_required.add_argument('-i', '--input_bam', action='store', dest='bam_inp', required=True, 
+        help='Input Bam(.bam) file of aligned reads')
+    sp_discover_required.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
         help='File with reference sequence paths, see README.md for more info')
-    sp_discover.add_argument('--isz', action='store', dest='isz_inp', type=int, default=340, help='insert Size estimate')
+    sp_discover.add_argument('--isz', action='store', dest='isz_inp', type=int, default=340, help='Insert size estimate')
     sp_discover.add_argument('--rdl', action='store', dest='rdl_inp', type=int, default=150, help='Average read length')
     sp_discover.add_argument('--drd', action='store', dest='drd_inp', type=int, default=10, help='discord read clust denst')
     sp_discover.add_argument('--cct', action='store', dest='cct_inp', type=int, default=200, help='Coverage cutoff input')
@@ -2746,12 +2747,13 @@ def main():
     sp_discover.add_argument('-p', '--preprocess_dir', action='store',
         dest='preprocess_dir', default='preprocessed_files',
         help='directory used to store preprocessing output files (default: preprocessed_files)')
+    sp_discover._action_groups.reverse()
 
     sp_analyze = subparsers.add_parser('analyze', help="analyze argument")
-    sp_analyze.add_argument('-i','--input_bam', action='store', dest='bam_inp', required=True, 
+    sp_analyze_required = sp_analyze.add_argument_group('required arguments')
+    sp_analyze_required.add_argument('-i','--input_bam', action='store', dest='bam_inp', required=True, 
         help='input Bam(.bam) file of aligned reads')
-    #sp_analyze.add_argument('-ref', action='store', dest='fofn_ref', required=True, help='FoFn for reference sequence')
-    sp_analyze.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
+    sp_analyze_required.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
         help='File with reference sequence paths, see README.md for more info')
     sp_analyze.add_argument('-p', '--preprocess_dir', action='store',
         dest='preprocess_dir', default='preprocessed_files',
@@ -2773,12 +2775,13 @@ def main():
     sp_analyze.add_argument('--mpq', action='store', dest='mpq_inp', type=int, default=30, help='Minimum mapping quality')
     sp_analyze.add_argument('--mpqu', action='store', dest='mpqu_inp', type=int, default=1, help='Minimum mapping quality uniq test')
     sp_analyze.add_argument('--flt', action='store_true', dest='flt_inp', default=False, help='Filter discord mate files')
+    sp_analyze._action_groups.reverse()
 
     sp_nadiscover = subparsers.add_parser('nadiscover', help="nadiscover argument")
-    sp_nadiscover.add_argument('-i','--input_bam', action='store', dest='bam_inp', required=True, 
+    sp_nadiscover_required = sp_nadiscover.add_argument_group('required arguments')
+    sp_nadiscover_required.add_argument('-i','--input_bam', action='store', dest='bam_inp', required=True, 
         help='input Bam(.bam) file of aligned reads')
-    #sp_nadiscover.add_argument('-ref', action='store', dest='fofn_ref', required=True, help='FoFn for reference sequence')
-    sp_nadiscover.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
+    sp_nadiscover_required.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
         help='File with reference sequence paths, see README.md for more info')
     sp_nadiscover.add_argument('-o', '--output_file', action='store',
         dest='output_file', default='initial_predictions_noalign.txt',
@@ -2800,12 +2803,13 @@ def main():
     sp_nadiscover.add_argument('--pmm', action='store', dest='pmm_inp', type=int, default=1, help='poly A/T mismatch')
     sp_nadiscover.add_argument('--mpqu', action='store', dest='mpqu_inp', type=int, default=1, help='Minimum mapping quality uniq test')
     sp_nadiscover.add_argument('--bed', action='store', dest='rmsk_bed', help='FoFn for existing repeat elements')
+    sp_nadiscover._action_groups.reverse()
 
     sp_cluster2d = subparsers.add_parser('cluster2d', help="cluster2d argument")
-    sp_cluster2d.add_argument('-i','--input_bam', action='store', dest='bam_inp', required=True, 
+    sp_cluster2d_required = sp_cluster2d.add_argument_group('required arguments')
+    sp_cluster2d_required.add_argument('-i','--input_bam', action='store', dest='bam_inp', required=True, 
         help='input Bam(.bam) file of aligned reads')
-    #sp_cluster2d.add_argument('-ref', action='store', dest='fofn_ref', required=True, help='FoFn for reference sequence')
-    sp_cluster2d.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
+    sp_cluster2d_required.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
         help='File with reference sequence paths, see README.md for more info')
     sp_cluster2d.add_argument('-p', '--preprocess_dir', action='store',
         dest='preprocess_dir', default='preprocessed_files',
@@ -2815,10 +2819,12 @@ def main():
     sp_cluster2d.add_argument('--drd', action='store', dest='drd_inp', type=int, default=5, help='discord read clust denst')
     sp_cluster2d.add_argument('--cct', action='store', dest='cct_inp', type=int, default=200, help='Coverage cutoff input')
     sp_cluster2d.add_argument('--all', action='store_true', dest='flg_all', default=False, help='Only clipped or all?')
+    sp_cluster2d._action_groups.reverse()
 
     sp_filter = subparsers.add_parser('filter', help="Filter argument")
-    sp_filter.add_argument('--ofa', action='store', dest='ofa_inp', required=True, help='output file from analyze section')
-    sp_filter.add_argument('--bed', action='store', dest='fofn_bed', required=True, help='FoFn for existing repeat elements')
+    sp_filter_required = sp_filter.add_argument_group('required arguments')
+    sp_filter_required.add_argument('--ofa', action='store', dest='ofa_inp', required=True, help='output file from analyze section')
+    sp_filter_required.add_argument('--bed', action='store', dest='fofn_bed', required=True, help='FoFn for existing repeat elements')
     sp_filter.add_argument('-p', '--preprocess_dir', action='store',
         dest='preprocess_dir', default='preprocessed_files',
         help='directory used to store preprocessing output files (default: preprocessed_files)')
@@ -2829,10 +2835,12 @@ def main():
     sp_filter.add_argument('--rp', action='store', dest='rp_inp', type=float, default=10.0, help='read percent value')
     sp_filter.add_argument('--rdl', action='store', dest='rdl_inp', type=int, default=150, help='Average read length')
     sp_filter.add_argument('--isz', action='store', dest='isz_inp', type=int, default=340, help='insert Size estimate')
+    sp_filter._action_groups.reverse()
 
     sp_filter_p = subparsers.add_parser('filter_p', help="Filter argument")
-    sp_filter_p.add_argument('--ofa', action='store', dest='ofa_inp', required=True, help='output file from analyze section')
-    sp_filter_p.add_argument('--bed', action='store', dest='fofn_bed', required=True, help='FoFn for existing repeat elements')
+    sp_filter_p_required = sp_filter_p.add_argument_group('required arguments')
+    sp_filter_p_required.add_argument('--ofa', action='store', dest='ofa_inp', required=True, help='output file from analyze section')
+    sp_filter_p_required.add_argument('--bed', action='store', dest='fofn_bed', required=True, help='FoFn for existing repeat elements')
     sp_filter_p.add_argument('-p', '--preprocess_dir', action='store',
         dest='preprocess_dir', default='preprocessed_files',
         help='directory used to store preprocessing output files (default: preprocessed_files)')
@@ -2843,6 +2851,7 @@ def main():
     sp_filter_p.add_argument('--rp', action='store', dest='rp_inp', type=float, default=10.0, help='read percent value')
     sp_filter_p.add_argument('--rdl', action='store', dest='rdl_inp', type=int, default=100, help='Average read length')
     sp_filter_p.add_argument('--isz', action='store', dest='isz_inp', type=int, default=369, help='insert Size estimate')
+    sp_filter_p._action_groups.reverse()
 
     args = parser.parse_args()
     funct = FUNCTION_MAP[args.command]

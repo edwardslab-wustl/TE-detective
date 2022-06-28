@@ -53,12 +53,13 @@ Clone and install with pip:
 	preferably prepared using following alignment command:
 	bwa mem -M -Y -R $RG_LINE ref.fa test_1.fq test_2.fq | samtools view -b -S - > test_ref.bam
 
-    2. Reference file specifying repeat to be examined (e.g. LINE) and location of Reference sequence of repeat elements:
+    2. ref_fofn file
+	Reference file specifying repeat to be examined (e.g. LINE) and location of Reference sequence of repeat elements:
 	file can be space- or tab-delimited
 	first field is the repeat name
 	second field is the full path to a fasta file containing the reference sequences for the repeat element
 	Reference sequences of repeat elements can be obtained from Repbase(https://www.girinst.org/server/RepBase/index.php) or other resources.
-	See example file fofn_ref in the example_data folder.
+	See example file ref_fofn in the example_data folder.
 
 ````
 
@@ -74,6 +75,7 @@ Clone and install with pip:
     TE_detective filter -i final_results.tsv --bed rmsk_ucsc_mm10.bed
 
 	or 
+
 	cd example_data
 	sh run_example.sh
 ````
@@ -84,7 +86,7 @@ Clone and install with pip:
 
 		In your working directory ($DIR) you need four subdirectories: one for each sample, and then one for polymorphic analysis (NA12878, NA12891, NA12892, polymorph)
 		You have downloaded, aligned and sorted the bam file for each of the three individuals using the instructions above.
-		Create a file called ref_fofn in $DIR that has a single line with the repeat element and location (complete path) of a fasta file for the repeat element of interest. See example ref_fofn file in example_data.
+		Create a file called ref_fofn in $DIR that has a single line with the repeat element and location (complete path) of a fasta file for the repeat element of interest. See above and/or example ref_fofn file in example_data.
 
 	1. Insertion prediction in child (NA12878).
 

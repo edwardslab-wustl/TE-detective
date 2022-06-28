@@ -417,7 +417,8 @@ def exec_nadiscover(args):
             # nas consition ends
             #
         if not args.nas_inp:
-            print(args.nas_inp)
+            #print(args.nas_inp)
+            log_FH.write('--nonaligned_search flag is ' + str(args.nas_inp))
             #    
             with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_read-bam_mate_id_pos.dat', 'r') as mate_id_dat:
                 mate_id_dat_lines = mate_id_dat.readlines()

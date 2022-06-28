@@ -141,3 +141,4 @@ dmypy.json
 .DS_Store
 TEdetective/core.old.py
 .vscode/
+TEdetective/analyze.updated_subprocess.py

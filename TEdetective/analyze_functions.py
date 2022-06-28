@@ -1,9 +1,17 @@
 
 import os
+import subprocess
 from Bio.Seq import Seq
 from TEdetective.general_functions import pat_check, check_uniq_mapping
 
-def analysis_pat_check(    inp_fa_file, inp_fa_map_file ):
+def run_censor (fasta_file, library_file, log_FH, message):
+    log_FH.write(message + "\n")
+    log_FH.flush()
+    command = ['censor.ncbi', fasta_file, '-lib', library_file]
+    result = subprocess.run(command, stderr = log_FH, stdout = log_FH)
+    return
+
+def analysis_pat_check( inp_fa_file, inp_fa_map_file ):
     #
     with open(inp_fa_file, 'r') as fa_file:
         fa_file_lines = fa_file.readlines()

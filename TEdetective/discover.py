@@ -265,7 +265,9 @@ def exec_discover(args):
                                             int(clust_pos[1])+(insert_size+read_length)):    
                     coverage_values.append(int(pileupcolumn.n))            
                 coverage_values_np = np.array(coverage_values)
-                print(np.mean(coverage_values_np[read_length:-1*read_length]))
+                #print(np.mean(coverage_values_np[read_length:-1*read_length]))
+                mean_coverage = np.mean(coverage_values_np[read_length:-1*read_length])
+                log_FH.write( bam_short_name + ".bam mean coverage: " + str(mean_coverage) + "\n")
                 if np.mean(coverage_values_np[read_length:-1*read_length]) < coverage_cutoff: #cct
                     read_positions_clusters_nohicov.append(clust_pos)
                 del coverage_values[:]

@@ -2,7 +2,7 @@ import os, subprocess
 import pysam
 from TEdetective.io_functions import check_file, read_type_info, te_type_setup, read_class_info, get_class, print_tup, num_of_lines
 from TEdetective.general_functions import break_points, check_uniq_mapping, calc_length
-from TEdetective.analyze_functions import find_clipped_ends,flt_discord, analysis_pat_check
+from TEdetective.analyze_functions import find_clipped_ends,flt_discord, analysis_pat_check, run_censor
 
 
 def exec_analyze(args):
@@ -289,11 +289,13 @@ def exec_analyze(args):
         #    proc = Popen(['censor.ncbi', int_file_name+'_reads_p.fa' , '-lib' , te_type_file], shell=True, stdout=PIPE, stderr=PIPE)
         #    out, err = proc.communicate()
         #    print (err, proc.returncode)
-            subprocess.run(['censor.ncbi', int_file_name+'_reads_p.fa' , '-lib' , te_type_file])
+            #subprocess.run(['censor.ncbi', int_file_name+'_reads_p.fa' , '-lib' , te_type_file])
+            run_censor(int_file_name+'_reads_p.fa' , te_type_file, log_FH, "censor reads p: " + int_file_name)
         if cnt_rd_n > 0: # Number of clipped reads at n-end of TE >1
 #            proc = Popen(['censor.ncbi', int_file_name+'_reads_n.fa' , '-lib' , te_type_file], shell=True, stdout=PIPE, stderr=PIPE)
 #            out, err = proc.communicate()
-            subprocess.run(['censor.ncbi', int_file_name+'_reads_n.fa' , '-lib' , te_type_file])
+            #subprocess.run(['censor.ncbi', int_file_name+'_reads_n.fa' , '-lib' , te_type_file])
+            run_censor(int_file_name+'_reads_n.fa' , te_type_file, log_FH, "censor reads n: " + int_file_name)
         #---------------------------------------------------------------------------------------------------------------------------
         output_file.write("\nMapping information of clipped part of read\n------------------------------------------------\n")
         #
@@ -325,8 +327,10 @@ def exec_analyze(args):
         #continue
         #---------------------------------------------------------------------------------------------------------------------------
         if len_calc_flag == 'y':
-            subprocess.run(['censor.ncbi', int_file_name+'_reads_p.fa' , '-lib' , te_class_file])
-            subprocess.run(['censor.ncbi', int_file_name+'_reads_n.fa' , '-lib' , te_class_file])
+            #subprocess.run(['censor.ncbi', int_file_name+'_reads_p.fa' , '-lib' , te_class_file])
+            #subprocess.run(['censor.ncbi', int_file_name+'_reads_n.fa' , '-lib' , te_class_file])
+            run_censor(int_file_name+'_reads_p.fa' , te_class_file, log_FH, "censor class reads p:" + int_file_name)
+            run_censor(int_file_name+'_reads_n.fa' , te_class_file, log_FH, "censor class reads n:" + int_file_name)
             if check_file("%s_reads_p.fa.map" % int_file_name) != True or \
                         check_file("%s_reads_n.fa.map" % int_file_name) !=True:
                 len_calc_flag = 'n'
@@ -366,7 +370,8 @@ def exec_analyze(args):
                 f_tmp.close()
 
                 subprocess.run(['cp' , int_file_name+'_reads_n.fa' , 'n.clipped.fa'])
-                subprocess.run(['censor.ncbi' , 'n.clipped.fa' , '-lib' , class_out_p[0][0]+'.fa'])
+                #subprocess.run(['censor.ncbi' , 'n.clipped.fa' , '-lib' , class_out_p[0][0]+'.fa'])
+                run_censor('n.clipped.fa' , class_out_p[0][0]+'.fa', log_FH, "censor class_out_p reads n:" + int_file_name)
                 #
                 if check_file('n.clipped.fa.map') == True:
                     output_file.write(str(class_out_p[0][0]) + ' ' + str( get_class('n.clipped.fa.map', args)[0][0] ) + ' ' + \
@@ -374,7 +379,8 @@ def exec_analyze(args):
                     len_arr.append([class_out_p[0][0], calc_length(class_out_p, get_class('n.clipped.fa.map', args))])
             
                 subprocess.run(['cp' , int_file_name+'_reads_p.fa' , 'p.clipped.fa'])
-                subprocess.run(['censor.ncbi' , 'p.clipped.fa' , '-lib' , class_out_n[0][0]+'.fa'])
+                #subprocess.run(['censor.ncbi' , 'p.clipped.fa' , '-lib' , class_out_n[0][0]+'.fa'])
+                run_censor('p.clipped.fa' , class_out_n[0][0]+'.fa', log_FH, "censor class_out_n reads p:" + int_file_name)
                 if check_file('p.clipped.fa.map') == True:
                     output_file.write(str(class_out_n[0][0]) + ' ' + str(get_class('p.clipped.fa.map', args)[0][0]) + ' ' + \
                                     str(calc_length(class_out_n, get_class('p.clipped.fa.map', args))) + '\n') 
@@ -632,9 +638,11 @@ def exec_analyze(args):
                 #
         #---------------------------------------------------------------------------------------------------------------
         if cnt_dm_p > 0:
-            subprocess.run(['censor.ncbi' , int_file_name+'_discord_mate_p.fa' , '-lib' , te_type_file])
+            #subprocess.run(['censor.ncbi' , int_file_name+'_discord_mate_p.fa' , '-lib' , te_type_file])
+            run_censor(int_file_name+'_discord_mate_p.fa', te_type_file, log_FH, 'censor discord mate p: ' +int_file_name)
         if cnt_dm_n > 0:
-            subprocess.run(['censor.ncbi' , int_file_name+'_discord_mate_n.fa' , '-lib' , te_type_file])
+            #subprocess.run(['censor.ncbi' , int_file_name+'_discord_mate_n.fa' , '-lib' , te_type_file])
+            run_censor(int_file_name+'_discord_mate_n.fa', te_type_file, log_FH, 'censor discord mate n: ' +int_file_name)
         #--------------------------------------------------------------------------------------------------------------
         output_file.write("\nMapping information of mates of discordant reads\n------------------------------------------------\n")
         #
@@ -661,8 +669,10 @@ def exec_analyze(args):
         #--------------------------------------------------------------------------------------------------------------
         #Type estimation for discordant mates
         if discord_class_flag == 'y':
-            subprocess.run(['censor.ncbi' , int_file_name+'_discord_mate_p.fa' , '-lib' , te_class_file])
-            subprocess.run(['censor.ncbi' , int_file_name+'_discord_mate_n.fa' , '-lib' , te_class_file])
+            #subprocess.run(['censor.ncbi' , int_file_name+'_discord_mate_p.fa' , '-lib' , te_class_file])
+            #subprocess.run(['censor.ncbi' , int_file_name+'_discord_mate_n.fa' , '-lib' , te_class_file])
+            run_censor(int_file_name+'_discord_mate_n.fa', te_class_file, log_FH, 'censor class discord mate n: ' +int_file_name)
+            run_censor(int_file_name+'_discord_mate_p.fa', te_class_file, log_FH, 'censor class discord mate p: ' +int_file_name)
             #
             if check_file( int_file_name+'_discord_mate_p.fa.map' ) !=True or check_file( int_file_name+'_discord_mate_n.fa.map' ) !=True:
                 discord_class_flag = 'n'

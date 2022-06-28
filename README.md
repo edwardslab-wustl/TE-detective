@@ -126,113 +126,297 @@ Clone and install with pip:
 
 [NCBI Blast](https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download) is freely available to the public for use as a "United States Government Work".  See details [here](https://www.ncbi.nlm.nih.gov/IEB/ToolBox/CPP_DOC/lxr/source/scripts/projects/blast/LICENSE).
 
-### Parameters
+### Detailed usage for each command/module
 
 ````
 
-1. Preprocess:
+1. Preprocess
 
-	This module processes the input files (indexed BAM file and indexed fasta file) and create input files for next steps. 
+usage: TE_detective preprocess [-h] -i BAM_INP -r FOFN_REF [-p PREPROCESS_DIR]
+                               [--min_clipped_len CLL_INP]
+                               [--log_file LOG_FILE]
 
-	-bam  : Input indexed bam file (aligned with bwa -mem).
-	-ref  : File of file name of TE reference fasta file (please refer to example data for file format) . Please provide file name with absolute path.
-	-cll  : minimum length of clipped reads to be extracted. (default=25)
-	'-p', '--preprocess_dir' : directory used to store preprocessing and intermediate output files (default: preprocessed_files)
+Processes the input files (indexed BAM file and indexed fasta file), extracts
+discordant and clipped reads, as well as creates other files needed in
+subsequent steps. Outputs all files to directory specified by --preprocess_dir
 
-2. Discover:
+required arguments:
+  -i BAM_INP, --input_bam BAM_INP
+                        input Bam(.bam) file of aligned reads
+  -r FOFN_REF, --ref FOFN_REF
+                        File with reference sequence paths, see README.md for
+                        more info
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -p PREPROCESS_DIR, --preprocess_dir PREPROCESS_DIR
+                        directory to store preprocessing output files
+                        (default: preprocessed_files)
+  --min_clipped_len CLL_INP
+                        Minimum clipped length(bp) (default: 25)
+  --log_file LOG_FILE   run log file (default: preprocess.log)
+
+
+2. Discover
+
+usage: TE_detective discover [-h] -i BAM_INP -r FOFN_REF [-o OUTPUT_FILE]
+                             [-p PREPROCESS_DIR] [--insert_size_est ISZ_INP]
+                             [--read_length RDL_INP]
+                             [--discord_cluster_dens DRD_INP]
+                             [--coverage_cutoff CCT_INP]
+                             [--min_clipped_len CLL_INP]
+                             [--min_map_qual MPQ_INP]
+                             [--map_qual_uniq MPQU_INP] [--log_file LOG_FILE]
+
+Uses output from preprocessing step and makes an initial list of candidate
+insertions
+
+required arguments:
+  -i BAM_INP, --input_bam BAM_INP
+                        Input Bam(.bam) file of aligned reads
+  -r FOFN_REF, --ref FOFN_REF
+                        File with reference sequence paths, see README.md for
+                        more info
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o OUTPUT_FILE, --output_file OUTPUT_FILE
+                        Tab-delimited file of initial set of TE insertions
+                        (default: initial_predictions.txt)
+  -p PREPROCESS_DIR, --preprocess_dir PREPROCESS_DIR
+                        directory used to store preprocessing output files
+                        (default: preprocessed_files)
+  --insert_size_est ISZ_INP
+                        Insert size estimate (default: 340)
+  --read_length RDL_INP
+                        Average read length (default: 150)
+  --discord_cluster_dens DRD_INP
+                        Discord read cluster density (default: 10)
+  --coverage_cutoff CCT_INP
+                        Coverage cutoff input (default: 200)
+  --min_clipped_len CLL_INP
+                        Minimum clipped length(bp) (default: 25)
+  --min_map_qual MPQ_INP
+                        Minimum mapping quality (default: 30)
+  --map_qual_uniq MPQU_INP
+                        Minimum mapping quality (default: 1)
+  --log_file LOG_FILE   run log file (default: discover.log)
+
+
+3. Analyze (Realignment step from figure 2)
+
+usage: TE_detective analyze [-h] -i BAM_INP -r FOFN_REF --inp LIST_INP
+                            [-p PREPROCESS_DIR] [-o OUTPUT_FILE]
+                            [--read_length RDL_INP]
+                            [--min_clipped_len CLL_INP]
+                            [--min_anchor_len AHL_INP]
+                            [--clipped_read_range CER_INP]
+                            [--clipped_search_interval CSI_INP]
+                            [--min_breakpt_reads MRE_INP]
+                            [--min_het_reads MRH_INP]
+                            [--insert_size_est ISZ_INP]
+                            [--mapping_qual_interval QII_INP]
+                            [--intervals NII_INP] [--min_map_qual MPQ_INP]
+                            [--map_qual_uniq MPQU_INP]
+                            [--filter_discord_mates] [--log_file LOG_FILE]
+
+Realigns reads around a predicted insertion point. Can be used to refine
+initial predictions from the discover step, or to find evidence of potential
+insertions in a different sample (e.g. for polymorphic subtraction). Filter
+output from detailed analysis section. User can filter results using the
+filter module or manually by importing them into Excel or any other tool
+
+required arguments:
+  -i BAM_INP, --input_bam BAM_INP
+                        input Bam(.bam) file of aligned reads
+  -r FOFN_REF, --ref FOFN_REF
+                        File with reference sequence paths, see README.md for
+                        more info
+  --inp LIST_INP        Input list of insertions
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -p PREPROCESS_DIR, --preprocess_dir PREPROCESS_DIR
+                        directory used to store preprocessing output files
+                        (default: preprocessed_files)
+  -o OUTPUT_FILE, --output_file OUTPUT_FILE
+                        Tab-delimited output file of potential TE
+                        insertions(default: final_resutls.tsv)
+  --read_length RDL_INP
+                        Average read length (default: 150)
+  --min_clipped_len CLL_INP
+                        Minimum clipped length(bp) (default: 25)
+  --min_anchor_len AHL_INP
+                        Minimum anchor length(bp) (defualt: 30)
+  --clipped_read_range CER_INP
+                        Range of clipped reads at a end to put in a group
+                        (default: 5)
+  --clipped_search_interval CSI_INP
+                        Clipped read search interval (default: 20)
+  --min_breakpt_reads MRE_INP
+                        Min read for breakpoint (default: 4)
+  --min_het_reads MRH_INP
+                        Minimum reads to call hetrozygous insertion (default:
+                        3)
+  --insert_size_est ISZ_INP
+                        Insert size estimate (default: 340)
+  --mapping_qual_interval QII_INP
+                        Interval for mapping quality (default: 0.05)
+  --intervals NII_INP   Number of intervals (default: 6)
+  --min_map_qual MPQ_INP
+                        Minimum mapping quality (default: 30)
+  --map_qual_uniq MPQU_INP
+                        Minimum mapping quality uniq test (default: 1)
+  --filter_discord_mates
+                        Filter discord mate files (default: False)
+  --log_file LOG_FILE   run log file (default: analyze.log)
+
+
+4. Nadiscover
+
+usage: TE_detective nadiscover [-h] -i BAM_INP -r FOFN_REF [--bed RMSK_BED]
+                               [-o OUTPUT_FILE] [-p PREPROCESS_DIR]
+                               [--min_clipped_len CLL_INP]
+                               [--insert_size_est ISZ_INP]
+                               [--read_length RDL_INP]
+                               [--discord_cluster_dens DRD_INP]
+                               [--coverage_cutoff CCT_INP] [--all]
+                               [--merge_aligned] [--nonaligned_search]
+                               [--min_map_qual MPQ_INP]
+                               [--map_qual_uniq MPQU_INP] [--polyA]
+                               [--polyA_len PQL_INP]
+                               [--polyA_mismatch PMM_INP]
+                               [--log_file LOG_FILE]
+
+Performs nonalignment part of the discovery step. Module adds poly A/T
+information into predictions made by discovery step. This module performs
+initial searches as well, but without using BWA aligner for clipped and
+discordant read alignment to TE reference sequence. Instead, a bed file of
+masked regions is provided as input, and alignment information from input BAM
+file is used.
+
+required arguments:
+  -i BAM_INP, --input_bam BAM_INP
+                        input Bam(.bam) file of aligned reads
+  -r FOFN_REF, --ref FOFN_REF
+                        File with reference sequence paths, see README.md for
+                        more info
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --bed RMSK_BED        FoFn for existing repeat elements
+  -o OUTPUT_FILE, --output_file OUTPUT_FILE
+                        Tab-delimited output file of initial set of TE
+                        insertions (default: initial_predictions_noalign.txt)
+  -p PREPROCESS_DIR, --preprocess_dir PREPROCESS_DIR
+                        directory used to store preprocessing output files
+                        (default: preprocessed_files)
+  --min_clipped_len CLL_INP
+                        Minimum clipped length(bp) (default: 25)
+  --insert_size_est ISZ_INP
+                        insert Size estimate (default: 340)
+  --read_length RDL_INP
+                        Average read length (default: 150)
+  --discord_cluster_dens DRD_INP
+                        discord read cluster density (default: 5)
+  --coverage_cutoff CCT_INP
+                        Coverage cutoff input (default: 200)
+  --all                 use all reads instead of only clipped (default: False)
+  --merge_aligned       Merge aligned predictions (default: False)
+  --nonaligned_search   Perform non-alignment ref bam search (default: False)
+  --min_map_qual MPQ_INP
+                        Minimum mapping quality (default: 30)
+  --map_qual_uniq MPQU_INP
+                        Minimum mapping quality unique test (default: 1)
+  --polyA               Perform poly A/T search (default: False)
+  --polyA_len PQL_INP   poly A/T Length (default: 9)
+  --polyA_mismatch PMM_INP
+                        poly A/T mismatch (default: 1)
+  --log_file LOG_FILE   run log file (default: nadiscover.log)
+
+
+5. Cluster2D
+
+usage: TE_detective cluster2d [-h] -i BAM_INP -r FOFN_REF [-o OUTPUT_FILE]
+                              [-p PREPROCESS_DIR] [--insert_size_est ISZ_INP]
+                              [--read_length RDL_INP]
+                              [--discord_cluster_dens DRD_INP]
+                              [--coverage_cutoff CCT_INP] [--all]
+                              [--log_file LOG_FILE]
+
+Optional module to change the discordant read clustering density for initial
+prediction without realigning everything. For example, if
+--discord_cluster_dens was set to 10 for initial discovery step and user want
+to see predictions with --discord_cluster_dens = 5. Uses intermediate files
+from discover section and generates new prediction file.
+
+required arguments:
+  -i BAM_INP, --input_bam BAM_INP
+                        input Bam(.bam) file of aligned reads
+  -r FOFN_REF, --ref FOFN_REF
+                        File with reference sequence paths, see README.md for
+                        more info
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o OUTPUT_FILE, --output_file OUTPUT_FILE
+                        Tab-delimited file of initial set of TE insertions
+                        (default: recluster_initial_predictions.txt)
+  -p PREPROCESS_DIR, --preprocess_dir PREPROCESS_DIR
+                        directory used to store preprocessing output files
+                        (default: preprocessed_files)
+  --insert_size_est ISZ_INP
+                        insert Size estimate (default: 340)
+  --read_length RDL_INP
+                        Average read length (default: 150)
+  --discord_cluster_dens DRD_INP
+                        Discord read cluster density (default: 5)
+  --coverage_cutoff CCT_INP
+                        Coverage cutoff input (default: 200)
+  --all                 use all reads instead of only clipped (default: False)
+  --log_file LOG_FILE   run log file (default: cluster2d.log)
+
+
+6. Filter
 	
-	This module uses output from preprocessing step and  makes initial list of candidate insertions. 	
+usage: TE_detective filter [-h] -i OFA_INP -b FOFN_BED [-p PREPROCESS_DIR]
+                           [--align_qual_lim QLM_INP]
+                           [--min_clipped_reads TCR_INP]
+                           [--min_clipped_and_dischord_reads TRD_INP]
+                           [--read_percent RP_INP] [--read_length RDL_INP]
+                           [--insert_size_est ISZ_INP] [--log_file LOG_FILE]
 
-	-bam  : Input indexed bam file (aligned with bwa -mem).
-	-ref  : File of file name of TE reference fasta file (please refer to example data for file format). Please provide file name with absolute path.
-	-isz  : Insert size estimate ( = mean_insert_size + 2 * insert_size_standard_deviation - read_length). Use picard to calculate these values.
-	-rdl  : Average read length of bam file (can be estimated using picard). (default=150)
-	-drd  : Minimum number of total supporting reads for calling an insertion. (default=10)
-	-cct  : A region with coverage more than this will be ignored from initial prediction. (default=200)
-	-ccl  : Minimum length of clipped read to be analyzed. (default=25)
-	-mpq  : Minimum mapping quality of a read. (default=30)
-	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads). This is value of MAPQ in sction of 3.3 of document. (default=1)
-	'-p', '--preprocess_dir' : directory used to store intermediate output files, and pull in preprocessing files. Must be same as that used in prior steps (default: preprocessed_files)
+Filter output from analyze step.# Filteration step code looks like this if
+total_clipped_rd >= tcr or ( (total_clipped_rd >= mtcr ) and (
+(total_clipped_rd_wpat+total_discord_rd) >= trd ) ): filter_result = 'PASS'
+elif total_discord_rd >= odrd: filter_result = 'PASS_D' # This flag says
+passed based on only discordant reads.
 
-3. Analyze ( This is Realignment step from figure 2):
+required arguments:
+  -i OFA_INP, --input_file OFA_INP
+                        use the output file from analyze section as input
+  -b FOFN_BED, --bed FOFN_BED
+                        File containg a list of files to existing repeat
+                        elements. List the full path for each file. See
+                        example in example_data
 
-	Detailed analysis of initial list of candidate insertions from discover step.
-
-	Usages:
-	1. For transposable element insertion prediction withing a bam file, use same bam file using which initial prediction list was generated.
-	2. For polymorhic substracrtion, one run with bam file which generated initial prediction list, and other runs with bam files of parents (or such) will be required. After filteration step, substraction can be performed (using MS Excel etc). 
-
-	-bam  : Input indexed bam file (aligned with bwa -mem). 
-	-ref  : File of file name of TE reference fasta file (please refer to example data for file format). Please provide file name with absolute path.
-	-inp  : Initial prediction file from discover step.
-	-rdl  : Average read length of bam file (can be estimated using picard). (default=150)
-	-cll  : Minimum length of clipped read to be analyzed. (default=25) 
-	-ahl  : Minimum anchor length (mapped portion) of clipped reads. (default=30) 
-	-csi  : Clipped read search interval ( how far clipped read ends will be searched from initial prediction ) (default=20)
-	-cer  : Range of clipped reads ends to be put in a group for accurate insertion point determination. (default=5)
-	-mre  : Minimum number of reads to support a breakpoint (while determining accurate insertion point). (default=4)
-	-mrh  : Minimum supporting reads (reads crossing across insertion point) to call hetrozygous insertion. (default=3)
-	-isz  : Insert size estimate. ( = mean_insert_size + 2 * insert_size_standard_deviation - read_length) (default=340)
-	-qii  : Interval for mapping quality of reads from Censor output. (default=0.05)
-	-nii  : Number of intervals for mapping quality of reads from Censor output to be searched and printed. (default=6)
-	-mpq  : Minimum mapping quality of a read. (default=30)
-	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads). This is value of MAPQ in sction of 3.3 of document. (default=1)
-	'-p', '--preprocess_dir' : directory used to store intermediate output files, and pull in preprocessing files. Must be same as that used in prior steps (default: preprocessed_files)
-
-4. Nadiscover:
-
-	(Performes non alignment part of discovery step). One of the main tasks of this module is to add poly A/T information into prediction made by discovery step. This module performes initial searches as well, but without using BWA aligner for clipped and discordant read alignment to TE reference sequence. Instead, a bed file of masked regions is provided as input, and alignment information from input BAM file is used. 
-
-	-bam  : Input indexed bam file (aligned with bwa -mem).
-	-ref  : File of file name of TE reference fasta file (please refer to example data for file format). Please provide file name with absolute path.
-	-cll  : Minimum length of clipped read to be analyzed. (default=25)
-	-isz  : Insert size estimate ( = mean_insert_size + 2 * insert_size_standard_deviation - read_length). (default=340)
-	-rdl  : Average read length of bam file (can be estimated using picard). (default=150)
-	-drd  : Number of supporting reads for calling an insertion. (default=10)
-	-cct  : A region with coverage more than this will be ignored from prediction. (default=200)
-	-pat  : Flag to include P/T analysis in prediction. (default=false)
-	-nas  : Non-alignment search of transposable elements. If this flag is used, intermedeate file generated from discover step will be overwritten. (default=false) 
-	-all  : If set false, clipped reads will not be taken into consideration. ( default=false; works with -nas )
-	-mrg  : Flag to merge this part of analysis with alignment module of initial prediction. (works with -nas )
-	-bed  : BED file of existing repeat elements ( CHROM	START	END	TE_CLASS ). (needed with -nas ) 
-	-mpq  : Minimum mapping quality of a read. (default=30).
-	-mpqu : Value of a mapping quality which is used by uniqness testing algorithm (used for clipped reads). This is value of MAPQ in sction of 3.3 of document. (default=1)
-	'-p', '--preprocess_dir' : directory used to store intermediate output files, and pull in preprocessing files. Must be same as that used in prior steps (default: preprocessed_files)
-
-5. Cluster2D:
-
-	This module is optional. Use this module if you want to change the clustering desnity for initial prediction. For example, if -drd was set to 10 for discovery step and user want to see predictions with -drd = 5, this module provides result withput running all the time consuming alignment steps of discovery step. This module uses intermediate files from discover section and generates new prediction file.
-
-	-bam  : Input indexed bam file (aligned with bwa -mem).
-	-ref  : File of file name of TE reference fasta file (please refer to example data for file format). Please provide file name with absolute path.
-	-isz  : Insert size estimate. ( = mean_insert_size + 2 * insert_size_standard_deviation - read_length). (default=340)
-	-rdl  : Average read length of bam file (can be estimated using picard). (default=150)
-	-drd  : Number of supporting reads for calling an insertion. (default=10)
-	-cct  : A region with coverage more than this will be ignored from prediction. (default=200)
-	'-p', '--preprocess_dir' : directory used to store intermediate output files, and pull in preprocessing files. Must be same as that used in prior steps (default: preprocessed_files)
-
-6. Filter:
-	
-	Filter output from detailed analysis section. 
-	( User can import output from detailed analysis section (realignment step) into MS Excel or any other tool, and create filter of their own choice)
-
-	# Filteration step code looks like this
-
-        if total_clipped_rd >= tcr or ( (total_clipped_rd >= mtcr ) and ( (total_clipped_rd_wpat+total_discord_rd) >= trd ) ):
-            filter_result = 'PASS'
-        elif total_discord_rd >= odrd: 
-            filter_result = 'PASS_D' # This flag says passed based on only discordant reads.
-
-	-ofa  : Output file from analyze section
-	-bed  : BED file of existing repeat elements ( CHROM	START    END     TE_CLASS )
-	-qlm  : Lowest limit for Censor alignment quality (default=0.75)
-	-tcr  : Minimum number of clipped reads. (default=3)
-	-mtcr : Minimum number of clipped reads. (default=1)
-	-trd  : Minimum total reads (default=5)
-	-otrd : Minimum total count of only discordant reads (default=10)
-	-ref  : File of file name of TE reference fasta file. Please provide file name with absolute path.
-	-rdl  : Average read length of bam file (can be estimated using picard). (default=150)
-	-isz  : Insert size estimate. ( = mean_insert_size + 2 * insert_size_standard_deviation - read_length). (default=340)
-	'-p', '--preprocess_dir' : directory used to store intermediate output files, and pull in preprocessing files. Must be same as that used in prior steps (default: preprocessed_files)
+optional arguments:
+  -h, --help            show this help message and exit
+  -p PREPROCESS_DIR, --preprocess_dir PREPROCESS_DIR
+                        directory used to store preprocessing output files
+                        (default: preprocessed_files)
+  --align_qual_lim QLM_INP
+                        Lowest limit for alignment quality (default: 0.85)
+  --min_clipped_reads TCR_INP
+                        Minimum number of clipped reads (default: 5)
+  --min_clipped_and_dischord_reads TRD_INP
+                        Minimum total [clipped+discordant] reads (default: 10)
+  --read_percent RP_INP
+                        read percent value (default: 10.0)
+  --read_length RDL_INP
+                        Average read length (default: 150)
+  --insert_size_est ISZ_INP
+                        insert Size estimate (default: 340)
+  --log_file LOG_FILE   run log file (default: filter.log)
 
 ````

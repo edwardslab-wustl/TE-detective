@@ -66,56 +66,57 @@ Clone and install with pip:
 
 ````
     cd example_data
-    TE_detective preprocess -bam test_sim.bam -ref ref_fofn
-    TE_detective discover -bam test_sim.bam -ref ref_fofn
-    TE_detective nadiscover -bam test_sim.bam -ref ref_fofn -pat -drd 5 ( adds Poly A/T information to initial prediction) 
-    TE_detective analyze -bam test_sim.bam -ref ref_fofn -inp initial_predictions.txt
-    TE_detective cluster2d -bam test_sim.bam -ref ref_fofn
-    TE_detective filter -ofa final_results.tsv -bed rmsk_ucsc_mm10.bed
+	TE_detective preprocess -i test_sim.bam -r ref_fofn 
+    TE_detective discover -i test_sim.bam -r ref_fofn 
+    TE_detective nadiscover -i test_sim.bam -r ref_fofn --polyA --discord_cluster_dens 5  
+    TE_detective analyze -i test_sim.bam -r ref_fofn --inp initial_predictions.txt 
+    TE_detective cluster2d -i test_sim.bam -r ref_fofn 
+    TE_detective filter -i final_results.tsv --bed rmsk_ucsc_mm10.bed
+
+	or 
+	cd example_data
+	sh run_example.sh
 ````
 
 ### CEU-Trio use case example.
 
+	Setup and assumptions:
+
+		In your working directory ($DIR) you need four subdirectories: one for each sample, and then one for polymorphic analysis (NA12878, NA12891, NA12892, polymorph)
+		You have downloaded, aligned and sorted the bam file for each of the three individuals using the instructions above.
+		Create a file called ref_fofn in $DIR that has a single line with the repeat element and location (complete path) of a fasta file for the repeat element of interest. See example ref_fofn file in example_data.
+
 	1. Insertion prediction in child (NA12878).
 
-		cd $MASTER_DIR/NA12878/
-		TE_detective preprocess -bam $MASTER_DIR/NA12878/NA12878_hg19_sorted.bam -ref ref_fofn
-		TE_detective discover -bam $MASTER_DIR/NA12878/NA12878_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 383 ( this step will generate initial_predictions.txt )
-		TE_detective nadiscover -bam $MASTER_DIR/NA12878/NA12878_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 383 -pat ( this step will add Poly A/T information and will generate initial_predictions_noalign.txt ) 
-		cp initial_predictions_noalign.txt initial_predictions_NA12878.txt
-		TE_detective analyze -bam $MASTER_DIR/NA12878/NA12878_hg19_sorted.bam -ref ref_fofn -inp initial_predictions_NA12878.txt -rdl 100 -isz 383
-		cp final_results.tsv final_result_NA12878.txt
+		cd $DIR/NA12878/
+		TE_detective preprocess -i NA12878_hg19_sorted.bam -r ../ref_fofn
+		TE_detective discover -i NA12878_hg19_sorted.bam -r ../ref_fofn --read_length 100 --insert_size_est 383
+		TE_detective nadiscover -i NA12878_hg19_sorted.bam -r ../ref_fofn -o initial_predictions_NA12878.txt --polyA --read_length 100 --insert_size_est 383
+		TE_detective analyze -i NA12878_hg19_sorted.bam  -r ../ref_fofn -o final_results_NA12878.txt --inp initial_predictions_NA12878.txt --read_length 100 --insert_size_est 383
 
 	2. Insertion prediction in one parent (NA12891).
 
-		cd $MASTER_DIR/NA12891/
-		TE_detective preprocess -bam $MASTER_DIR/NA12891/NA12891_hg19_sorted.bam -ref ref_fofn
-		TE_detective discover -bam $MASTER_DIR/NA12891/NA12891_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 439 ( this step will generate initial_predictions.txt )
-		TE_detective nadiscover -bam $MASTER_DIR/NA12878/NA12891_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 439 -pat ( this step will generate initial_predictions_noalign.txt )
-		cp initial_predictions_noalign.txt initial_predictions_NA12891.txt
-		TE_detective analyze -bam $MASTER_DIR/NA12891/NA12891_hg19_sorted.bam -ref ref_fofn -inp initial_predictions_NA12891.txt -rdl 100 -isz 439
-		cp final_results.tsv final_result_NA12891.txt
+		cd $DIR/NA12891/
+		TE_detective preprocess -i NA12891_hg19_sorted.bam -r ../ref_fofn
+		TE_detective discover -i NA12891_hg19_sorted.bam -r ../ref_fofn --read_length 100 --insert_size_est 383
+		TE_detective nadiscover -i NA12891_hg19_sorted.bam -r ../ref_fofn -o initial_predictions_NA12891.txt --polyA --read_length 100 --insert_size_est 383
+		TE_detective analyze -i NA12891_hg19_sorted.bam  -r ../ref_fofn -o final_results_NA12891.txt --inp initial_predictions_NA12891.txt --read_length 100 --insert_size_est 383
 
 	3. Insertion prediction in other parent (NA12892).
 
-		cd $MASTER_DIR/NA12892/
-		TE_detective preprocess -bam $MASTER_DIR/NA12892/NA12892_hg19_sorted.bam -ref ref_fofn
-		TE_detective discover -bam $MASTER_DIR/NA12892/NA12892_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 439 ( this step will generate initial_predictions.txt )
-		TE_detective nadiscover -bam $MASTER_DIR/NA12878/NA12892_hg19_sorted.bam -ref ref_fofn -rdl 100 -isz 439 -pat ( this step will generate initial_predictions_noalign.txt )
-		cp initial_predictions_noalign.txt initial_predictions_NA12892.txt
-		TE_detective analyze -bam $MASTER_DIR/NA12892/NA12892_hg19_sorted.bam -ref ref_fofn -inp initial_predictions_NA12892.txt -rdl 100 -isz 439
-		cp final_results.tsv final_result_NA12892.txt
+		cd $DIR/NA12892/
+		TE_detective preprocess -i NA12892_hg19_sorted.bam -r ../ref_fofn
+		TE_detective discover -i NA12892_hg19_sorted.bam -r ../ref_fofn --read_length 100 --insert_size_est 383
+		TE_detective nadiscover -i NA12892_hg19_sorted.bam -r ../ref_fofn -o initial_predictions_NA12892.txt --polyA --read_length 100 --insert_size_est 383
+		TE_detective analyze -i NA12892_hg19_sorted.bam  -r ../ref_fofn -o final_results_NA12892.txt --inp initial_predictions_NA12892.txt --read_length 100 --insert_size_est 383
 
 	4. Polymorphic insertion prediciton in child:
 	
-		mkdir $MASTER_DIR/polymorph
-		cd $MASTER_DIR/polymorph	
-		TE_detective analyze -bam $MASTER_DIR/NA12891/NA12891_hg19_sorted.bam -ref ref_fofn -inp $MASTER_DIR/NA12878/initial_predictions_NA12878.txt -rdl 100 -isz 439
-		cp final_results.tsv final_result_NA12878_NA12891.txt
-		TE_detective analyze -bam $MASTER_DIR/NA12892/NA12892_hg19_sorted.bam -ref ref_fofn -inp $MASTER_DIR/NA12878/initial_predictions_NA12878.txt -rdl 100 -isz 439
-		cp final_results.tsv final_result_NA12878_NA12892.txt
+		cd $DIR/polymorph	
+		TE_detective analyze -o final_results_NA12878_NA12891.txt -i $DIR/NA12891/NA12891_hg19_sorted.bam -r ../ref_fofn --inp $DIR/NA12878/initial_predictions_NA12878.txt -p $DIR/NA12891/preprocessed_files --read_length 100 --insert_size_est 439
+		TE_detective analyze -o final_results_NA12878_NA12892.txt -i $DIR/NA12892/NA12892_hg19_sorted.bam -r ../ref_fofn --inp $DIR/NA12878/initial_predictions_NA12878.txt -p $DIR/NA12892/preprocessed_files --read_length 100 --insert_size_est 439
 
-	5. Aplly filter on final_result_NA12878.txt, final_result_NA12891.txt, final_result_NA12892.txt, final_result_NA12878_NA12891.txt and final_result_NA12878_NA12892.txt. After applying filter, a new insertion in child (NA12878) would be those which are found in final_result_NA12878.txt but not in final_result_NA12878_NA12891.txt or final_result_NA12878_NA12892.txt.
+	5. Apply a filter on final_results_NA12878.txt, final_results_NA12878_NA12891.txt and final_results_NA12878_NA12892.txt. After applying filter, a new insertion in child (NA12878) would be those which are found in final_result_NA12878.txt but not in final_result_NA12878_NA12891.txt or final_result_NA12878_NA12892.txt.
 
 
 ## License information

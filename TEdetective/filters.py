@@ -457,7 +457,7 @@ def exec_filter_p_ceu(args):
             filter_result = 'PASS_C3'
         elif total_clipped_rd >= 1 and ( (total_clipped_rd + total_discord_rd >= 3) or (total_clipped_rd_wpat + total_discord_rd >= 5) ) : #1,3,5
             filter_result = 'PASS_C1'
-        elif ( total_discord_rd + total_clipped_rd_wpat >= 3 ): #3
+        elif ( total_discord_rd + total_clipped_rd_wpat >= 3 ) and total_discord_rd >= 2: #3
             filter_result = 'PASS_D'
 
         #log_FH.write(filter_result+'\t'+te_loc+'\t'+line) #+'\t'+str(cnt_rd))

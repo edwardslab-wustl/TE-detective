@@ -12,8 +12,9 @@ from TEdetective.preprocess import exec_preprocess
 from TEdetective.discover import exec_discover
 from TEdetective.nadiscover import exec_nadiscover
 from TEdetective.cluster2d import exec_cluster2d
-from TEdetective.filters import exec_filter, exec_filter_p
+from TEdetective.filters import exec_filter, exec_filter_p, exec_filter_p_ceu
 from TEdetective.analyze import exec_analyze
+from TEdetective.polymorph_screen import exec_polymorph, polymorph_setup_arg_parser
 
 def main():
     FUNCTION_MAP = {
@@ -23,18 +24,26 @@ def main():
             'analyze' : exec_analyze,
             'cluster2d' : exec_cluster2d,
             'filter' : exec_filter,
-            'filter_p' : exec_filter_p
+            'filter_p' : exec_filter_p,
+            'filter_p_ceu' : exec_filter_p_ceu,
+            'polymorph' : exec_polymorph
             }
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest='command')
     subparsers.required = True
-
+    
+    polymorph_desc=str("polymorphic subtraction module")
+    sp_polymorph = subparsers.add_parser('polymorph',
+        help=polymorph_desc, description=polymorph_desc)
+    sp_polymorph = polymorph_setup_arg_parser(sp_polymorph)
+    
+    preprocess_desc=str("Processes the input files (indexed BAM file and indexed " +
+        "fasta file), extracts discordant and clipped reads, as well as  " +
+        "creates other files needed in subsequent steps. Outputs all files " +
+        "to directory specified by --preprocess_dir")
     sp_preprocess = subparsers.add_parser('preprocess',
-        description="Processes the input files (indexed BAM file and indexed " +
-          "fasta file), extracts discordant and clipped reads, as well as  " +
-          "creates other files needed in subsequent steps. Outputs all files " +
-          "to directory specified by --preprocess_dir")
+        description=preprocess_desc, help=preprocess_desc)
     sp_preprocess_required = sp_preprocess.add_argument_group('required arguments')
     sp_preprocess_required.add_argument('-i', '--input_bam', action='store', dest='bam_inp', required=True,
         help='input Bam(.bam) file of aligned reads')
@@ -50,8 +59,9 @@ def main():
         help='run log file (default: preprocess.log)')
     sp_preprocess._action_groups.reverse()
 
+    discover_desc=str("Uses output from preprocessing step and makes an initial list of candidate insertions")
     sp_discover = subparsers.add_parser('discover',
-        description="Uses output from preprocessing step and makes an initial list of candidate insertions")
+        help=discover_desc, description=discover_desc)
     sp_discover_required = sp_discover.add_argument_group('required arguments')
     sp_discover_required.add_argument('-i', '--input_bam', action='store', dest='bam_inp', required=True, 
         help='Input Bam(.bam) file of aligned reads')
@@ -82,8 +92,7 @@ def main():
         help='run log file (default: discover.log)')
     sp_discover._action_groups.reverse()
 
-    sp_analyze = subparsers.add_parser('analyze', 
-        description="Realigns reads around a predicted insertion point. " +
+    analyze_desc=str("Realigns reads around a predicted insertion point. " +
           "Can be used to refine initial predictions from the " +
           "discover step, or to find evidence of potential " +
           "insertions in a different sample (e.g. for polymorphic " +
@@ -91,6 +100,8 @@ def main():
           "section. User can filter results using the filter " +
           "module or manually by importing them into Excel or " +
           "any other tool")
+    sp_analyze = subparsers.add_parser('analyze', 
+        description=analyze_desc, help=analyze_desc)
     sp_analyze_required = sp_analyze.add_argument_group('required arguments')
     sp_analyze_required.add_argument('-i','--input_bam', action='store', dest='bam_inp', required=True, 
         help='input Bam(.bam) file of aligned reads')
@@ -135,14 +146,15 @@ def main():
         help='run log file (default: analyze.log)')
     sp_analyze._action_groups.reverse()
 
-    sp_nadiscover = subparsers.add_parser('nadiscover', 
-        description="Performs nonalignment part of the discovery step. " +
+    nadiscover_desc=str("Performs nonalignment part of the discovery step. " +
           "Module adds poly A/T information into predictions made " +
           "by discovery step. This module performs initial searches " +
           "as well, but without using BWA aligner for clipped and " +
           "discordant read alignment to TE reference sequence. " +
           "Instead, a bed file of masked regions is provided as " +
           "input, and alignment information from input BAM file is used.")
+    sp_nadiscover = subparsers.add_parser('nadiscover', 
+        description=nadiscover_desc,help=nadiscover_desc)
     sp_nadiscover_required = sp_nadiscover.add_argument_group('required arguments')
     sp_nadiscover_required.add_argument('-i','--input_bam', action='store', dest='bam_inp', required=True, 
         help='input Bam(.bam) file of aligned reads')
@@ -186,12 +198,13 @@ def main():
         help='run log file (default: nadiscover.log)')
     sp_nadiscover._action_groups.reverse()
 
-    sp_cluster2d = subparsers.add_parser('cluster2d', 
-        description="Optional module to change the discordant read clustering density for " +
+    cluster2d_desc=str("Optional module to change the discordant read clustering density for " +
           "initial prediction without realigning everything. For example, if " +
           "--discord_cluster_dens was set to 10 for initial discovery step " +
           "and user want to see predictions with --discord_cluster_dens = 5. " +
           "Uses intermediate files from discover section and generates new prediction file.")
+    sp_cluster2d = subparsers.add_parser('cluster2d', 
+        help=cluster2d_desc, description=cluster2d_desc)
     sp_cluster2d_required = sp_cluster2d.add_argument_group('required arguments')
     sp_cluster2d_required.add_argument('-i','--input_bam', action='store', dest='bam_inp', required=True, 
         help='input Bam(.bam) file of aligned reads')
@@ -218,23 +231,24 @@ def main():
         help='run log file (default: cluster2d.log)')
     sp_cluster2d._action_groups.reverse()
 
-    sp_filter = subparsers.add_parser('filter', 
-        description="Filter output from analyze step." +
+    filter_desc=str("Filter output from analyze step." +
             "# Filteration step code looks like this\n" +
             "if total_clipped_rd >= tcr or ( (total_clipped_rd >= mtcr ) " +
             "and ( (total_clipped_rd_wpat+total_discord_rd) >= trd ) ):\n" +
             "filter_result = 'PASS'\n" +
             "elif total_discord_rd >= odrd: \n" +
             "filter_result = 'PASS_D' # This flag says passed based on only discordant reads.")
+    sp_filter = subparsers.add_parser('filter', 
+        help=filter_desc, description=filter_desc)
     sp_filter_required = sp_filter.add_argument_group('required arguments')
     sp_filter_required.add_argument('-i', '--input_file', action='store', dest='ofa_inp', required=True,
         help='use the output file from analyze section as input')
     sp_filter_required.add_argument('-b', '--bed', action='store', dest='fofn_bed', required=True, 
         help='File containg a list of files to existing repeat elements. ' +
         'List the full path for each file. See example in example_data')
-    sp_filter.add_argument('-p', '--preprocess_dir', action='store',
-        dest='preprocess_dir', default='preprocessed_files',
-        help='directory used to store preprocessing output files (default: preprocessed_files)')
+    #sp_filter.add_argument('-p', '--preprocess_dir', action='store',
+    #    dest='preprocess_dir', default='preprocessed_files',
+    #    help='directory used to store preprocessing output files (default: preprocessed_files)')
     sp_filter.add_argument('--align_qual_lim', action='store', dest='qlm_inp', type=float, default=0.85, 
         help='Lowest limit for alignment quality (default: 0.85)')
     sp_filter.add_argument('--min_clipped_reads', action='store', dest='tcr_inp', type=int, default=5, 
@@ -243,25 +257,26 @@ def main():
         help='Minimum total [clipped+discordant] reads (default: 10)')
     sp_filter.add_argument('--read_percent', action='store', dest='rp_inp', type=float, default=10.0, 
         help='read percent value (default: 10.0)')
-    sp_filter.add_argument('--read_length', action='store', dest='rdl_inp', type=int, default=150, 
-        help='Average read length (default: 150)')
-    sp_filter.add_argument('--insert_size_est', action='store', dest='isz_inp', type=int, default=340, 
-        help='insert Size estimate (default: 340)')
+#    sp_filter.add_argument('--read_length', action='store', dest='rdl_inp', type=int, default=150, 
+#        help='Average read length (default: 150)')
+#    sp_filter.add_argument('--insert_size_est', action='store', dest='isz_inp', type=int, default=340, 
+#        help='insert Size estimate (default: 340)')
     sp_filter.add_argument('--log_file', action='store',
         dest='log_file', default='filter.log',
         help='run log file (default: filter.log)')
     sp_filter._action_groups.reverse()
 
+    filter_p_desc=str("alternative filter for output from analyze step")
     sp_filter_p = subparsers.add_parser('filter_p', 
-        description="alternative filter for output from analyze step")
+        help=filter_p_desc, description=filter_p_desc)
     sp_filter_p_required = sp_filter_p.add_argument_group('required arguments')
     sp_filter_p_required.add_argument('-i', '--input_file', action='store', dest='ofa_inp', required=True,
         help='use the output file from analyze section as input')
     sp_filter_p_required.add_argument('-b', '--bed', action='store', dest='fofn_bed', required=True, 
         help='File containg a list of files to existing repeat elements. List the full path for each file. See example in example_dir')
-    sp_filter_p.add_argument('-p', '--preprocess_dir', action='store',
-        dest='preprocess_dir', default='preprocessed_files',
-        help='directory used to store preprocessing output files (default: preprocessed_files)')
+    #sp_filter_p.add_argument('-p', '--preprocess_dir', action='store',
+    #    dest='preprocess_dir', default='preprocessed_files',
+    #    help='directory used to store preprocessing output files (default: preprocessed_files)')
     sp_filter_p.add_argument('--align_qual_lim', action='store', dest='qlm_inp', type=float, default=0.75,
         help='Lowest limit for alignment quality (default: 0.75)')
     sp_filter_p.add_argument('--min_clipped_reads', action='store', dest='tcr_inp', type=int, default=2, 
@@ -270,14 +285,42 @@ def main():
         help='Minimum total [clipped+discordant] reads (default: 5)')
     sp_filter_p.add_argument('--read_percent', action='store', dest='rp_inp', type=float, default=10.0, 
         help='read percent value (default: 10.0)')
-    sp_filter_p.add_argument('--read_length', action='store', dest='rdl_inp', type=int, default=100, 
-        help='Average read length (default: 100)')
-    sp_filter_p.add_argument('--insert_size_est', action='store', dest='isz_inp', type=int, default=369, 
-        help='insert Size estimate (default: 369)')
+#    sp_filter_p.add_argument('--read_length', action='store', dest='rdl_inp', type=int, default=100, 
+#        help='Average read length (default: 100)')
+#    sp_filter_p.add_argument('--insert_size_est', action='store', dest='isz_inp', type=int, default=369, 
+#        help='insert Size estimate (default: 369)')
     sp_filter_p.add_argument('--log_file', action='store',
         dest='log_file', default='filter_p.log',
         help='run log file (default: filter_p.log)')
     sp_filter_p._action_groups.reverse()
+
+    filter_p_ceu_desc=str("alternative filter for output from analyze step")
+    sp_filter_p_ceu = subparsers.add_parser('filter_p_ceu', 
+        help=filter_p_ceu_desc, description=filter_p_ceu_desc)
+    sp_filter_p_ceu_required = sp_filter_p_ceu.add_argument_group('required arguments')
+    sp_filter_p_ceu_required.add_argument('-i', '--input_file', action='store', dest='ofa_inp', required=True,
+        help='use the output file from analyze section as input')
+    sp_filter_p_ceu_required.add_argument('-b', '--bed', action='store', dest='fofn_bed', required=True, 
+        help='File containg a list of files to existing repeat elements. List the full path for each file. See example in example_dir')
+    #sp_filter_p_ceu.add_argument('-p', '--preprocess_dir', action='store',
+    #    dest='preprocess_dir', default='preprocessed_files',
+    #    help='directory used to store preprocessing output files (default: preprocessed_files)')
+    sp_filter_p_ceu.add_argument('--align_qual_lim', action='store', dest='qlm_inp', type=float, default=0.75,
+        help='Lowest limit for alignment quality (default: 0.75)')
+    sp_filter_p_ceu.add_argument('--min_clipped_reads', action='store', dest='tcr_inp', type=int, default=2, 
+        help='Minimum number of clipped reads (default: 2)')
+    sp_filter_p_ceu.add_argument('--min_clipped_and_dischord_reads', action='store', dest='trd_inp', type=int, default=5, 
+        help='Minimum total [clipped+discordant] reads (default: 5)')
+    sp_filter_p_ceu.add_argument('--read_percent', action='store', dest='rp_inp', type=float, default=10.0, 
+        help='read percent value (default: 10.0)')
+#    sp_filter_p_ceu.add_argument('--read_length', action='store', dest='rdl_inp', type=int, default=100, 
+#        help='Average read length (default: 100)')
+#    sp_filter_p_ceu.add_argument('--insert_size_est', action='store', dest='isz_inp', type=int, default=369, 
+#        help='insert Size estimate (default: 369)')
+    sp_filter_p_ceu.add_argument('--log_file', action='store',
+        dest='log_file', default='filter_p_ceu.log',
+        help='run log file (default: filter_p_ceu.log)')
+    sp_filter_p_ceu._action_groups.reverse()
 
     args = parser.parse_args()
     funct = FUNCTION_MAP[args.command]
@@ -289,7 +332,8 @@ if __name__ == '__main__':
     from TEdetective.discover import exec_discover
     from TEdetective.nadiscover import exec_nadiscover
     from TEdetective.cluster2d import exec_cluster2d
-    from TEdetective.filters import exec_filter, exec_filter_p
+    from TEdetective.filters import exec_filter, exec_filter_p, exec_filter_p_ceu
     from TEdetective.analyze import exec_analyze
+    from TEdetective.polymorph_screen import exec_polymorph, polymorph_setup_arg_parser
     main() 
 

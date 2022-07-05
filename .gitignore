@@ -142,3 +142,5 @@ dmypy.json
 TEdetective/core.old.py
 .vscode/
 TEdetective/analyze.updated_subprocess.py
+filter_output.txt
+filter_stats.txt

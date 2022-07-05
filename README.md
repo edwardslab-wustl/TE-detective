@@ -61,6 +61,10 @@ Clone and install with pip:
 	Reference sequences of repeat elements can be obtained from Repbase(https://www.girinst.org/server/RepBase/index.php) or other resources.
 	See example file ref_fofn in the example_data folder.
 
+	3. bed formatted file of known repeat locations corresponding to the genome version used for alignment.
+	You can download the repeatmasker track data from the [UCSC Genome Browser](https://hgdownload.soe.ucsc.edu/downloads.html) and filter with something like:
+	zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed
+
 ````
 
 ### Test example
@@ -203,7 +207,70 @@ optional arguments:
   --log_file LOG_FILE   run log file (default: discover.log)
 
 
-3. Analyze (Realignment step from figure 2)
+3. Nadiscover
+
+usage: TE_detective nadiscover [-h] -i BAM_INP -r FOFN_REF [--bed RMSK_BED]
+                               [-o OUTPUT_FILE] [-p PREPROCESS_DIR]
+                               [--min_clipped_len CLL_INP]
+                               [--insert_size_est ISZ_INP]
+                               [--read_length RDL_INP]
+                               [--discord_cluster_dens DRD_INP]
+                               [--coverage_cutoff CCT_INP] [--all]
+                               [--merge_aligned] [--nonaligned_search]
+                               [--min_map_qual MPQ_INP]
+                               [--map_qual_uniq MPQU_INP] [--polyA]
+                               [--polyA_len PQL_INP]
+                               [--polyA_mismatch PMM_INP]
+                               [--log_file LOG_FILE]
+
+Performs nonalignment part of the discovery step. Module adds poly A/T
+information into predictions made by discovery step. This module performs
+initial searches as well, but without using BWA aligner for clipped and
+discordant read alignment to TE reference sequence. Instead, a bed file of
+masked regions is provided as input, and alignment information from input BAM
+file is used.
+
+required arguments:
+  -i BAM_INP, --input_bam BAM_INP
+                        input Bam(.bam) file of aligned reads
+  -r FOFN_REF, --ref FOFN_REF
+                        File with reference sequence paths, see README.md for
+                        more info
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --bed RMSK_BED        FoFn for existing repeat elements
+  -o OUTPUT_FILE, --output_file OUTPUT_FILE
+                        Tab-delimited output file of initial set of TE
+                        insertions (default: initial_predictions_noalign.txt)
+  -p PREPROCESS_DIR, --preprocess_dir PREPROCESS_DIR
+                        directory used to store preprocessing output files
+                        (default: preprocessed_files)
+  --min_clipped_len CLL_INP
+                        Minimum clipped length(bp) (default: 25)
+  --insert_size_est ISZ_INP
+                        insert Size estimate (default: 340)
+  --read_length RDL_INP
+                        Average read length (default: 150)
+  --discord_cluster_dens DRD_INP
+                        discord read cluster density (default: 5)
+  --coverage_cutoff CCT_INP
+                        Coverage cutoff input (default: 200)
+  --all                 use all reads instead of only clipped (default: False)
+  --merge_aligned       Merge aligned predictions (default: False)
+  --nonaligned_search   Perform non-alignment ref bam search (default: False)
+  --min_map_qual MPQ_INP
+                        Minimum mapping quality (default: 30)
+  --map_qual_uniq MPQU_INP
+                        Minimum mapping quality unique test (default: 1)
+  --polyA               Perform poly A/T search (default: False)
+  --polyA_len PQL_INP   poly A/T Length (default: 9)
+  --polyA_mismatch PMM_INP
+                        poly A/T mismatch (default: 1)
+  --log_file LOG_FILE   run log file (default: nadiscover.log)
+
+
+4. Analyze (Realignment step from figure 2)
 
 usage: TE_detective analyze [-h] -i BAM_INP -r FOFN_REF --inp LIST_INP
                             [-p PREPROCESS_DIR] [-o OUTPUT_FILE]
@@ -270,69 +337,6 @@ optional arguments:
   --filter_discord_mates
                         Filter discord mate files (default: False)
   --log_file LOG_FILE   run log file (default: analyze.log)
-
-
-4. Nadiscover
-
-usage: TE_detective nadiscover [-h] -i BAM_INP -r FOFN_REF [--bed RMSK_BED]
-                               [-o OUTPUT_FILE] [-p PREPROCESS_DIR]
-                               [--min_clipped_len CLL_INP]
-                               [--insert_size_est ISZ_INP]
-                               [--read_length RDL_INP]
-                               [--discord_cluster_dens DRD_INP]
-                               [--coverage_cutoff CCT_INP] [--all]
-                               [--merge_aligned] [--nonaligned_search]
-                               [--min_map_qual MPQ_INP]
-                               [--map_qual_uniq MPQU_INP] [--polyA]
-                               [--polyA_len PQL_INP]
-                               [--polyA_mismatch PMM_INP]
-                               [--log_file LOG_FILE]
-
-Performs nonalignment part of the discovery step. Module adds poly A/T
-information into predictions made by discovery step. This module performs
-initial searches as well, but without using BWA aligner for clipped and
-discordant read alignment to TE reference sequence. Instead, a bed file of
-masked regions is provided as input, and alignment information from input BAM
-file is used.
-
-required arguments:
-  -i BAM_INP, --input_bam BAM_INP
-                        input Bam(.bam) file of aligned reads
-  -r FOFN_REF, --ref FOFN_REF
-                        File with reference sequence paths, see README.md for
-                        more info
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --bed RMSK_BED        FoFn for existing repeat elements
-  -o OUTPUT_FILE, --output_file OUTPUT_FILE
-                        Tab-delimited output file of initial set of TE
-                        insertions (default: initial_predictions_noalign.txt)
-  -p PREPROCESS_DIR, --preprocess_dir PREPROCESS_DIR
-                        directory used to store preprocessing output files
-                        (default: preprocessed_files)
-  --min_clipped_len CLL_INP
-                        Minimum clipped length(bp) (default: 25)
-  --insert_size_est ISZ_INP
-                        insert Size estimate (default: 340)
-  --read_length RDL_INP
-                        Average read length (default: 150)
-  --discord_cluster_dens DRD_INP
-                        discord read cluster density (default: 5)
-  --coverage_cutoff CCT_INP
-                        Coverage cutoff input (default: 200)
-  --all                 use all reads instead of only clipped (default: False)
-  --merge_aligned       Merge aligned predictions (default: False)
-  --nonaligned_search   Perform non-alignment ref bam search (default: False)
-  --min_map_qual MPQ_INP
-                        Minimum mapping quality (default: 30)
-  --map_qual_uniq MPQU_INP
-                        Minimum mapping quality unique test (default: 1)
-  --polyA               Perform poly A/T search (default: False)
-  --polyA_len PQL_INP   poly A/T Length (default: 9)
-  --polyA_mismatch PMM_INP
-                        poly A/T mismatch (default: 1)
-  --log_file LOG_FILE   run log file (default: nadiscover.log)
 
 
 5. Cluster2D

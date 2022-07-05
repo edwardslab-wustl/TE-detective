@@ -144,3 +144,4 @@ TEdetective/core.old.py
 TEdetective/analyze.updated_subprocess.py
 filter_output.txt
 filter_stats.txt
+example_data/final_results*.txt

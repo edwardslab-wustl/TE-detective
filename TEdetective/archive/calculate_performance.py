@@ -1,6 +1,5 @@
 
-import sys
-import os
+import sys, os
 import argparse
 from datetime import datetime
 
@@ -22,13 +21,14 @@ def exec_evaluate_performance(args):
 	dict_ref = {}
 	dict_ref_keys = []
 	for line in ref_file_lines:
-		items = line.strip().split()
-		te_type = items[0]
-		chrom = items[1]
-		ip = items[2]
-		temp_ref_ip_id = te_type+'-'+chrom+'-'+ip
-		dict_ref[ temp_ref_ip_id ] = []
-		dict_ref_keys.append(temp_ref_ip_id ) # definite order compared to doing {for key in dict_ref}:
+		if not (line.startswith("Type") or line.startswith("#")):
+			items = line.strip().split()
+			te_type = items[0]
+			chrom = items[1]
+			ip = items[2]
+			temp_ref_ip_id = te_type+'-'+chrom+'-'+ip
+			dict_ref[ temp_ref_ip_id ] = []
+			dict_ref_keys.append(temp_ref_ip_id ) # definite order compared to doing {for key in dict_ref}:
 	#
 	track_pred_ids = []
 	#
@@ -39,13 +39,14 @@ def exec_evaluate_performance(args):
 		pred_ip = int(key.strip().split('-')[2])
 		#
 		for line in pred_file_lines:
-			items = line.strip().split()
-			te_type = items[0]
-			chrom = items[1]
-			ip = int(items[2])
-			if ( pred_te_type == te_type ) and ( pred_chrom == chrom ) and ( pred_ip in range(ip-inp_isz, ip+inp_isz+1) ) and ( line not in track_pred_ids):
-				dict_ref[ key ].append( (te_type, chrom, ip ) )
-				track_pred_ids.append( line )
+			if not (line.startswith("Type") or line.startswith("#")):
+				items = line.strip().split()
+				te_type = items[0]
+				chrom = items[1]
+				ip = int(items[2])
+				if ( pred_te_type == te_type ) and ( pred_chrom == chrom ) and ( pred_ip in range(ip-inp_isz, ip+inp_isz+1) ) and ( line not in track_pred_ids):
+					dict_ref[ key ].append( (te_type, chrom, ip ) )
+					track_pred_ids.append( line )
 
 	# Count true positive and false negative
 	true_positive = 0

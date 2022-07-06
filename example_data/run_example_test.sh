@@ -4,3 +4,6 @@ echo "PREPROCESS" && TE_detective preprocess -i test_sim.bam -r ref_fofn \
     && echo 'ANALYZE' && TE_detective analyze -i test_sim.bam -r ref_fofn --inp initial_predictions.txt \
     && echo 'CLUSTER2D' && TE_detective cluster2d -i test_sim.bam -r ref_fofn --discord_cluster_dens 5 --all \
     && echo 'FILTER' && TE_detective filter -i final_results.tsv --bed rmsk_ucsc_mm10.bed \
+    && echo 'OLD FILTER' && TE_detective old_filter -i final_results.tsv --bed rmsk_ucsc_mm10.bed \
+    && echo 'OLD FILTER P' && TE_detective old_filter_p -i final_results.tsv --bed rmsk_ucsc_mm10.bed \
+    && echo 'OLD FILTER P CEU' && TE_detective old_filter_p_ceu -i final_results.tsv --bed rmsk_ucsc_mm10.bed

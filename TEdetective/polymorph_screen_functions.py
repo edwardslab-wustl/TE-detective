@@ -216,10 +216,10 @@ def add_filter_existing_data (filter_input, rmsk_file, file_name, te_type):
                                     te_stop = te_info[te_id][0]
                                 if (te_start <= ini_pos and ini_pos <= te_stop):
                                     filterVal = True
-                            #elif filterVal == True:
-                            #    continue
-                    #if filterVal == True:
-                    #    continue
+                            elif filterVal == True:
+                                break
+                    if filterVal == True:
+                        break
                 filter_input[key].append(filterVal)
     return filter_input
 

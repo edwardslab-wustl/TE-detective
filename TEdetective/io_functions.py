@@ -216,3 +216,40 @@ def get_type(file_name, args):
         te_type_name.append(['NA', 0, 0])
 
     return(te_type_name)
+
+
+def output_header ():
+    header = ''
+    header = "\t".join( "#Type",
+                        "Chromosome",
+                        "Initial_Guess",
+                        "Estimated_insertion_point",
+                        "Hetrozygous/Homozygous",
+                        "num_reads_forHet",
+                        "TSD_length",
+                        "(+)clipped_type",
+                        "(+)clipped_type_quality",
+                        "num_reads_supporting_(+)clipped_type",
+                        "frac_reads_supporting_(+)clipped_type",
+                        "(-)clipped_type",
+                        "(-)clipped_type_quality",
+                        "num_reads_supporting_(-)clipped_type",
+                        "frac_reads_supporting_(-)clipped_type",
+                        "Estimated_TE_class",
+                        "Both_clipped_end_support",
+                        "Estimated_TE_Length(bp)",
+                        "gap_bw_ends",
+                        "num_pat_p",
+                        "num_pat_n",
+                        "(+)discord_mate_type",
+                        "(+)discord_mate_type_quality",
+                        "num_reads_supporting_(+)discord_mate_type",
+                        "frac_reads_supporting_(+)discord_mate_type",
+                        "(-)discord_mate_type",
+                        "(-)discord_mate_type_quality",
+                        "num_reads_supporting_(-)discord_mate_type",
+                        "frac_reads_supporting_(-)discord_mate_type",
+                        "Estimated_TE_class-discord",
+                        "Both_end_discord_mate_support",
+                        "special_comment" )
+    return header

@@ -1,6 +1,6 @@
 import os, subprocess
 import pysam
-from TEdetective.io_functions import check_file, read_type_info, te_type_setup, read_class_info, get_class, print_tup, num_of_lines
+from TEdetective.io_functions import check_file, read_type_info, te_type_setup, read_class_info, get_class, print_tup, num_of_lines, output_header
 from TEdetective.general_functions import break_points, check_uniq_mapping, calc_length
 from TEdetective.analyze_functions import find_clipped_ends,flt_discord, analysis_pat_check, run_censor
 
@@ -718,9 +718,8 @@ def exec_analyze(args):
                 output_file.write(class_out_discord_p[0][0]+'\t'+discord_class_both+'\t')
         if discord_class_flag == 'n':
             output_file.write("NA\tNA\t")
-        #
+            
         output_file.write('\n')
-        #os.chdir('..')
         os.chdir(dir_path)
 
         output_file.close()
@@ -730,38 +729,33 @@ def exec_analyze(args):
     samfile_idx.close()
     #--------------------------------------------------------------------------------------------------------------
     # Write combined output file.
-    #eprint("----------\n"  + "writing output files\n" + "----------\n")
     log_FH.write("----------\n"  + "writing output files\n" + "----------\n")
-    #final_output = open('final_results.tsv', 'w')
     with open(args.output_file, 'w') as final_output:
-        final_output.write("Type\t# Chromosome\tInitial_Guess\tActual_insertion_point\tHetrozygous/Homozygous\t"
-            + "#reads_forHet\tTSD_length\t(+)clipped_type\t(+)clipped_type_quality\t"
-            + "#reads_supporting_(+)clipped_type\t%reads_supporting_(+)clipped_type\t(-)clipped_type\t"
-            + "(-)clipped_type_quality\t#reads_supporting_(-)clipped_type\t%reads_supporting_(-)clipped_type\t"
-            + "Estimated_TE_class\tBoth_clipped_end_support\tEstimated_TE_Length(bp)\tgap_bw_ends\t"
-            + "num_pat_p\tnum_pat_n\t"
-            + "(+)discord_mate_type\t(+)discord_mate_type_quality\t#reads_supporting_(+)discord_mate_typet\t"
-            + "%reads_supporting_(+)discord_mate_type\t(-)discord_mate_type\t(-)discord_mate_type_quality\t"
-            + "#reads_supporting_(-)discord_mate_type\t%reads_supporting_(-)discord_mate_type\t"
-            + "Estimated_TE_class-discord\tBoth_end_discord_mate_support\tspecial_comment\n")
+        #final_output.write("#Type\tChromosome\tInitial_Guess\tEstimated_insertion_point\tHetrozygous/Homozygous\t"
+        #    + "num_reads_forHet\tTSD_length\t(+)clipped_type\t(+)clipped_type_quality\t"
+        #    + "num_reads_supporting_(+)clipped_type\t%reads_supporting_(+)clipped_type\t(-)clipped_type\t"
+        #    + "(-)clipped_type_quality\tnum_reads_supporting_(-)clipped_type\tfrac_reads_supporting_(-)clipped_type\t"
+        #    + "Estimated_TE_class\tBoth_clipped_end_support\tEstimated_TE_Length(bp)\tgap_bw_ends\t"
+        #    + "num_pat_p\tnum_pat_n\t"
+        #    + "(+)discord_mate_type\t(+)discord_mate_type_quality\tnum_reads_supporting_(+)discord_mate_typet\t"
+        #    + "frac_reads_supporting_(+)discord_mate_type\t(-)discord_mate_type\t(-)discord_mate_type_quality\t"
+        #    + "num_reads_supporting_(-)discord_mate_type\tfrac_reads_supporting_(-)discord_mate_type\t"
+        #    + "Estimated_TE_class-discord\tBoth_end_discord_mate_support\tspecial_comment\n")
+        final_output.write(output_header() + "\n")
 
         for lf_line in inp_file_lines:
-            #
             if lf_line.startswith('#'):
                 continue
-            #
             chrom = lf_line.split()[1]
             insert_guess = int(lf_line.split()[2])
             int_file_name = str(chrom)+'_'+str(insert_guess)
             tmp_censor_dir = preprocess_dir_realpath + '/' + 'censor_results/' + int_file_name
-            #output_file = open('./'+int_file_name+'/'+str(chrom)+'_'+str(insert_guess)+'.out', 'r')
             output_file = open(tmp_censor_dir+'/'+str(chrom)+'_'+str(insert_guess)+'.out', 'r')
             for line in output_file:
                 if line.startswith('@clipped'):
                     final_output.write(lf_line.split()[0]+'\t'+line.split('\t', 1)[1].rstrip('\n'))
                 if line.startswith('@discord'):
                     final_output.write(line.split('\t', 4)[4])
-            #
             output_file.close()
         final_output.close()    
     log_FH.close()

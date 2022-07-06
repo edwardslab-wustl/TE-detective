@@ -120,8 +120,8 @@ def add_filter_data (filter_input, file_name, file_num, qual_threshold, filter):
                 filterVal = pm_filter.polymorph_filter( filter_clipped_p[key], filter_clipped_n[key],
                                               filter_discord_p[key], filter_discord_n[key],
                                               filter_num_pat_p[key], filter_num_pat_n[key])
-        #filter_input[key].append(filterVal)
-        filter_input[key].insert(file_num, filterVal)
+        filter_input[key].append(filterVal)
+        #filter_input[key].insert(file_num, filterVal)
     return filter_input
  
     
@@ -179,7 +179,17 @@ def read_results_file (fileName, quality_threshold):
                 results_num_pat_p[key] = int(line_data[19])
     return header,results_clipped_p,results_clipped_n,results_discord_p,results_discord_n,results_num_pat_p,results_num_pat_n
  
-def add_filter_existing_data (filter_input, rmsk_file, file_name, insert_size, te_type):
+def add_filter_alt_chrom (filter_input):
+    count = 0
+    for key in filter_input.keys():
+        filterVal = False
+        if len(key.split('_')) > 2:
+            filterVal = True
+            count += 1
+        filter_input[key].append(filterVal)
+    return filter_input, count
+
+def add_filter_existing_data (filter_input, rmsk_file, file_name, te_type):
     index_size = 50000
     filter_dict,te_info = read_rmsk_file(rmsk_file, te_type,index_size)
     with open(file_name, 'r') as FH:
@@ -204,7 +214,6 @@ def add_filter_existing_data (filter_input, rmsk_file, file_name, insert_size, t
                                 if te_start > te_stop:
                                     te_start = te_info[te_id][1]
                                     te_stop = te_info[te_id][0]
-                                #if ( ini_pos in range(te_start, te_stop+1) ):
                                 if (te_start <= ini_pos and ini_pos <= te_stop):
                                     filterVal = True
                             #elif filterVal == True:

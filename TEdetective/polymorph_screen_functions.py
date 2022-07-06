@@ -29,7 +29,6 @@ def write_results(results, filter_cnt, file_name, out_file):
                     ini_pos = line_data[2]
                     key = chrom + '_' + ini_pos
                     filterVal = check_filters( results[key], filter_cnt)
-                    #eprint(key, filterVal)
                     if filterVal == False:
                         out_fh.write(line + "\n")
                         total_pass += 1
@@ -52,7 +51,6 @@ def write_stats(total_initial_pass,total_pass,total_not_found,total_initial_pred
         fh.write('total_not_found: ' + str(total_not_found) + "\n")
         for key in total_filtered:
             if key == 0:
-                #fh.write('initial predictions passing base filter: ' + str(total_filtered[key]) + "\n")
                 fh.write('initial predictions passing base filter: ' + str(total_initial_pass)+ "\n")
             else:
                 name = str(key)
@@ -91,7 +89,6 @@ def calc_filter_results(file_name, filter_cnt, filter_results):
                 if key in filter_results:
                     out_line += "\t" + "\t".join([str(x) for x in filter_results[key]])
                     for i,val in enumerate(filter_results[key]):
-                        #eprint(key,i,val)
                         if i == 0 and val == True:
                             ini_filter_pass = True
                             total_initial_pass += 1
@@ -107,8 +104,8 @@ def calc_filter_results(file_name, filter_cnt, filter_results):
     return total_initial_pass,total_pass,total_not_found,total_initial_predictions,total_filtered, results
     
 
-def add_filter_data (filter_input, file_name, file_num, qual_threshold, filter):
-    filter_header,filter_clipped_n,filter_clipped_p,filter_discord_p,filter_discord_n,filter_num_pat_p,filter_num_pat_n = read_results_file(file_name, qual_threshold)
+def add_filter_data (filter_input, file_name, file_num, qual_threshold, filter, te_type):
+    filter_header,filter_clipped_n,filter_clipped_p,filter_discord_p,filter_discord_n,filter_num_pat_p,filter_num_pat_n = read_results_file(file_name, qual_threshold, te_type)
     for key in filter_input.keys():
         filterVal = 'NA'
         if key in filter_clipped_n:
@@ -121,13 +118,12 @@ def add_filter_data (filter_input, file_name, file_num, qual_threshold, filter):
                                               filter_discord_p[key], filter_discord_n[key],
                                               filter_num_pat_p[key], filter_num_pat_n[key])
         filter_input[key].append(filterVal)
-        #filter_input[key].insert(file_num, filterVal)
     return filter_input
  
     
-def filter_input_file (fileName, filter, qual_threshold):
+def filter_input_file (fileName, filter, qual_threshold, te_type):
     filter_input = defaultdict(list)
-    input_header, input_clipped_n, input_clipped_p, input_discord_p, input_discord_n, input_num_pat_p, input_num_pat_n = read_results_file(fileName, qual_threshold)
+    input_header, input_clipped_n, input_clipped_p, input_discord_p, input_discord_n, input_num_pat_p, input_num_pat_n = read_results_file(fileName, qual_threshold, te_type)
     for key in input_clipped_n.keys():
         if filter == 'ceu':
             #eprint(fileName, ",", key)
@@ -140,7 +136,7 @@ def filter_input_file (fileName, filter, qual_threshold):
     return filter_input
 
 
-def read_results_file (fileName, quality_threshold):
+def read_results_file (fileName, quality_threshold, te_type):
     results_clipped_p = dict()
     results_clipped_n = dict()
     results_discord_p = dict()
@@ -159,19 +155,19 @@ def read_results_file (fileName, quality_threshold):
                 chrom = line_data[1]
                 ini_pos = line_data[2]
                 key = chrom + '_' + ini_pos
-                if (line_data[8] != 'NA' and float(line_data[8]) > quality_threshold):
+                if (line_data[7] == te_type and float(line_data[8]) > quality_threshold) or line_data[7] == 'NA':
                     results_clipped_p[key] = int(line_data[9])
                 else:
                     results_clipped_p[key] = 0
-                if (line_data[12] != 'NA' and float(line_data[12]) > quality_threshold):
+                if (line_data[11] == te_type and float(line_data[12]) > quality_threshold) or line_data[11] == 'NA':
                     results_clipped_n[key] = int(line_data[13])
                 else:
                     results_clipped_n[key] = 0
-                if (line_data[22] != 'NA' and float(line_data[22]) > quality_threshold):
+                if (line_data[21] == te_type and float(line_data[22]) > quality_threshold) or line_data[21] == 'NA':
                     results_discord_p[key] = int(line_data[23])
                 else:
                     results_discord_p[key] = 0
-                if (line_data[26] != 'NA' and float(line_data[26]) > quality_threshold):
+                if (line_data[25] == te_type and float(line_data[26]) > quality_threshold) or line_data[25] == 'NA':
                     results_discord_n[key] = int(line_data[27])
                 else:
                     results_discord_n[key] = 0

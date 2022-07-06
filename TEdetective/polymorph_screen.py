@@ -14,7 +14,7 @@ def exec_polymorph(args):
         eprint("reading input file: " + args.input_file) 
     if args.verbose > 0:
         eprint("filtering input file.") 
-    filter_results = pm_fun.filter_input_file(args.input_file, args.filter, args.qual_thresh)
+    filter_results = pm_fun.filter_input_file(args.input_file, args.filter, args.qual_thresh, args.te_type)
     filter_cnt = 0   
     filter_file_names = dict()
     if args.screen_file_list != 'None':
@@ -23,7 +23,7 @@ def exec_polymorph(args):
             filter_file_names[filter_cnt] = file_name
             if args.verbose > 0:
                 eprint("reading filter file: " + file_name) 
-            filter_results = pm_fun.add_filter_data(filter_results, file_name, filter_cnt, args.pm_qual_thresh, args.filter)
+            filter_results = pm_fun.add_filter_data(filter_results, file_name, filter_cnt, args.pm_qual_thresh, args.filter, args.te_type)
     if args.bed_screen:
         if args.verbose > 0:
             eprint("filtering all " + args.te_type + " with bed file: " + args.bed_screen) 

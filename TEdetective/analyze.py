@@ -298,28 +298,28 @@ def exec_analyze(args):
             run_censor(int_file_name+'_reads_n.fa' , te_type_file, log_FH, "censor reads n: " + int_file_name)
         #---------------------------------------------------------------------------------------------------------------------------
         output_file.write("\nMapping information of clipped part of read\n------------------------------------------------\n")
-        #
+        
         clipped_read_p_flag = 'n'
         clipped_read_n_flag = 'n'
-        #
+        
         clipped_read_p_flag, type_clipped_p, output_write_lines = \
                 read_type_info('clipped', 'p', int_file_name+'_reads_p.fa.map', args)
-        #
+        
         output_file.write(''.join(output_write_lines))
         del output_write_lines[:]
-        #
+        
         clipped_read_n_flag, type_clipped_n, output_write_lines = \
                 read_type_info('clipped', 'n', int_file_name+'_reads_n.fa.map', args)
-        #
+        
         output_file.write(''.join(output_write_lines))
         del output_write_lines[:]
-        #
+        
         len_calc_flag = 'n'
         len_calc_flag, te_class_file, output_write_lines = te_type_setup( int_file_name+'_reads_p.fa.map', \
             int_file_name+'_reads_n.fa.map', type_clipped_p, type_clipped_n, cnt_rd_p, cnt_rd_n, fofn_ref_realpath)
         output_file.write(''.join(output_write_lines))
         del output_write_lines[:]
-        #
+        
         # Remove intermediate files
         subprocess.run(['rm' , '-rf' , '*.fa.*' , 'censor.ncbi.*' , 'error.log' , 'formatdb.log'])
         #call(['rm' , '-rf' , '*.fa.map' , 'censor.ncbi.*' , '*.log'])
@@ -427,7 +427,7 @@ def exec_analyze(args):
         # num_pt_p = sum(x.count('T') for x in pat_test_out_p)
         num_pat_p = len(pat_test_out_p)    
         open(int_file_name+'_pat_p', 'w').write( '\n'.join('\t'.join(str(dat) for dat in itm) for itm in pat_test_out_p) )
-        #
+        
     # 2. n-end
         pat_test_out_n = analysis_pat_check( int_file_name+'_reads_n.fa', int_file_name+'_reads_n.fa.map' )        
         num_pat_n = len(pat_test_out_n)    
@@ -438,7 +438,7 @@ def exec_analyze(args):
         output_file.write( "\n-----Final results ( Clipped )-----\n" )
         output_file.write( '@clipped\t'+ chrom +'\t'+ str(insert_guess) +'\t'+ str(insert_point_out)+'\t' )
         output_file.write( het_hom +'\t'+ str(cnt_het) +'\t'+ str(tsd_length) +'\t' )
-        #
+        
         if clipped_read_p_flag == 'y':
             if cnt_rd_p > 0:
                 type_c_p_out = str(float("{0:.2f}".format((type_clipped_p[0][2]/cnt_rd_p)*100)))
@@ -447,7 +447,7 @@ def exec_analyze(args):
             output_file.write(str(type_clipped_p[0][0])+'\t'+ str(type_clipped_p[0][1])+'\t'+  str(type_clipped_p[0][2]) +'\t'+ type_c_p_out +'\t')
         if clipped_read_p_flag == 'n':
             output_file.write("NA\tNA\t0\t0\t")
-        #
+        
         if clipped_read_n_flag == 'y':
             if cnt_rd_n > 0:
                 type_c_n_out = str(float("{0:.2f}".format((type_clipped_n[0][2]/cnt_rd_n)*100)))
@@ -456,7 +456,7 @@ def exec_analyze(args):
             output_file.write(str(type_clipped_n[0][0])+'\t'+ str(type_clipped_n[0][1])+'\t'+ str(type_clipped_n[0][2]) +'\t' + type_c_n_out + '\t')
         if clipped_read_n_flag == 'n':
             output_file.write("NA\tNA\t0\t0\t")
-        #
+        
         if len_calc_flag == 'y':
             if len(len_arr) == 2:
                 if class_out_p[0][3] < class_out_n[0][3]:
@@ -470,17 +470,14 @@ def exec_analyze(args):
             del len_arr
         if len_calc_flag == 'n':
             output_file.write('NA\tNA\t0\t')
-        #
+        
         output_file.write(str(gap_ends)+'\t')
-        #
         output_file.write(str(num_pat_p) + '\t' + str(num_pat_n) + '\t' )
-        #
+        
         del array_p[:], array_n[:], clipped_ends_p[:], clipped_ends_n[:]
         del iterator_reads_list[:]
 
         output_file.close()
-        #
-        #os.chdir('..')
         os.chdir(dir_path)
     #*****************************************************************************************************************************
     #*****************************************************************************************************************************

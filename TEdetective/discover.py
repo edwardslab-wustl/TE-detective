@@ -287,3 +287,35 @@ def exec_discover(args):
 
     read_positions_clusters_file.close()
     log_FH.close()
+    
+def discover_setup_arg_parser(parser):
+    parser_required = parser.add_argument_group('required arguments')
+    parser_required.add_argument('-i', '--input_bam', action='store', dest='bam_inp', required=True, 
+        help='Input Bam(.bam) file of aligned reads')
+    parser_required.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
+        help='File with reference sequence paths, see README.md for more info')
+    parser.add_argument('-o', '--output_file', action='store',
+        dest='output_file', default='initial_predictions.txt',
+        help='Tab-delimited file of initial set of TE insertions (default: initial_predictions.txt)')
+    parser.add_argument('-p', '--preprocess_dir', action='store',
+        dest='preprocess_dir', default='preprocessed_files',
+        help='directory used to store preprocessing output files (default: preprocessed_files)')
+    parser.add_argument('--insert_size_est', action='store', dest='isz_inp', type=int, default=340, 
+        help='Insert size estimate (default: 340)')
+    parser.add_argument('--read_length', action='store', dest='rdl_inp', type=int, default=150, 
+        help='Average read length (default: 150)')
+    parser.add_argument('--discord_cluster_dens', action='store', dest='drd_inp', type=int, default=10, 
+        help='Discord read cluster density (default: 10)')
+    parser.add_argument('--coverage_cutoff', action='store', dest='cct_inp', type=int, default=200, 
+        help='Coverage cutoff input (default: 200)')
+    parser.add_argument('--min_clipped_len', action='store', dest='cll_inp', type=int, default=25,
+        help='Minimum clipped length(bp) (default: 25)')
+    parser.add_argument('--min_map_qual', action='store', dest='mpq_inp', type=int, default=30, 
+        help='Minimum mapping quality (default: 30)')
+    parser.add_argument('--map_qual_uniq', action='store', dest='mpqu_inp', type=int, default=1, 
+        help='Minimum mapping quality (default: 1)')
+    parser.add_argument('--log_file', action='store',
+        dest='log_file', default='discover.log',
+        help='run log file (default: discover.log)')
+    parser._action_groups.reverse()
+    return parser

@@ -756,3 +756,49 @@ def exec_analyze(args):
             output_file.close()
         final_output.close()    
     log_FH.close()
+    
+def analyze_setup_arg_parser (parser):
+    parser_required = parser.add_argument_group('required arguments')
+    parser_required.add_argument('-i','--input_bam', action='store', dest='bam_inp', required=True, 
+        help='input Bam(.bam) file of aligned reads')
+    parser_required.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
+        help='File with reference sequence paths, see README.md for more info')
+    parser_required.add_argument('--inp', action='store', dest='list_inp', required=True, 
+        help='Input list of insertions')
+    parser.add_argument('-p', '--preprocess_dir', action='store',
+        dest='preprocess_dir', default='preprocessed_files',
+        help='directory used to store preprocessing output files (default: preprocessed_files)')
+    parser.add_argument('-o', '--output_file', action='store',
+        dest='output_file', default='final_results.tsv',
+        help='Tab-delimited output file of potential TE insertions(default: final_resutls.tsv)')
+    parser.add_argument('--read_length', action='store', dest='rdl_inp', type=int, default=150, 
+        help='Average read length (default: 150)')
+    parser.add_argument('--min_clipped_len', action='store', dest='cll_inp', type=int, default=25, 
+        help='Minimum clipped length(bp) (default: 25)')
+    parser.add_argument('--min_anchor_len', action='store', dest='ahl_inp', type=int, default=30, 
+        help='Minimum anchor length(bp) (defualt: 30)')
+    parser.add_argument('--clipped_read_range', action='store', dest='cer_inp', type=int, default=5,
+        help='Range of clipped reads at a end to put in a group (default: 5)')
+    parser.add_argument('--clipped_search_interval', action='store', dest='csi_inp', type=int, default=20, 
+        help='Clipped read search interval (default: 20)')
+    parser.add_argument('--min_breakpt_reads', action='store', dest='mre_inp', type=int, default=4, 
+        help='Min read for breakpoint (default: 4)')
+    parser.add_argument('--min_het_reads', action='store', dest='mrh_inp', type=int, default=3, 
+        help='Minimum reads to call hetrozygous insertion (default: 3)')
+    parser.add_argument('--insert_size_est', action='store', dest='isz_inp', type=int, default=340,
+        help='Insert size estimate (default: 340)')
+    parser.add_argument('--mapping_qual_interval', action='store', dest='qii_inp', type=float, default=0.05, 
+        help='Interval for mapping quality (default: 0.05)')
+    parser.add_argument('--intervals', action='store', dest='nii_inp', type=int, default=6,
+        help='Number of intervals (default: 6)')
+    parser.add_argument('--min_map_qual', action='store', dest='mpq_inp', type=int, default=30, 
+        help='Minimum mapping quality (default: 30)')
+    parser.add_argument('--map_qual_uniq', action='store', dest='mpqu_inp', type=int, default=1,
+        help='Minimum mapping quality uniq test (default: 1)')
+    parser.add_argument('--filter_discord_mates', action='store_true', dest='flt_inp', default=False,
+        help='Filter discord mate files (default: False)')
+    parser.add_argument('--log_file', action='store',
+        dest='log_file', default='analyze.log',
+        help='run log file (default: analyze.log)')
+    parser._action_groups.reverse()
+    return parser

@@ -557,3 +557,49 @@ def exec_nadiscover(args):
 
         read_positions_clusters_file.close()
     log_FH.close()
+    
+def nadiscover_setup_arg_parser (parser):
+    parser_required = parser.add_argument_group('required arguments')
+    parser_required.add_argument('-i','--input_bam', action='store', dest='bam_inp', required=True, 
+        help='input Bam(.bam) file of aligned reads')
+    parser_required.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
+        help='File with reference sequence paths, see README.md for more info')
+    parser.add_argument('--bed', action='store', dest='rmsk_bed', help='FoFn for existing repeat elements')
+    parser.add_argument('-o', '--output_file', action='store',
+        dest='output_file', default='initial_predictions_noalign.txt',
+        help='Tab-delimited output file of initial set of TE insertions (default: initial_predictions_noalign.txt)')
+    parser.add_argument('-p', '--preprocess_dir', action='store',
+        dest='preprocess_dir', default='preprocessed_files',
+        help='directory used to store preprocessing output files (default: preprocessed_files)')
+    parser.add_argument('--min_clipped_len', action='store', dest='cll_inp', type=int, default=25,
+        help='Minimum clipped length(bp) (default: 25)')
+    parser.add_argument('--insert_size_est', action='store', dest='isz_inp', type=int, default=340,
+        help='insert Size estimate (default: 340)')
+    parser.add_argument('--read_length', action='store', dest='rdl_inp', type=int, default=150,
+        help='Average read length (default: 150)')
+    parser.add_argument('--discord_cluster_dens', action='store', dest='drd_inp', type=int, default=5,
+        help='discord read cluster density (default: 5)')
+    parser.add_argument('--coverage_cutoff', action='store', dest='cct_inp', type=int, default=200,
+        help='Coverage cutoff input (default: 200)')
+    parser.add_argument('--all', action='store_true', dest='flg_all', default=False,
+        help='use all reads instead of only clipped (default: False)')
+    parser.add_argument('--merge_aligned', action='store_true', dest='merged', default=False,
+        help='Merge aligned predictions (default: False)')
+    parser.add_argument('--nonaligned_search', action='store_true', dest='nas_inp', default=False,
+        help='Perform non-alignment ref bam search (default: False)')
+    parser.add_argument('--min_map_qual', action='store', dest='mpq_inp', type=int, default=30,
+        help='Minimum mapping quality (default: 30)')
+    parser.add_argument('--map_qual_uniq', action='store', dest='mpqu_inp', type=int, default=1,
+        help='Minimum mapping quality unique test (default: 1)')
+    parser.add_argument('--polyA', action='store_true', dest='pat_inp', default=False,
+        help='Perform poly A/T search (default: False)')
+    parser.add_argument('--polyA_len', action='store', dest='pql_inp', type=int, default=9,
+        help='poly A/T Length (default: 9)')
+    parser.add_argument('--polyA_mismatch', action='store', dest='pmm_inp', type=int, default=1,
+        help='poly A/T mismatch (default: 1)')
+    parser.add_argument('--log_file', action='store',
+        dest='log_file', default='nadiscover.log',
+        help='run log file (default: nadiscover.log)')
+    parser._action_groups.reverse()
+    return parser
+    

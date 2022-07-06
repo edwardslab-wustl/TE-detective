@@ -402,4 +402,20 @@ def exec_discover(args):
 
     read_positions_clusters_file.close()
     log_FH.close()
-    
+ 
+def preprocess_setup_arg_parser(parser):
+    parser_required = parser.add_argument_group('required arguments')
+    parser_required.add_argument('-i', '--input_bam', action='store', dest='bam_inp', required=True,
+        help='input Bam(.bam) file of aligned reads')
+    parser_required.add_argument('-r', '--ref', action='store', dest='fofn_ref', required=True,
+        help='File with reference sequence paths, see README.md for more info')
+    parser.add_argument('-p', '--preprocess_dir', action='store',
+        dest='preprocess_dir', default='preprocessed_files',
+        help='directory to store preprocessing output files (default: preprocessed_files)')
+    parser.add_argument('--min_clipped_len', action='store', dest='cll_inp', type=int, default=25,
+        help='Minimum clipped length(bp) (default: 25)')
+    parser.add_argument('--log_file', action='store',
+        dest='log_file', default='preprocess.log',
+        help='run log file (default: preprocess.log)')
+    parser._action_groups.reverse()
+    return parser   

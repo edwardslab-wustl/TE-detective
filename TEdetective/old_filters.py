@@ -466,3 +466,31 @@ def exec_old_filter_p_ceu(args):
 
         left_clipped_rd, right_clipped_rd, left_discord_rd, right_discord_rd, test_class_score = 0, 0, 0, 0, 0
     log_FH.close()
+    
+def old_filter_setup_arg_parser(parser):
+    parser_required = parser.add_argument_group('required arguments')
+    parser_required.add_argument('-i', '--input_file', action='store', dest='ofa_inp', required=True,
+        help='use the output file from analyze section as input')
+    parser_required.add_argument('-b', '--bed', action='store', dest='fofn_bed', required=True, 
+        help='File containg a list of files to existing repeat elements. ' +
+        'List the full path for each file. See example in example_data')
+    #sp_filter.add_argument('-p', '--preprocess_dir', action='store',
+    #    dest='preprocess_dir', default='preprocessed_files',
+    #    help='directory used to store preprocessing output files (default: preprocessed_files)')
+    parser.add_argument('--align_qual_lim', action='store', dest='qlm_inp', type=float, default=0.85, 
+        help='Lowest limit for alignment quality (default: 0.85)')
+    parser.add_argument('--min_clipped_reads', action='store', dest='tcr_inp', type=int, default=5, 
+        help='Minimum number of clipped reads (default: 5)')
+    parser.add_argument('--min_clipped_and_dischord_reads', action='store', dest='trd_inp', type=int, default=10, 
+        help='Minimum total [clipped+discordant] reads (default: 10)')
+    parser.add_argument('--read_percent', action='store', dest='rp_inp', type=float, default=10.0, 
+        help='read percent value (default: 10.0)')
+#    sp_filter.add_argument('--read_length', action='store', dest='rdl_inp', type=int, default=150, 
+#        help='Average read length (default: 150)')
+#    sp_filter.add_argument('--insert_size_est', action='store', dest='isz_inp', type=int, default=340, 
+#        help='insert Size estimate (default: 340)')
+    parser.add_argument('--log_file', action='store',
+        dest='log_file', default='filter.log',
+        help='run log file (default: filter.log)')
+    parser._action_groups.reverse()
+    return parser

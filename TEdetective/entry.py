@@ -12,9 +12,9 @@ from TEdetective.preprocess import exec_preprocess
 from TEdetective.discover import exec_discover
 from TEdetective.nadiscover import exec_nadiscover
 from TEdetective.cluster2d import exec_cluster2d
-from TEdetective.filters import exec_filter, exec_filter_p, exec_filter_p_ceu
+from TEdetective.old_filters import exec_old_filter, exec_old_filter_p, exec_old_filter_p_ceu
 from TEdetective.analyze import exec_analyze
-from TEdetective.polymorph_screen import exec_polymorph, polymorph_setup_arg_parser
+from TEdetective.filter import exec_filter, filter_setup_arg_parser
 
 def main():
     FUNCTION_MAP = {
@@ -23,20 +23,21 @@ def main():
             'nadiscover' : exec_nadiscover, 
             'analyze' : exec_analyze,
             'cluster2d' : exec_cluster2d,
-            'filter' : exec_filter,
-            'filter_p' : exec_filter_p,
-            'filter_p_ceu' : exec_filter_p_ceu,
-            'polymorph' : exec_polymorph
+            'old_filter' : exec_old_filter,
+            'old_filter_p' : exec_old_filter_p,
+            'old_filter_p_ceu' : exec_old_filter_p_ceu,
+            'filter' : exec_filter
             }
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest='command')
     subparsers.required = True
     
-    polymorph_desc=str("polymorphic subtraction module")
-    sp_polymorph = subparsers.add_parser('polymorph',
-        help=polymorph_desc, description=polymorph_desc)
-    sp_polymorph = polymorph_setup_arg_parser(sp_polymorph)
+    filter_desc=str("Filter module to filter predictions from nadiscover " +
+        "based on read support, existing TEs, and polymorphic subtraction")
+    sp_filter = subparsers.add_parser('filter',
+        help=filter_desc, description=filter_desc)
+    sp_filter = filter_setup_arg_parser(sp_filter)
     
     preprocess_desc=str("Processes the input files (indexed BAM file and indexed " +
         "fasta file), extracts discordant and clipped reads, as well as  " +
@@ -332,8 +333,8 @@ if __name__ == '__main__':
     from TEdetective.discover import exec_discover
     from TEdetective.nadiscover import exec_nadiscover
     from TEdetective.cluster2d import exec_cluster2d
-    from TEdetective.filters import exec_filter, exec_filter_p, exec_filter_p_ceu
+    from TEdetective.old_filters import exec_old_filter, exec_old_filter_p, exec_old_filter_p_ceu
     from TEdetective.analyze import exec_analyze
-    from TEdetective.polymorph_screen import exec_polymorph, polymorph_setup_arg_parser
+    from TEdetective.filter import exec_filter, filter_setup_arg_parser
     main() 
 

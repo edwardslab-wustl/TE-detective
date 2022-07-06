@@ -1,7 +1,7 @@
 
 import argparse 
 from TEdetective.io_functions import eprint
-import TEdetective.polymorph_screen_functions as pm_fun
+import TEdetective.filter_functions as flt_fun
     
 def main():
     parser = argparse.ArgumentParser()
@@ -14,34 +14,34 @@ def exec_polymorph(args):
         eprint("reading input file: " + args.input_file) 
     if args.verbose > 0:
         eprint("filtering input file.") 
-    filter_results = pm_fun.filter_input_file(args.input_file, args.filter, args.qual_thresh, args.te_type)
-    filter_cnt = 0   
-    filter_file_names = dict()
-    if args.screen_file_list != 'None':
-        for file_name in args.screen_file_list.split(','):
-            filter_cnt += 1
-            filter_file_names[filter_cnt] = file_name
-            if args.verbose > 0:
-                eprint("reading filter file: " + file_name) 
-            filter_results = pm_fun.add_filter_data(filter_results, file_name, filter_cnt, args.pm_qual_thresh, args.filter, args.te_type)
+        filter_results = flt_fun.filter_input_file(args.input_file, args.filter, args.qual_thresh, args.te_type)
+        filter_cnt = 0   
+        filter_file_names = dict()
+        if args.screen_file_list != 'None':
+            for file_name in args.screen_file_list.split(','):
+                filter_cnt += 1
+                filter_file_names[filter_cnt] = file_name
+                if args.verbose > 0:
+                    eprint("reading filter file: " + file_name) 
+                filter_results = flt_fun.add_filter_data(filter_results, file_name, filter_cnt, args.pm_qual_thresh, args.filter, args.te_type)
     if args.bed_screen:
         if args.verbose > 0:
             eprint("filtering all " + args.te_type + " with bed file: " + args.bed_screen) 
-        filter_results = pm_fun.add_filter_existing_data(filter_results, args.bed_screen, args.input_file, args.te_type)
+        filter_results = flt_fun.add_filter_existing_data(filter_results, args.bed_screen, args.input_file, args.te_type)
         filter_cnt += 1
         filter_file_names[filter_cnt] = "in_existing_" + args.te_type
     if args.filter_alt_chrom:
         if args.verbose > 0:
             eprint("filtering alt chromosomes") 
-        filter_results,total_alt_chrom = pm_fun.add_filter_alt_chrom(filter_results)
+        filter_results,total_alt_chrom = flt_fun.add_filter_alt_chrom(filter_results)
         filter_cnt += 1
         filter_file_names[filter_cnt] = "alt_chrom"
     if args.verbose > 0:
         eprint("writing results")
-    total_initial_pass,total_pass,total_not_found,total_initial_predictions,total_filtered,results = pm_fun.calc_filter_results(args.input_file, filter_cnt, filter_results)
-    pm_fun.write_stats(total_initial_pass,total_pass,total_not_found,total_initial_predictions,total_filtered,filter_file_names,args.stats_file)
-    pm_fun.write_results_mask(results,filter_cnt,filter_file_names,args.output_file + ".mask")
-    total_pass_all_filters = pm_fun.write_results(filter_results,filter_cnt,args.input_file,args.output_file)
+    total_initial_pass,total_pass,total_not_found,total_initial_predictions,total_filtered,results = flt_fun.calc_filter_results(args.input_file, filter_cnt, filter_results)
+    flt_fun.write_stats(total_initial_pass,total_pass,total_not_found,total_initial_predictions,total_filtered,filter_file_names,args.stats_file)
+    flt_fun.write_results_mask(results,filter_cnt,filter_file_names,args.output_file + ".mask")
+    total_pass_all_filters = flt_fun.write_results(filter_results,filter_cnt,args.input_file,args.output_file)
     if args.verbose > 0:
         eprint("total_passing_all_filters: " + str(total_pass_all_filters))
     return
@@ -91,5 +91,5 @@ def polymorph_setup_arg_parser(parser):
 if __name__ == '__main__':
     import argparse 
     from io_functions import eprint
-    import polymorph_screen_functions as pm_fun
+    import filter_functions as flt_fun
     main() 

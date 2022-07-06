@@ -1,6 +1,6 @@
 from collections import defaultdict
 from TEdetective.io_functions import eprint
-import TEdetective.polymorph_screen_filters as pm_filter
+import TEdetective.filter_screens as flt_scr
 
 def write_results_mask(results, filter_cnt, filter_file_names, out_file):
     header = "\t".join(['Type','Chr','initial_guess', 'pass_initial_ins_filter'])
@@ -110,11 +110,11 @@ def add_filter_data (filter_input, file_name, file_num, qual_threshold, filter, 
         filterVal = 'NA'
         if key in filter_clipped_n:
             if filter == 'ceu':
-                filterVal = pm_filter.polymorph_filter_ceu( filter_clipped_p[key], filter_clipped_n[key],
+                filterVal = flt_scr.polymorph_filter_ceu( filter_clipped_p[key], filter_clipped_n[key],
                                                   filter_discord_p[key], filter_discord_n[key],
                                                   filter_num_pat_p[key], filter_num_pat_n[key])
             else:
-                filterVal = pm_filter.polymorph_filter( filter_clipped_p[key], filter_clipped_n[key],
+                filterVal = flt_scr.polymorph_filter( filter_clipped_p[key], filter_clipped_n[key],
                                               filter_discord_p[key], filter_discord_n[key],
                                               filter_num_pat_p[key], filter_num_pat_n[key])
         filter_input[key].append(filterVal)
@@ -127,11 +127,11 @@ def filter_input_file (fileName, filter, qual_threshold, te_type):
     for key in input_clipped_n.keys():
         if filter == 'ceu':
             #eprint(fileName, ",", key)
-            filterVal = pm_filter.initial_ins_filter_ceu(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key], input_num_pat_p[key], input_num_pat_n[key])
+            filterVal = flt_scr.initial_ins_filter_ceu(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key], input_num_pat_p[key], input_num_pat_n[key])
         elif filter == 'stringent':
-            filterVal = pm_filter.initial_ins_filter_stringent(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key], input_num_pat_p[key], input_num_pat_n[key])
+            filterVal = flt_scr.initial_ins_filter_stringent(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key], input_num_pat_p[key], input_num_pat_n[key])
         else: 
-            filterVal = pm_filter.initial_ins_filter(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key])
+            filterVal = flt_scr.initial_ins_filter(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key])
         filter_input[key] = [filterVal]
     return filter_input
 

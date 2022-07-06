@@ -1,7 +1,7 @@
 
 import sys, os
 
-def exec_filter(args):
+def exec_old_filter(args):
     #
     log_FH=open(args.log_file, 'w')
     #preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)
@@ -155,7 +155,7 @@ def exec_filter(args):
     log_FH.close()
 
 
-def exec_filter_p(args):
+def exec_old_filter_p(args):
     #
     log_FH=open(args.log_file, 'w')
     #preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)
@@ -312,7 +312,7 @@ def exec_filter_p(args):
         left_clipped_rd, right_clipped_rd, left_discord_rd, right_discord_rd, test_class_score = 0, 0, 0, 0, 0
     log_FH.close()
 
-def exec_filter_p_ceu(args):
+def exec_old_filter_p_ceu(args):
     #
     log_FH=open(args.log_file, 'w')
     #preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)

@@ -61,7 +61,7 @@ Clone and install with pip:
 	Reference sequences of repeat elements can be obtained from Repbase(https://www.girinst.org/server/RepBase/index.php) or other resources.
 	See example file ref_fofn in the example_data folder.
 
-	3. bed formatted file of known repeat locations corresponding to the genome version used for alignment.
+    3. bed formatted file of known repeat locations corresponding to the genome version used for alignment.
 	You can download the repeatmasker track data from the [UCSC Genome Browser](https://hgdownload.soe.ucsc.edu/downloads.html) and filter with something like:
 	zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed
 
@@ -71,17 +71,17 @@ Clone and install with pip:
 
 ````
     cd example_data
-	  TE_detective preprocess -i test_sim.bam -r ref_fofn 
+    TE_detective preprocess -i test_sim.bam -r ref_fofn 
     TE_detective discover -i test_sim.bam -r ref_fofn 
     TE_detective nadiscover -i test_sim.bam -r ref_fofn --polyA --discord_cluster_dens 5  
     TE_detective analyze -i test_sim.bam -r ref_fofn --inp initial_predictions.txt 
     TE_detective cluster2d -i test_sim.bam -r ref_fofn 
     TE_detective filter -i final_results.tsv --bed rmsk_ucsc_mm10.bed
 
-	or 
+    or 
 
-	cd example_data
-	sh run_example.sh
+    cd example_data
+    sh run_example.sh
 ````
 
 ### CEU-Trio example
@@ -97,6 +97,7 @@ Clone and install with pip:
     - obtain a bed formatted file of annotated TE entries. Called rmsk_hg19.bed below. See info above.
 
   1. General set up
+
     mkdir -p $DIR/NA12878
     mkdir -p $DIR/NA12891
     mkdir -p $DIR/NA12892

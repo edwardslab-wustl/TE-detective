@@ -5,11 +5,11 @@ import TEdetective.filter_functions as flt_fun
     
 def main():
     parser = argparse.ArgumentParser()
-    arg_parser = polymorph_setup_arg_parser(parser)
+    arg_parser = filter_setup_arg_parser(parser)
     args = arg_parser.parse_args()
-    exec_polymorph(args)
+    exec_filter(args)
     
-def exec_polymorph(args):
+def exec_filter(args):
     if args.verbose > 0:
         eprint("reading input file: " + args.input_file) 
     if args.verbose > 0:
@@ -47,7 +47,7 @@ def exec_polymorph(args):
     return
 
 
-def polymorph_setup_arg_parser(parser):
+def filter_setup_arg_parser(parser):
     parser_required = parser.add_argument_group('required arguments')
     parser_required.add_argument('-i', '--input_file', action='store', 
         dest='input_file', required=True, 

@@ -374,17 +374,17 @@ def exec_analyze(args):
                 run_censor('n.clipped.fa' , class_out_p[0][0]+'.fa', log_FH, "censor class_out_p reads n:" + int_file_name)
                 #
                 if check_file('n.clipped.fa.map') == True:
-                    output_file.write(str(class_out_p[0][0]) + ' ' + str( get_class('n.clipped.fa.map', args)[0][0] ) + ' ' + \
-                                    str( calc_length( class_out_p, get_class( 'n.clipped.fa.map', args ) ) ) + '\n') 
-                    len_arr.append([class_out_p[0][0], calc_length(class_out_p, get_class('n.clipped.fa.map', args))])
+                    output_file.write(str(class_out_p[0][0]) + ' ' + str( get_class('n.clipped.fa.map', args.qii_inp)[0][0] ) + ' ' + \
+                                    str( calc_length( class_out_p, get_class( 'n.clipped.fa.map', args.qii_inp ) ) ) + '\n') 
+                    len_arr.append([class_out_p[0][0], calc_length(class_out_p, get_class('n.clipped.fa.map', args.qii_inp))])
             
                 subprocess.run(['cp' , int_file_name+'_reads_p.fa' , 'p.clipped.fa'])
                 #subprocess.run(['censor.ncbi' , 'p.clipped.fa' , '-lib' , class_out_n[0][0]+'.fa'])
                 run_censor('p.clipped.fa' , class_out_n[0][0]+'.fa', log_FH, "censor class_out_n reads p:" + int_file_name)
                 if check_file('p.clipped.fa.map') == True:
-                    output_file.write(str(class_out_n[0][0]) + ' ' + str(get_class('p.clipped.fa.map', args)[0][0]) + ' ' + \
-                                    str(calc_length(class_out_n, get_class('p.clipped.fa.map', args))) + '\n') 
-                    len_arr.append([class_out_n[0][0], calc_length(class_out_n, get_class('p.clipped.fa.map', args))])
+                    output_file.write(str(class_out_n[0][0]) + ' ' + str(get_class('p.clipped.fa.map', args.qii_inp)[0][0]) + ' ' + \
+                                    str(calc_length(class_out_n, get_class('p.clipped.fa.map', args.qii_inp))) + '\n') 
+                    len_arr.append([class_out_n[0][0], calc_length(class_out_n, get_class('p.clipped.fa.map', args.qii_inp))])
 
 
             print_tup(len_arr, output_file, '-' , ' ')

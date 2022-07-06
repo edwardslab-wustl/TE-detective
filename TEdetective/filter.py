@@ -14,16 +14,23 @@ def exec_filter(args):
         eprint("reading input file: " + args.input_file) 
     if args.verbose > 0:
         eprint("filtering input file.") 
-        filter_results = flt_fun.filter_input_file(args.input_file, args.filter, args.qual_thresh, args.te_type)
-        filter_cnt = 0   
-        filter_file_names = dict()
-        if args.screen_file_list != 'None':
-            for file_name in args.screen_file_list.split(','):
-                filter_cnt += 1
-                filter_file_names[filter_cnt] = file_name
-                if args.verbose > 0:
-                    eprint("reading filter file: " + file_name) 
-                filter_results = flt_fun.add_filter_data(filter_results, file_name, filter_cnt, args.pm_qual_thresh, args.filter, args.te_type)
+    filter_results = flt_fun.filter_input_file(args.input_file, args.ini_filter, args.qual_thresh, args.te_type)
+    filter_cnt = 0   
+    filter_file_names = dict()
+    if args.screen_file_list != 'None':
+        for file_name in args.screen_file_list.split(','):
+            filter_cnt += 1
+            filter_file_names[filter_cnt] = file_name
+            if args.verbose > 0:
+                eprint("reading filter file: " + file_name) 
+            filter_results = flt_fun.add_filter_data(filter_results, file_name, filter_cnt, args.pm_qual_thresh, args.filter, args.te_type)
+    if args.results_screen_file_list != 'None':
+        for file_name in args.results_screen_file_list.split(','):
+            filter_cnt += 1
+            filter_file_names[filter_cnt] = file_name
+            if args.verbose > 0:
+                eprint("reading filter file: " + file_name) 
+            filter_results = flt_fun.add_filter_other_results(filter_results, file_name, args.insert_size, args.read_length)
     if args.bed_screen:
         if args.verbose > 0:
             eprint("filtering all " + args.te_type + " with bed file: " + args.bed_screen) 
@@ -52,9 +59,12 @@ def filter_setup_arg_parser(parser):
     parser_required.add_argument('-i', '--input_file', action='store', 
         dest='input_file', required=True, 
         help="prediction list to be filtered (output from analyze module)")
-    parser.add_argument('-s', '--screen_file(s)', action='store', 
+    parser.add_argument('-s', '--screen_files', action='store', 
         dest='screen_file_list', default='None', 
         help="comma separated list of prediction file(s) for filtering, set to None to skip filter (default: None)")
+    parser.add_argument('--results_screen_files', action='store', 
+        dest='results_screen_file_list', default='None', 
+        help="comma separated list of results file(s) for filtering, filters TEs within insert_size - read_length. Set to None to skip filter (default: None)")
     parser.add_argument('-b', '--bed_screen', action='store', 
         dest='bed_screen', default=False, 
         help="bed formated file of TE positions, file will be screened for TE type (default: Off)")
@@ -72,6 +82,11 @@ def filter_setup_arg_parser(parser):
         help="filter statistics output file (default: filter_stats.txt)")
     parser.add_argument('-f', '--filter', action='store', 
         dest='filter', default="ceu",
+        choices = ['ceu','custom','normal'],
+        help="polymorphic subtraction filtering criteria, see README.md for more info (default: ceu)")
+    parser.add_argument('--ini_filter', action='store', 
+        dest='ini_filter', default="ceu",
+        choices = ['ceu','stringent','custom','normal'],
         help="initial filtering criteria, see README.md for more info (default: ceu)")
     parser.add_argument('--qual_thresh', action='store', 
         dest='qual_thresh', default=0.85, type=float,
@@ -79,8 +94,10 @@ def filter_setup_arg_parser(parser):
     parser.add_argument('--pm_qual_thresh', action='store', 
         dest='pm_qual_thresh', default=0.75, type=float,
         help="initial filter quality threshold for clipped and discordant read alignments. (default: 0.75)")
-#    parser.add_argument('--insert_size_est', action='store', dest='insert_size', type=int, default=340, 
-#        help='insert size estimate (default: 340)')
+    parser.add_argument('--insert_size_est', action='store', dest='insert_size', type=int, default=340, 
+        help='insert size estimate (default: 340)')
+    parser.add_argument('--read_length', action='store', dest='read_length', type=int, default=100, 
+        help='read length (default: 100)')
     parser.add_argument('-v', '--verbose', action='store', 
         dest='verbose', default=1, type=int,
         help="verbose level, set to 0 for quiet. (default: 1)")

@@ -1,4 +1,5 @@
-from TEdetective.io_functions import eprint
+# from TEdetective.io_functions import eprint
+
  #FILTER INFO
 #        if total_clipped_rd >= 3 or ( (total_clipped_rd >= 1) and ( (total_clipped_rd_wpat+total_discord_rd) >= 5) ) or ( total_discord_rd >= 10 ): # L1base Sim
 #        if total_clipped_rd >= 5 or ( total_clipped_rd >=3 and (total_clipped_rd_wpat + total_discord_rd >= 7)) or total_discord_rd >= 10: # and test_class_score == 4 \ CEU

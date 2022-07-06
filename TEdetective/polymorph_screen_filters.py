@@ -61,4 +61,18 @@ def polymorph_filter( clipped_p, clipped_n, discord_p, discord_n, num_pat_p, num
         returnVal = True
     return returnVal
 
+def polymorph_filter_ceu( clipped_p, clipped_n, discord_p, discord_n, num_pat_p, num_pat_n):
+    returnVal = False
+    clipped_total = clipped_p + clipped_n
+    discord_total = discord_p + discord_n
+    num_pat_total = num_pat_n + num_pat_p
+    if clipped_total >= 3:
+        returnVal = True
+    if clipped_total >= 1 and (clipped_total + discord_total) >= 3:
+        returnVal = True
+    elif clipped_total >= 1 and (clipped_total + num_pat_total + discord_total) >= 5:
+        returnVal = True
+    elif (clipped_total + num_pat_total + discord_total) >= 3 and discord_total >= 2:
+        returnVal = True
+    return returnVal
  

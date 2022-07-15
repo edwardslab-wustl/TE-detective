@@ -1,5 +1,7 @@
-import numpy as np
 import re
+
+import numpy as np
+
 from TEdetective.io_functions import check_file
 
 
@@ -131,18 +133,14 @@ def calc_length(inp_tup_a, inp_tup_b):
 
 
 def pat_check(inp_seq, query_len, mis_match):
-    #
     inp_seq = inp_seq.upper()
-    #
     match_len = query_len - mis_match
-    #
     polyAT_test_flag = 0
     polyAT_type = 'X'
     # 1. Check poly-A
     start_idx  = 0
     end_idx = query_len
     while ( end_idx <= len(inp_seq) ):
-        #
         if ( inp_seq[start_idx:end_idx].count('A') >= match_len ):
             polyAT_test_flag  = 1
             polyAT_type = 'A'
@@ -153,5 +151,4 @@ def pat_check(inp_seq, query_len, mis_match):
             break
         start_idx += 1
         end_idx += 1
-        #
     return( polyAT_test_flag, polyAT_type )

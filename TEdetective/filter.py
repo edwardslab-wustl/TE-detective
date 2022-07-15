@@ -14,7 +14,7 @@ def exec_filter(args):
         eprint("reading input file: " + args.input_file) 
     if args.verbose > 0:
         eprint("filtering input file.") 
-    filter_results = flt_fun.filter_input_file(args.input_file, args.ini_filter, args.qual_thresh, args.te_type)
+    filter_results = flt_fun.filter_input_file(args.input_file, args.ini_filter, args.qual_thresh, args.te_type,args.no_polyA_info)
     filter_cnt = 0   
     filter_file_names = dict()
     if args.screen_file_list != 'None':
@@ -23,7 +23,7 @@ def exec_filter(args):
             filter_file_names[filter_cnt] = file_name
             if args.verbose > 0:
                 eprint("reading filter file: " + file_name) 
-            filter_results = flt_fun.add_filter_data(filter_results, file_name, filter_cnt, args.pm_qual_thresh, args.filter, args.te_type)
+            filter_results = flt_fun.add_filter_data(filter_results, file_name, filter_cnt, args.pm_qual_thresh, args.filter, args.te_type,args.no_polyA_info)
     if args.results_screen_file_list != 'None':
         for file_name in args.results_screen_file_list.split(','):
             filter_cnt += 1
@@ -98,6 +98,8 @@ def filter_setup_arg_parser(parser):
         help='insert size estimate (default: 340)')
     parser.add_argument('--read_length', action='store', dest='read_length', type=int, default=100, 
         help='read length (default: 100)')
+    parser.add_argument('--no_polyA_info', action='store', dest='no_polyA_info', default=False, 
+        help='for backward compatibility with some old results files. (default: False)')
     parser.add_argument('-v', '--verbose', action='store', 
         dest='verbose', default=1, type=int,
         help="verbose level, set to 0 for quiet. (default: 1)")

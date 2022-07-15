@@ -1,11 +1,14 @@
-import sys, os
+import sys
+import os
+import subprocess
+
 import pysam
 import numpy as np
-import subprocess
 from Bio.Sequencing.Applications import BwaIndexCommandline
 from Bio.Sequencing.Applications import BwaAlignCommandline
 from Bio.Sequencing.Applications import BwaSamseCommandline
-#from TEdetective.io_functions import eprint
+
+from TEdetective.io_functions import eprint
 from TEdetective.general_functions import check_uniq_mapping, break_points_2d
 
 def exec_discover(args):
@@ -172,25 +175,26 @@ def exec_discover(args):
         samfile = pysam.AlignmentFile(read_bam_clipped, 'rb')
         for read in samfile.fetch():
             line_number += 1
-            try:
-                if (dict_crali[line_number] == read.query_name) and (read.is_supplementary != True) and \
-                    (read.cigartuples != None) and (read.has_tag('XA') or read.has_tag('SA') or \
-                    read.mapping_quality >= min_mapq) and (read.mapping_quality >= min_mapq_uniq):
-        
-                    write_flag = check_uniq_mapping( read, args )
+            if line_number in dict_crali:
+                #eprint(line_number, read.query_name,
+                #       dict_crali[line_number], read.is_supplementary,
+                #       read.cigartuples, read.mapping_quality, read.cigarstring)
+                if ( (dict_crali[line_number] == read.query_name)
+                    and (read.is_supplementary != True)
+                    and (read.cigartuples != None)
+                    and (read.has_tag('XA') or read.has_tag('SA') or read.mapping_quality >= min_mapq)
+                    and (read.mapping_quality >= min_mapq_uniq) ):
 
+                    write_flag = check_uniq_mapping( read, args )
+                    #eprint(line_number, read.query_name, write_flag)
                     if write_flag == 'y':
-                        #
                         clipped_side = 'X'
                         if  ( read.cigartuples[-1][0] == 4 ) and ( read.cigartuples[-1][1] > clipped_length ):
                             clipped_side = 'R'
                         elif ( read.cigartuples[0][0] == 4 ) and ( read.cigartuples[0][1] > clipped_length ):
                             clipped_side = 'L'
-                        #
                         raw_out_file_line.append(read.query_name +' '+ str(read.flag) + ' ' \
                             + str(read.reference_name) + ' ' + str(read.reference_start) + ' ' + str(read.reference_end) + ' ' + clipped_side)
-            except KeyError:
-                continue
         samfile.close()
         raw_out_file = open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_clipped_read-bam_id_flag.dat','w')
         raw_out_file.write('\n'.join(raw_out_file_line))

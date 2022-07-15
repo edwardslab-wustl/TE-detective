@@ -106,8 +106,8 @@ def calc_filter_results(file_name, filter_cnt, filter_results):
     return total_initial_pass,total_pass,total_not_found,total_initial_predictions,total_filtered, results
  
 
-def add_filter_data(filter_input, file_name, file_num, qual_threshold, filter, te_type):
-    filter_header,filter_clipped_n,filter_clipped_p,filter_discord_p,filter_discord_n,filter_num_pat_p,filter_num_pat_n = read_results_file(file_name, qual_threshold, te_type)
+def add_filter_data(filter_input, file_name, file_num, qual_threshold, filter, te_type, no_polyA_info):
+    filter_header,filter_clipped_n,filter_clipped_p,filter_discord_p,filter_discord_n,filter_num_pat_p,filter_num_pat_n = read_results_file(file_name, qual_threshold, te_type, no_polyA_info)
     for key in filter_input.keys():
         filterVal = 'NA'
         if key in filter_clipped_n:
@@ -127,9 +127,9 @@ def add_filter_data(filter_input, file_name, file_num, qual_threshold, filter, t
     return filter_input
  
     
-def filter_input_file(fileName, filter, qual_threshold, te_type):
+def filter_input_file(fileName, filter, qual_threshold, te_type, no_polyA_info):
     filter_input = defaultdict(list)
-    input_header, input_clipped_n, input_clipped_p, input_discord_p, input_discord_n, input_num_pat_p, input_num_pat_n = read_results_file(fileName, qual_threshold, te_type)
+    input_header, input_clipped_n, input_clipped_p, input_discord_p, input_discord_n, input_num_pat_p, input_num_pat_n = read_results_file(fileName, qual_threshold, te_type, no_polyA_info)
     for key in input_clipped_n.keys():
         if filter == 'ceu':
             #eprint(fileName, ",", key)
@@ -144,7 +144,7 @@ def filter_input_file(fileName, filter, qual_threshold, te_type):
     return filter_input
 
 
-def read_results_file(fileName, quality_threshold, te_type):
+def read_results_file(fileName, quality_threshold, te_type, no_polyA_info):
     results_clipped_p = dict()
     results_clipped_n = dict()
     results_discord_p = dict()
@@ -158,11 +158,19 @@ def read_results_file(fileName, quality_threshold, te_type):
             line_count += 1
             if line_count == 1:
                 header = line
-            else:
+            elif not line.startswith("#"):
                 line_data = line.strip().split()
                 chrom = line_data[1]
                 ini_pos = line_data[2]
                 key = chrom + '-' + ini_pos
+                base_coord = 20
+                if no_polyA_info=='True' or no_polyA_info == True:
+                    results_num_pat_n[key] = 0
+                    results_num_pat_p[key] = 0
+                    base_coord = 18
+                else:
+                    results_num_pat_n[key] = int(line_data[20])
+                    results_num_pat_p[key] = int(line_data[19])
                 if (line_data[7] == te_type and float(line_data[8]) > quality_threshold) or line_data[7] == 'NA':
                     results_clipped_p[key] = int(line_data[9])
                 else:
@@ -171,16 +179,14 @@ def read_results_file(fileName, quality_threshold, te_type):
                     results_clipped_n[key] = int(line_data[13])
                 else:
                     results_clipped_n[key] = 0
-                if (line_data[21] == te_type and float(line_data[22]) > quality_threshold) or line_data[21] == 'NA':
-                    results_discord_p[key] = int(line_data[23])
+                if (line_data[base_coord + 1] == te_type and float(line_data[base_coord + 2]) > quality_threshold) or line_data[base_coord + 1] == 'NA':
+                    results_discord_p[key] = int(line_data[base_coord + 3])
                 else:
                     results_discord_p[key] = 0
-                if (line_data[25] == te_type and float(line_data[26]) > quality_threshold) or line_data[25] == 'NA':
-                    results_discord_n[key] = int(line_data[27])
+                if (line_data[base_coord + 5] == te_type and float(line_data[base_coord + 6]) > quality_threshold) or line_data[base_coord + 5] == 'NA':
+                    results_discord_n[key] = int(line_data[base_coord + 7])
                 else:
                     results_discord_n[key] = 0
-                results_num_pat_n[key] = int(line_data[20])
-                results_num_pat_p[key] = int(line_data[19])
     return header,results_clipped_p,results_clipped_n,results_discord_p,results_discord_n,results_num_pat_p,results_num_pat_n
  
 def add_filter_alt_chrom(filter_input):
@@ -227,7 +233,7 @@ def add_filter_existing_data (filter_input, rmsk_file, file_name, te_type):
         for line in FH:
             filterVal = False
             line_count += 1
-            if line_count > 1:
+            if line_count > 1 and not line.startswith("#"):
                 line = line.strip()
                 line_data = line.split()
                 chrom = line_data[1]
@@ -285,7 +291,7 @@ def read_results_file_index (fileName, index_size):
             line_count += 1
             if line_count == 1:
                 header = line
-            else:
+            elif not line.startswith("#"):
                 te_id += 1
                 line_data = line.strip().split()
                 chrom = line_data[1]

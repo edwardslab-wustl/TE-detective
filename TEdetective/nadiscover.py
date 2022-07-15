@@ -1,112 +1,67 @@
 import os
+
 import pysam
 import numpy as np
+
 from TEdetective.general_functions import check_uniq_mapping, break_points_2d, pat_check, break_points
-from TEdetective.nadiscover_functions import alt_mapped_pos
-
-
+from TEdetective.nadiscover_functions import alt_mapped_pos, write_pat_clipped_dat, write_pat_clipped_dat_new
+from TEdetective.io_functions import eprint
 
 def exec_nadiscover(args):
-    #
     log_FH=open(args.log_file, 'w')
     dir_path = os.getcwd() #os.path.dirname(os.path.realpath(__file__))
     log_FH.write('Working directory: '+str(dir_path)+'\n')
-    #
+    
     preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)
     log_FH.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
-    #
+    
     fofn_ref_realpath = os.path.realpath(args.fofn_ref)
     log_FH.write('fofn_ref file: '+ fofn_ref_realpath +'\n')
-    #
+    
     bam_full = args.bam_inp
     log_FH.write('bam file name: '+str(bam_full)+'\n')
-    #
+    
     bam_short_name = bam_full.split('/')[-1][:-4]
     log_FH.write('bam short name: '+ bam_short_name +'\n')
-    #
+    
     insert_size = args.isz_inp
     log_FH.write('Insert size estimate: '+str(insert_size)+'\n')
-    #
+    
     discord_rd_clust_denst = args.drd_inp
     log_FH.write('Number of reads in a cluster to call it insertion: '+str(discord_rd_clust_denst)+'\n')
-    #
+    
     read_length = args.rdl_inp
     log_FH.write('Average read length: '+str(read_length)+'\n')
-    #
+    
     coverage_cutoff = args.cct_inp
     log_FH.write('Coverage cutoff to skip a region: '+str(coverage_cutoff)+'\n')
-    #
+    
     min_mapq = args.mpq_inp
     log_FH.write('minimum mapping quality: '+str(min_mapq)+'\n')
-    #
+    
     min_mapq_uniq = args.mpqu_inp
     log_FH.write('minimum mapping quality: '+str(min_mapq_uniq)+'\n')
-    #
+    
     clipped_length = args.cll_inp
     log_FH.write('Minimum clipped length: '+str(clipped_length)+'\n')
-    #
+    
     log_FH.write('Writing initial predictions noalign to: '+ args.output_file +'\n')
-    #
+    
     pat_query_len = args.pql_inp
     pat_mis_match = args.pmm_inp
     rmsk_bed = args.rmsk_bed
     read_bam_clipped = preprocess_dir_realpath +'/'+bam_short_name+'_clipped.bam'
-    #
     
     if args.pat_inp:
-        #
-        pat_out_file_lines = []
-        #
-        samfile_clipped = pysam.AlignmentFile(read_bam_clipped, "rb")
-        #    
-        for read in samfile_clipped.fetch():
-            if (read.is_supplementary != True) and ( read.has_tag('XA') or read.has_tag('SA') ) \
-                and ( read.mapping_quality >= min_mapq_uniq ):
-                #
-                write_flag = check_uniq_mapping( read, args )
-                #
-                if write_flag == 'y':
-                    clipped_side = 'X'
-                    query_sequence = 'tmp'
-                    if ( read.cigartuples[-1][0] == 4 ) and ( read.cigartuples[-1][1] > clipped_length ) and \
-                        ( (read.cigartuples[0][0] == 4 and read.cigartuples[0][1] > 5) != True ):
-                        #    
-                        clipped_side = 'R'
-                        query_sequence=read.query_sequence[read.infer_query_length() \
-                                    - read.cigartuples[-1][1]-1:read.infer_query_length()]
-                        #
-                    elif ( read.cigartuples[0][0] == 4 ) and ( read.cigartuples[0][1] > clipped_length ) and \
-                        ( (read.cigartuples[-1][0] == 4 and read.cigartuples[-1][1] > 5) != True ):
-                        #
-                        clipped_side = 'L'
-                        query_sequence=read.query_sequence[0:read.cigartuples[0][1]-1]
-                        #
-                    pat_flag, pat_type = pat_check(query_sequence, pat_query_len, pat_mis_match)
-                    if pat_flag == 1:
-                        #
-                        pat_out_file_lines.append( read.query_name +' '+ str(read.flag) + ' ' \
-                            + str(read.reference_name) + ' ' + str(read.reference_start) + ' ' + \
-                                         str(read.reference_end) + ' ' + clipped_side )
-                            # +'\t'+query_sequence+'\t'+pat_type )
-                        #pat_dat_lines.append( (read.reference_name, read.reference_start) )
-
-        samfile_clipped.close()
-        #
-        #    
         pat_out_file = open(preprocess_dir_realpath+'/pat_clipped_read-bam_id_flag.dat','w')
-        pat_out_file.write('\n'.join(pat_out_file_lines))
-        #del pat_out_file_lines[:]
-        pat_out_file.close()
-        #
-        #
-    #sys.exit()        
-    #
+        #pat_out_file_lines = write_pat_clipped_dat(read_bam_clipped, min_mapq_uniq, clipped_length, pat_out_file, pat_query_len, pat_mis_match, args)
+        pat_out_file_lines = write_pat_clipped_dat_new(bam_full, read_bam_clipped, min_mapq_uniq, clipped_length, pat_out_file, pat_query_len, pat_mis_match, args)
+        
     ref_type_file_name = []
     with open(fofn_ref_realpath, 'r') as ref_type_file_file:
         for line in ref_type_file_file:
             ref_type_file_name.append([line.split()[0], line.split()[1]])
-    #
-    #
+    
     if args.nas_inp:
         # Process RMSK file.
         dict_ref_bed = {}
@@ -116,7 +71,7 @@ def exec_nadiscover(args):
         with open(rmsk_bed, 'r') as rmsk_bed_file:
             rmsk_bed_file_lines = rmsk_bed_file.readlines()
         rmsk_bed_file.close()
-        #
+        
         # Consolidate rmsk bed items.
         rmsk_bed_items = []
         prev_chr, prev_start, prev_end, prev_type = 'chr00', 0, 0, 'none'
@@ -130,7 +85,7 @@ def exec_nadiscover(args):
                 #rmsk_bed_items.append( items[0] +'\t'+ items[1] +'\t'+ items[2] +'\t'+ items[3] +'\n' )
                 prev_chr, prev_start, prev_end, prev_type = items[0], int(items[1]), int(items[2]), items[3]
         open(preprocess_dir_realpath+'/rmsk_cons.bed', 'w').write(''.join(rmsk_bed_items))
-        #
+        
         # Indexing
         dict_bed = {}
         chr_track = 'chr00'
@@ -160,21 +115,18 @@ def exec_nadiscover(args):
         discord_pos_list = []
         discord_bam = preprocess_dir_realpath + '/'+bam_short_name+'_discord.bam'
         log_FH.write('Discordant bam file: '+discord_bam+'\n')
-        #
+        
         samfile_discord = pysam.AlignmentFile(discord_bam, 'rb')
-        #
         for read in samfile_discord.fetch():
             discord_pos_list.append( read.query_name +'\t'+ str(read.flag) +'\t'+ read.reference_name +'\t'+ str(read.reference_start) +'\t'+ str(read.reference_end)+'\n')
-        #
         samfile_discord.close()
-        #
         open(preprocess_dir_realpath+'/discord_pos_list.txt', 'w').write(''.join(discord_pos_list))
-        #
+        
         if args.flg_all:
             clipped_pos_list = []
             clipped_bam = preprocess_dir_realpath + '/'+bam_short_name+'_clipped.bam'
             log_FH.write('Clipped bam file: '+clipped_bam+'\n')
-            #
+            
             samfile_clipped = pysam.AlignmentFile(clipped_bam, 'rb')
             for read in samfile_clipped.fetch():
                 #
@@ -190,8 +142,6 @@ def exec_nadiscover(args):
 
             open(preprocess_dir_realpath+'/clipped_pos_list.txt', 'w').write(''.join(clipped_pos_list))
             samfile_clipped.close()
-        #
-        #
         dict_discord = {}
         for line in discord_pos_list:
             items = line.strip().split()
@@ -207,17 +157,15 @@ def exec_nadiscover(args):
                         break
                     elif (int(items[3]) > int(info[0])):
                         break
-
             except (ValueError, KeyError):
                 continue
-        #
+        
         for cnt_1 in range(0, len(ref_type_file_name)):
             try:
                 open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_read-bam_id_flag.dat', 'w').write(''.join(dict_discord[ref_type_file_name[cnt_1][0]]))
             except KeyError:
                 open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_read-bam_id_flag.dat', 'w').write('')
-        #
-        #
+        
         if args.flg_all:
             dict_clipped = {}
             for line in clipped_pos_list:
@@ -237,25 +185,21 @@ def exec_nadiscover(args):
 
                 except (ValueError, KeyError):
                     continue
-            #
             for cnt_1 in range(0, len(ref_type_file_name)):
                 try:
                     open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_clipped_read-bam_id_flag.dat', 'w').write(''.join(dict_clipped[ref_type_file_name[cnt_1][0]]))
                 except KeyError:
                     open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_clipped_read-bam_id_flag.dat', 'w').write('')
-            #
-        #
+        
         # Search for mate and their position
         samfile_idx = pysam.AlignmentFile(discord_bam, 'rb')
         id_index = pysam.IndexedReads(samfile_idx)
         id_index.build()
-        #
+        
         for cnt_1 in range( len(ref_type_file_name) ):
-            ##
             with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_read-bam_id_flag.dat' ,'r') as read_bam_dat:
                 read_bam_dat_lines = read_bam_dat.readlines()
             read_bam_dat.close
-            #
             mate_out_file_line = []
             for bam_line in read_bam_dat_lines:
                 iterator = id_index.find(bam_line.split()[0])
@@ -271,94 +215,70 @@ def exec_nadiscover(args):
                             str(read.reference_name) + ' ' + str(read.reference_start) + ' ' + str(read.reference_end))
             del read_bam_dat_lines[:]
             read_bam_dat.close()
-            #
             mate_out_file = open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_read-bam_mate_id_pos.dat', 'w')
             mate_out_file.write('\n'.join(mate_out_file_line))
             del mate_out_file_line[:]
             mate_out_file.close()
         samfile_idx.close()
-        #
         # nas condition done
-        #
+        
     read_positions_clusters_file = open(args.output_file, 'w')
-    #
     for cnt_1 in range( len(ref_type_file_name) ):
-        #
         read_positions = []
         dict_pat_test = {}
-        #
+        
         # nas condition
         if args.nas_inp:
-            #
             with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_read-bam_mate_id_pos.dat', 'r') as noalign_mate_id_dat:
                 noalign_mate_id_dat_lines = noalign_mate_id_dat.readlines()
             noalign_mate_id_dat.close()
             #
             if args.merged:
-                #
                 with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_read-bam_mate_id_pos.dat', 'r') as align_mate_id_dat:
                     align_mate_id_dat_lines = align_mate_id_dat.readlines()
                 align_mate_id_dat.close()
-                #
                 dict_align = {}
                 align_mate_read_positions = []
-                #
+                
                 for line in align_mate_id_dat_lines:
-                    #
                     align_mate_read_positions.append( ( line.split()[2], int(line.split()[3]) ) )
-                    #
                     item = line.strip().split()[0]+'_'+line.strip().split()[1]+'_'+line.strip().split()[2]+'_'+line.strip().split()[3]
                     dict_align[item] = 1
-                    #
                 del align_mate_id_dat_lines[:]
-                #
                 noalign_mate_read_positions = []
-                #
+                
                 for line in noalign_mate_id_dat_lines:
-                    #
                     test_item = line.strip().split()[0]+'_'+line.strip().split()[1]+'_'+line.strip().split()[2]+'_'+line.strip().split()[3]
-                    #
                     try:
                         if dict_align[test_item] == 1:
                             continue
                     except KeyError:
                         noalign_mate_read_positions.append( ( line.split()[2], int(line.split()[3]) ) )
-                    #
+                    
                 # del noalign_mate_id_dat_lines[:] need this if no merged
-                #
                 mate_read_positions = align_mate_read_positions + noalign_mate_read_positions
-                #
                 #print(mate_read_positions)
                 #print(align_mate_read_positions)
                 #print(noalign_mate_read_positions)
-                #
                 del align_mate_read_positions[:]
                 del noalign_mate_read_positions[:]
                 dict_align.clear()
-                #
+                
                 # Clipped
-                #
                 with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_clipped_read-bam_id_flag.dat', 'r') as align_id_dat:
                     align_id_dat_lines = align_id_dat.readlines()
                 align_id_dat.close()
-                #
                 dict_clp_align = {}
                 align_read_positions = []
-                #
                 for line in align_id_dat_lines:
-                    #
                     align_read_positions.append( ( line.split()[2], int(line.split()[3]) ) )
-                    #
                     item = line.strip().split()[0]+'_'+line.strip().split()[1]+'_'+line.strip().split()[2]+'_'+line.strip().split()[3]
-                    #
                     dict_clp_align[item] = 1
                     dict_pat_test[line.strip().split()[0]] = line.strip().split()[1]
-                    #
                 del align_id_dat_lines[:]
 
                 noalign_read_positions = []
                 if args.flg_all:
-                    #
                     with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_clipped_read-bam_id_flag.dat', 'r') as noalign_id_dat:
                         noalign_id_dat_lines = noalign_id_dat.readlines()
                     noalign_id_dat.close()
@@ -377,49 +297,38 @@ def exec_nadiscover(args):
                     del noalign_id_dat_lines[:]
                     #
                 clpd_read_positions = align_read_positions + noalign_read_positions
-                #
                 del align_read_positions[:]
-                #
                 del noalign_read_positions[:]
-                #
                 dict_clp_align.clear()
-                #
-                #
                 read_positions = mate_read_positions + clpd_read_positions
                 del mate_read_positions[:]
                 del clpd_read_positions[:]
-                #
             if not args.merged:
-                #
-                #
                 mate_read_positions = []
                 for line in noalign_mate_id_dat_lines:
                     mate_read_positions.append( ( line.split()[2], int(line.split()[3]) ) )
 
                 clpd_read_positions = []
                 if args.flg_all:
-                    #
                     with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_noalign_clipped_read-bam_id_flag.dat', 'r') as noalign_id_dat:
                         noalign_id_dat_lines = noalign_id_dat.readlines()
                     noalign_id_dat.close()
-                    #
-                    #
                     for line in noalign_id_dat_lines:
                         clpd_read_positions.append( ( line.strip().split()[2], int(line.strip().split()[3]) ) )
                         dict_pat_test[line.strip().split()[0]] = line.strip().split()[1]
                     del noalign_id_dat_lines[:]
-                    #
+                    
                 read_positions = mate_read_positions + clpd_read_positions
                 del mate_read_positions[:]
                 del clpd_read_positions[:]
-                #
+                
             del noalign_mate_id_dat_lines[:]
             # nas consition ends
-            #
+            
         if not args.nas_inp:
             #print(args.nas_inp)
             log_FH.write('--nonaligned_search flag is ' + str(args.nas_inp))
-            #    
+                
             with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_read-bam_mate_id_pos.dat', 'r') as mate_id_dat:
                 mate_id_dat_lines = mate_id_dat.readlines()
             mate_id_dat.close()
@@ -427,26 +336,20 @@ def exec_nadiscover(args):
             for line in mate_id_dat_lines:
                 read_positions.append((line.strip().split()[2], int(line.strip().split()[3])))
             del mate_id_dat_lines[:]
-            #
+            
             with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_clipped_read-bam_id_flag.dat', 'r') as clpd_read_id_dat:
                 clpd_read_id_dat_lines = clpd_read_id_dat.readlines()
             clpd_read_id_dat.close()
-            #
+            
             for line in clpd_read_id_dat_lines:
                 read_positions.append((line.strip().split()[2], int(line.strip().split()[3])))
                 dict_pat_test[line.strip().split()[0]] = line.strip().split()[1]            
     
             del clpd_read_id_dat_lines[:]
-    #
-    #
         read_positions_sorted = sorted(read_positions, key=lambda x: (x[0], x[1]))
-        #
-        if args.pat_inp:
-            #
-            #
-            #if args.pat_inp: # polyA/T search
+        
+        if args.pat_inp: # polyA/T search
             min_non_pat_rd_denst = 3 #min_non_pat_rd_denst
-            #
             pat_dat_lines = []
             for line in pat_out_file_lines:
                 try:
@@ -454,10 +357,8 @@ def exec_nadiscover(args):
                         continue
                 except (KeyError, ValueError):
                     pat_dat_lines.append( ( line.strip().split()[2], int(line.strip().split()[3]) ) )
-            #
             dict_pat_test.clear()
             pat_dat_lines_sorted = sorted(pat_dat_lines, key=lambda x: (x[0], x[1]))
-            #
             # Indexing
             dict_pat = {}
             chr_track = 'chr00'
@@ -472,7 +373,7 @@ def exec_nadiscover(args):
                     dict_pat[chr_track].append( int(items[1]) )
                     continue
                 dict_pat[chr_track].append( int(items[1]) )
-                #
+                
                 line_num += 1
                 if pos_track != int( int(items[1]) /10000 ):
                     for i in range(pos_track, int( int(items[1])/10000)):
@@ -482,8 +383,7 @@ def exec_nadiscover(args):
                         if pos_track + 1 < int( int(items[1])/10000):
                             dict_pat[chr_track+'_idx'][pos_track+1] = dict_pat[chr_track+'_idx'][pos_track]
                             pos_track = pos_track + 1
-
-        #    
+            
             read_positions_clusters = break_points_2d(read_positions_sorted, min_non_pat_rd_denst, \
                         insert_size, read_length/2) #<<<<< change it to insertsize-read_length
             #
@@ -517,13 +417,10 @@ def exec_nadiscover(args):
                 del tmp_position_clstrs[:]
                 #
             del read_positions_clusters[:]
-            #
             read_positions_clusters = read_positions_clusters_pat.copy()
-            #
             del read_positions_clusters_pat[:]
-            #
             dict_pat.clear()
-            #
+            
         if not args.pat_inp:
             read_positions_clusters = break_points_2d(read_positions_sorted, discord_rd_clust_denst, \
                         insert_size, read_length/2)    
@@ -549,12 +446,10 @@ def exec_nadiscover(args):
         for info in read_positions_clusters_nohicov:
             read_positions_clusters_file.write(ref_type_file_name[cnt_1][0]+'\t'+'\t'.join(str(dat) \
                                     for dat in info[:-1])+'\t'+str(len(info[-1]))+'\n')
-
         del read_positions[:]
         del read_positions_sorted[:]
         del read_positions_clusters[:]
         del read_positions_clusters_nohicov[:]
-
         read_positions_clusters_file.close()
     log_FH.close()
     

@@ -4,7 +4,7 @@ import pysam
 import numpy as np
 
 from TEdetective.general_functions import check_uniq_mapping, break_points_2d, pat_check, break_points
-from TEdetective.nadiscover_functions import alt_mapped_pos, write_pat_clipped_dat, write_pat_clipped_dat_new
+from TEdetective.nadiscover_functions import alt_mapped_pos, write_pat_clipped_dat, write_pat_clipped_dat_new2, write_pat_clipped_dat_new
 from TEdetective.io_functions import eprint
 
 def exec_nadiscover(args):
@@ -51,11 +51,13 @@ def exec_nadiscover(args):
     pat_mis_match = args.pmm_inp
     rmsk_bed = args.rmsk_bed
     read_bam_clipped = preprocess_dir_realpath +'/'+bam_short_name+'_clipped.bam'
+    read_bam_clipped_cmpl = preprocess_dir_realpath +'/'+bam_short_name+'_clipped_cmpl.bam'
     
     if args.pat_inp:
         pat_out_file = open(preprocess_dir_realpath+'/pat_clipped_read-bam_id_flag.dat','w')
         #pat_out_file_lines = write_pat_clipped_dat(read_bam_clipped, min_mapq_uniq, clipped_length, pat_out_file, pat_query_len, pat_mis_match, args)
-        pat_out_file_lines = write_pat_clipped_dat_new(bam_full, read_bam_clipped, min_mapq_uniq, clipped_length, pat_out_file, pat_query_len, pat_mis_match, args)
+        #pat_out_file_lines = write_pat_clipped_dat_new(bam_full, read_bam_clipped, min_mapq_uniq, clipped_length, pat_out_file, pat_query_len, pat_mis_match, args)
+        pat_out_file_lines = write_pat_clipped_dat_new2(bam_full, read_bam_clipped_cmpl, min_mapq_uniq, clipped_length, pat_out_file, pat_query_len, pat_mis_match, args)
         
     ref_type_file_name = []
     with open(fofn_ref_realpath, 'r') as ref_type_file_file:

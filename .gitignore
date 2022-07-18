@@ -191,3 +191,4 @@ example_data_2/preprocessed_files_orig/test_sim_clipped.bam
 example_data_2/preprocessed_files_orig/test_sim_clipped.bam.bai
 example_data_2/preprocessed_files_orig/test_sim_discord.bam
 example_data_2/preprocessed_files_orig/test_sim_discord.bam.bai
+initial_predictions_noalign.txt

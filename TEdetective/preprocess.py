@@ -53,14 +53,16 @@ def exec_preprocess(args):
         if read.is_paired == True and read.is_proper_pair != True:
             newsam_d.write(read)
         if read.cigartuples != None:
-            if ( read.cigartuples[-1][0] == 4 ) and ( read.cigartuples[-1][1] > clipped_length ) and \
-                    ( (read.cigartuples[0][0] == 4 and read.cigartuples[0][1] > 5) != True ):
+            if ( (read.cigartuples[-1][0] == 4)
+                  and ( read.cigartuples[-1][1] > clipped_length ) 
+                  and ((read.cigartuples[0][0] == 4 and read.cigartuples[0][1] > 5) != True)):
+                #clipped side = R
                 a = pysam.AlignedSegment()
                 a.query_name = read.query_name
                 #a.query_sequence=read.query_sequence[read.infer_query_length() \
                 #            - read.cigartuples[-1][1]-1:read.infer_query_length()]
-                start = read.infer_query_length() - read.cigartuples[-1][1]-1 #minus 1 to fix length issue, but could do from other side
-                end = read.infer_query_length() - 1
+                start = read.infer_query_length() - read.cigartuples[-1][1] #minus 1 to fix length issue, but could do from other side
+                end = read.infer_query_length()
                 a.query_sequence=read.query_sequence[ start : end ]
                 a.flag = read.flag
                 a.reference_id = read.reference_id

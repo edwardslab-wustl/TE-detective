@@ -1,5 +1,6 @@
+import sys
+import os
 
-import sys, os
 import numpy as np
 
 def eprint(*args, **kwargs):
@@ -40,11 +41,9 @@ def get_class(file_name, qual_interval_inp):
     #qual_interval_inp = args.qii_inp
     te_class_utop = None
     qual_bound = 1
-    
     with open(file_name,'r') as input_file:
         input_file_lines = input_file.readlines()
     input_file.close()
-
     while (te_class_utop == None):
         te_class = []
         qual_bound = qual_bound - qual_interval_inp
@@ -55,11 +54,9 @@ def get_class(file_name, qual_interval_inp):
         if len(te_class) > 0:
             te_class_u, te_counts = np.unique(te_class, return_counts=True)
             te_class_utop = (te_class_u[np.argmax(te_counts)])
-    
     out_arr = []
     ref_cnt_max = 0
     ref_cnt_min = sys.maxsize
-
     for text in input_file_lines:
         words = text.strip().split()
         if te_class_utop == words[3]:
@@ -67,7 +64,6 @@ def get_class(file_name, qual_interval_inp):
                 ref_cnt_max = words[5]
             if int(words[4]) < int(ref_cnt_min):
                 ref_cnt_min = words[4]
-                
     out_arr.append([te_class_utop, ref_cnt_min, ref_cnt_max, np.amax(te_counts)])
     return(tuple(out_arr))
 
@@ -75,9 +71,7 @@ def read_type_info(rd_type, end, file_name, args):
     # Decides TE type and some flags.
     output_file_lines = []
     flag_value = 'n'
-    
     output_file_lines.append( 'Mapping of ('+ end +')end '+ rd_type +' reads.. \n' )    
-    
     if check_file(file_name): # file_name = .fa.map
         #map_flname = (file_name)
         with open(file_name,'r') as fi: 
@@ -85,42 +79,34 @@ def read_type_info(rd_type, end, file_name, args):
         fi.close()
         output_file_lines.append('TE type: ')
         flag_value = 'y'
-
     type_info = get_type(file_name, args)
     output_file_lines.append(';'.join(str(dat) for dat in type_info)+' ')        
     output_file_lines.append('\n\n')
-
     return(flag_value, type_info, output_file_lines)
 
 
 def read_class_info(rd_type, end, file_name, args):
     # Finds TE class
     output_file_lines = []
-    
     if check_file(file_name):
         output_file_lines.append( 'Mapping of ('+ end +')end '+ rd_type +' reads.. \n' )
-        
         #map_flname = (file_name)
         with open(file_name,'r') as fi:
             output_file_lines.append(fi.read())
         fi.close()
         output_file_lines.append('TE class: ')
-        
         class_info = get_class(file_name, args.qii_inp)
         output_file_lines.append(';'.join(str(dat) for dat in class_info)+' ')
         output_file_lines.append('\n\n')
-        
     if not check_file(file_name):
         output_file_lines.append( file_name.split('_')[0] +' '+ file_name.split('_')[1] +' '+ \
                     rd_type +'reads/mates of ('+ end +')end do not align to any type\n')
-
     return(class_info, output_file_lines)
 
 def te_type_setup(file_name_p, file_name_n, type_p, type_n, cnt_p, cnt_n, fofn_ref_file):
     te_class_file = 'none'
     flag_value = 'n'
     output_file_lines = []
-    
     if check_file(file_name_p) == True and check_file(file_name_n) == True:
         ratio_p ='na'
         ratio_n = 'na'
@@ -153,7 +139,6 @@ def te_type_setup(file_name_p, file_name_n, type_p, type_n, cnt_p, cnt_n, fofn_r
                 if type_p[0][0] == line.split()[0]:
                     te_class_file = line.split()[1]
                     break
-    
     return(flag_value, te_class_file, output_file_lines)
 
 

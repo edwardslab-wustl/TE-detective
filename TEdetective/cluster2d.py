@@ -1,22 +1,24 @@
-import sys, os
+import sys
+import os
+
 import pysam
 import numpy as np
+
 from TEdetective.general_functions import break_points_2d
 
 def exec_cluster2d(args):    
-    #
     log_FH=open(args.log_file, 'w')
     preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)
     log_FH.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
-    #
+    
     fofn_ref_realpath = os.path.realpath(args.fofn_ref)
     log_FH.write('fofn_ref file: '+ fofn_ref_realpath +'\n')
-    #
+    
     dir_path = os.getcwd()
     log_FH.write('working directory: '+ dir_path +'\n')
-    #
+    
     log_FH.write('Writing recluster initial predictions to: '+ args.output_file +'\n')
-    #
+    
     bam_full = args.bam_inp
     insert_size = args.isz_inp
     discord_rd_clust_denst = args.drd_inp
@@ -32,7 +34,7 @@ def exec_cluster2d(args):
     for cnt_1 in range(0, len(ref_type_file_name)):
         flag_read_position = 'y'
         read_positions = []
-        #
+        
         if args.flg_all:
             with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_read-bam_mate_id_pos.dat', 'r') as mate_id_dat:
                 mate_id_dat_lines = mate_id_dat.readlines()
@@ -41,17 +43,17 @@ def exec_cluster2d(args):
             for line in mate_id_dat_lines:
                 read_positions.append((line.split()[2], int(line.split()[3])))
             del mate_id_dat_lines[:]
-        #
+        
         with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_clipped_read-bam_id_flag.dat', 'r') as read_id_dat:
             read_id_dat_lines = read_id_dat.readlines()
         read_id_dat.close()
         for line in read_id_dat_lines:
             read_positions.append((line.split()[2], int(line.split()[3])))
         del read_id_dat_lines[:]
-        #
+        
         read_positions_sorted = sorted(read_positions, key=lambda x: (x[0], x[1]))
         read_positions_clusters = break_points_2d(read_positions_sorted, discord_rd_clust_denst, insert_size, read_length/2) #<<<<< change it to insertsize-read_length
-        #
+        
         #Remove predictions from very high coverage areas
         samfile = pysam.AlignmentFile(bam_full, 'rb')
         read_positions_clusters_nohicov = []
@@ -72,7 +74,6 @@ def exec_cluster2d(args):
         #Write final cluster to a file
         for info in read_positions_clusters_nohicov:
             read_positions_clusters_file.write(ref_type_file_name[cnt_1][0]+'\t'+'\t'.join(str(dat) for dat in info[:-1])+'\n')
-
         del read_positions[:]
         del read_positions_sorted[:]
         del read_positions_clusters[:]

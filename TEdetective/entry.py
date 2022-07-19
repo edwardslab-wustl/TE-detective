@@ -8,6 +8,7 @@
 ################################################################
 
 import argparse
+
 from TEdetective.preprocess import exec_preprocess, preprocess_setup_arg_parser
 from TEdetective.discover import exec_discover, discover_setup_arg_parser
 from TEdetective.nadiscover import exec_nadiscover, nadiscover_setup_arg_parser

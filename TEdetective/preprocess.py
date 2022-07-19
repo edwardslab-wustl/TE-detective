@@ -1,42 +1,36 @@
 import sys
 import os
-import pysam
-import numpy as np
 import subprocess
+
+import numpy as np
+import pysam
 from Bio.Sequencing.Applications import BwaIndexCommandline
 from Bio.Sequencing.Applications import BwaAlignCommandline
 from Bio.Sequencing.Applications import BwaSamseCommandline
+
 from TEdetective.io_functions import eprint
 from TEdetective.general_functions import check_uniq_mapping, break_points_2d
 
 def exec_preprocess(args):
-    #
     log_FH=open(args.log_file, 'w')
     dir_path = os.getcwd()
-    #log_FH.write('working directory: '+ dir_path +'\n')
     log_FH.write('working directory: '+ dir_path +'\n')
-    #
+    
     preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)
-    #log_FH.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
     log_FH.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
-    #
+    
     fofn_ref_realpath = os.path.realpath(args.fofn_ref)
-    #log_FH.write('fofn_ref file: '+ fofn_ref_realpath +'\n')
     log_FH.write('fofn_ref file: '+ fofn_ref_realpath +'\n')
-    #
+    
     bam_full = os.path.realpath(args.bam_inp)
-    #log_FH.write('Input bam file: '+str(bam_full)+'\n')
     log_FH.write('Input bam file: '+str(bam_full)+'\n')
-    #
+    
     bam_short_name = bam_full.split('/')[-1][:-4]
-    #log_FH.write('bam short name: '+ bam_short_name +'\n')
     log_FH.write('bam short name: '+ bam_short_name +'\n')
-    #
+    
     clipped_length = args.cll_inp
-    #log_FH.write('Minimum clipped length: '+str(clipped_length)+'\n')
     log_FH.write('Minimum clipped length: '+str(clipped_length)+'\n')
-    #
-    #log_FH.write('working directory: '+os.getcwd()+'\n')
+    
     log_FH.write('working directory: '+os.getcwd()+'\n')
 
     discord_bam = bam_short_name+'_discord.bam'
@@ -61,7 +55,7 @@ def exec_preprocess(args):
                 a.query_name = read.query_name
                 #a.query_sequence=read.query_sequence[read.infer_query_length() \
                 #            - read.cigartuples[-1][1]-1:read.infer_query_length()]
-                start = read.infer_query_length() - read.cigartuples[-1][1] #minus 1 to fix length issue, but could do from other side
+                start = read.infer_query_length() - read.cigartuples[-1][1] #double checked this
                 end = read.infer_query_length()
                 a.query_sequence=read.query_sequence[ start : end ]
                 a.flag = read.flag
@@ -86,9 +80,10 @@ def exec_preprocess(args):
                 #eprint("top", a.cigar, a.cigarstring, str(len(a.query_sequence)), a.query_name)
                 newsam_c.write(a)
                 newsam_c_cmpl.write(read)
-
-            elif ( read.cigartuples[0][0] == 4 ) and ( read.cigartuples[0][1] > clipped_length ) and \
-                    ( (read.cigartuples[-1][0] == 4 and read.cigartuples[-1][1] > 5) != True ):
+            elif ( (read.cigartuples[0][0] == 4 ) 
+                      and ( read.cigartuples[0][1] > clipped_length ) 
+                      and ((read.cigartuples[-1][0] == 4 and read.cigartuples[-1][1] > 5) != True) ):
+                #clipped side = L
                 a = pysam.AlignedSegment()
                 a.query_name = read.query_name
                 #a.query_sequence=read.query_sequence[0:read.cigartuples[0][1]-1]
@@ -116,12 +111,9 @@ def exec_preprocess(args):
     newsam_c.close()
     newsam_c_cmpl.close()
     samfile.close()
-
     pysam.index(preprocess_dir_realpath + '/' + discord_bam)
     pysam.index(preprocess_dir_realpath + '/' + clipped_bam)
     pysam.index(preprocess_dir_realpath + '/' + clipped_bam_cmpl)
-    #log_FH.write('Created %s/%s\n' % (preprocess_dir_realpath,discord_bam))
-    #log_FH.write('Created %s/%s\n' % (preprocess_dir_realpath,clipped_bam))
     log_FH.write('Created %s/%s\n' % (preprocess_dir_realpath,discord_bam))
     log_FH.write('Created %s/%s\n' % (preprocess_dir_realpath,clipped_bam))
     log_FH.write('Created %s/%s\n' % (preprocess_dir_realpath,clipped_bam_cmpl))

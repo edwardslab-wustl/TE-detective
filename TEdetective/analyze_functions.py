@@ -1,7 +1,8 @@
-
 import os
 import subprocess
+
 from Bio.Seq import Seq
+
 from TEdetective.general_functions import pat_check, check_uniq_mapping
 
 def run_censor (fasta_file, library_file, log_FH, message):
@@ -12,59 +13,43 @@ def run_censor (fasta_file, library_file, log_FH, message):
     return
 
 def analysis_pat_check( inp_fa_file, inp_fa_map_file ):
-    #
     with open(inp_fa_file, 'r') as fa_file:
         fa_file_lines = fa_file.readlines()
     fa_file.close()
-    #
     mapeed_seq_idx = []
     try:
         with open(inp_fa_map_file, 'r') as map_file:
             map_file_lines = map_file.readlines()
         map_file.close()
-        #
         for line in  map_file_lines:
             mapeed_seq_idx.append( line.strip().split()[0] )
-        #
     except FileNotFoundError:
         pass
-    #
     fa_file_lines_itr = iter( fa_file_lines )
-    #
     pat_test_out_lines = []
-    #
     for line in fa_file_lines_itr:
-        #
         info_line = line
         seq_line = next( fa_file_lines_itr )
-        #
         seq_idx = (info_line.strip().split()[0]).strip('>')
-        #
         if seq_idx in mapeed_seq_idx:
             continue
         pat_flag, pat_type = pat_check( seq_line, 9, 1 )
         if pat_flag == 1:
             pat_test_out_lines.append([seq_idx, pat_type ])
-        #
     return ( pat_test_out_lines )
 
 
 def flt_discord( discord_mate_file ):
-    #
     with open(discord_mate_file, 'r') as inp_file:
         inp_file_lines = inp_file.readlines()
     inp_file.close()
-    #
     inp_file_lines_itr = iter( inp_file_lines )
-    #
     dict_info = {}
     for line in inp_file_lines_itr:
-        #
         info_line = line
         seq_id = line.strip().split()[1]
         seq_line = next( inp_file_lines_itr )
         seq = Seq( seq_line.strip() )
-        #
         try:
             for item in dict_info[seq_id]:
                 if ( ( item == seq ) or ( item == seq.complement() ) \
@@ -86,16 +71,14 @@ def flt_discord( discord_mate_file ):
 
 
 def find_clipped_ends( iterator_reads, insert_guess, args ):
-
     array_p_ps = []
     array_n_ps = []
-    #
     insert_size = args.isz_inp
     clipped_length = args.cll_inp
     anchor_length = args.ahl_inp
     insert_range = args.rdl_inp
     min_mapq = args.mpq_inp
-    #
+    
     # 1. Read is uniqly mapped.
     # 2. Soft clipped at either ends. Clipped len > min clipped len, Anchor len > min anchor len
     # 3. For reads p end of TE: insert_guess-read_len <= ref_end < insert_guess+read_len
@@ -121,5 +104,4 @@ def find_clipped_ends( iterator_reads, insert_guess, args ):
 
     array_p_s = sorted(array_p_ps, key=int)
     array_n_s = sorted(array_n_ps, key=int)
-    #    
     return(array_p_s, array_n_s)

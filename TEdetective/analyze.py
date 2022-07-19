@@ -96,34 +96,34 @@ def exec_analyze(args):
         subprocess.run(['mkdir' , '-p' , tmp_censor_dir])
         os.chdir(tmp_censor_dir)
         output_file = open(str(chrom)+'_'+str(lf_line.split()[2])+'.out', 'w')
-        #    
+            
         #samfile = pysam.AlignmentFile("../" + bam_full, 'rb')
         insert_guess_start_range = insert_guess-(insert_size+insert_range)
         insert_guess_end_range = insert_guess+(insert_size+insert_range)
         if insert_guess_start_range < 1:
             insert_guess_start_range = 1
         iterator_reads = samfile.fetch(chrom, insert_guess_start_range, insert_guess_end_range)
-        #
+        
         # Convert iterator to list for multiple usages
         iterator_reads_list = list( iterator_reads )
         # Close samfile. Don't close it before copying iterator to list, will cause segfault
         samfile.close()
-        #
+        
         # discover clipped reads 
         array_p, array_n = find_clipped_ends( iterator_reads_list, insert_guess, args ) 
         #seperate funct for adding more functionality later
-        #
+        
         output_file.write('(+)end clipped at: ' + ', '.join(list(map(str, array_p))) + '\n')
         output_file.write('(-)end clipped at: ' + ', '.join(list(map(str, array_n))) + '\n')
-        #
+        
         clipped_ends_p, clipped_ends_n = [], []
-        #
+        
         if len(array_p) == 0:
             output_file.write("No clipped reads on (+) end near provided guess. \
                         You may wanna change anchor_length/clipped_length parameters!\n")
         else:
             clipped_ends_p = break_points(array_p, min_reads_ends, cliped_end_range)
-        #
+        
         if len(array_n) == 0:
             output_file.write("No clipped reads in (-) end near provided guess. \
                         You may wanna change anchor_length/clipped_length parameters!\n")
@@ -131,19 +131,18 @@ def exec_analyze(args):
             clipped_ends_n = break_points(array_n, min_reads_ends, cliped_end_range)
         #----------------------------------------------------------------------------------------------
         calc_tsd_flag = 'y'
-        #
         if len(clipped_ends_p) == 0:
             if len(clipped_ends_n) > 0: # <- chnage this order, bring array_p first
                 clipped_ends_p = clipped_ends_n.copy()
             elif len(array_p) > 0:
                 clipped_ends_p = array_p.copy()
-        #
+        
         if len(clipped_ends_n) == 0:
             if len(clipped_ends_p) > 0: # <- change this order, bring array_n first
                 clipped_ends_n = clipped_ends_p.copy()
             elif len(array_n) > 0:
                 clipped_ends_n = array_n.copy()
-        #
+        
         if len(clipped_ends_p) == 0:
             if len(clipped_ends_n) > 0:
                 clipped_ends_p = clipped_ends_n.copy()
@@ -152,7 +151,7 @@ def exec_analyze(args):
             output_file.write("No clipped cluster on (+) end. You may wanna change \
                         anchor_length/clipped_length parameters!\n")
             calc_tsd_flag = 'n'
-        #
+        
         if len(clipped_ends_n) == 0:
             if len(clipped_ends_p) > 0:
                 clipped_ends_n = clipped_ends_p.copy()
@@ -161,7 +160,7 @@ def exec_analyze(args):
             output_file.write("No clipped cluster on (-) end. You may wanna change \
                         anchor_length/clipped_length parameters!\n")
             calc_tsd_flag = 'n'
-        #
+        
         # find insertion point *NEAREST* to provided guess
         insert_point = 0
         gap_ends = 0 # make first gap_end = max_tsd + 2*range of clipped read search (2*5)
@@ -217,16 +216,11 @@ def exec_analyze(args):
 
         #-----------------------------------------------------------------------------------------
         # Writes clipped part of reads to a file
-        # 
         output_file.write("\nDetails of clipped reads at insertion point:\n-----------------------------------------------\n")
-        #
         insert_range_new = round(gap_ends/2) + 5
-
         file_reads_p = open(str(int_file_name)+'_reads_p.fa','w')
         file_reads_n = open(str(int_file_name)+'_reads_n.fa','w')
-
         cnt_rd_p, cnt_rd_n = 0, 0
-
         for read in iterator_reads_list:
             if read.reference_start in range(insert_point-insert_range, insert_point+insert_range) and \
                 read.reference_end in range(insert_point-insert_size, insert_point+insert_size) and \
@@ -490,28 +484,23 @@ def exec_analyze(args):
     id_index.build()
 
     for lf_line in inp_file_lines:
-        #
         if lf_line.startswith('#'):
             continue
-        #    
         samfile = pysam.AlignmentFile(bam_full, "rb")
         chrom = lf_line.strip().split()[1]
         insert_guess = int(lf_line.strip().split()[2])
-        #
         int_file_name = str(chrom)+'_'+str(insert_guess)
         #os.chdir(int_file_name)
         tmp_censor_dir = preprocess_dir_realpath + '/' + 'censor_results/' + int_file_name
         os.chdir(tmp_censor_dir)
-        #
+        
         del insert_point
         with open( int_file_name+'.out', 'r') as tmpfile:
             for line in tmpfile:
                 if line.startswith('@clipped'):    
                     insert_point = int(line.split()[3])
         tmpfile.close()
-        #
         output_file = open(str(chrom)+'_'+str(insert_guess)+'.out', 'a+')
-        #
         #samfile = pysam.AlignmentFile("../" + bam_full, "rb")
         #iterator_reads = samfile.fetch(chrom, insert_point-insert_size, insert_point+insert_size)
         insert_point_start = insert_point-insert_size 
@@ -521,45 +510,43 @@ def exec_analyze(args):
         iterator_reads = samfile.fetch(chrom, insert_point_start, insert_point_end)
         iterator_reads_list = list( iterator_reads )
         samfile.close()
-        #
+        
         #----------------------------------------------------------------------------------------------------------------------------
         output_file.write("\n\n\nDiscordant mate pair analysis\n------------------------------------------------\n")
-        #
         file_discord_p = open( int_file_name+'_discord_p', 'w')
         file_discord_n = open( int_file_name+'_discord_n', 'w')
-        #
         for read in iterator_reads_list:
             if (read.is_paired == True) and (read.is_proper_pair != True) and (read.cigarstring != None) \
                 and (read.is_supplementary != True) and ( read.has_tag('XA') or read.has_tag('SA') \
                 or read.mapping_quality >= min_mapq ) and (read.mapping_quality >= min_mapq_uniq):    
-                #
+                
                 write_flag = check_uniq_mapping( read, args )
-                #    
+                    
                 #if read.get_reference_positions()[0] in range(insert_point-insert_size, insert_point) and write_flag == 'y':
                 if read.get_reference_positions()[0] in range(insert_point_start, insert_point) and write_flag == 'y':
                     file_discord_p.write(read.query_name + '\t' + str(read.flag) + '\t' + str(read.reference_start) + '\t' + str(read.reference_end) + '\n')        
-                #
+                
                 #if read.get_reference_positions()[-1] in range(insert_point, insert_point+insert_size+1) and write_flag == 'y':
                 if read.get_reference_positions()[-1] in range(insert_point, insert_point_end+1) and write_flag == 'y':
                     file_discord_n.write(read.query_name + '\t' + str(read.flag) + '\t' + str(read.reference_start) + '\t' + str(read.reference_end) + '\n')
-        #    
+            
         file_discord_p.close()
         file_discord_n.close()
+        
         #----------------------------------------------------------------------------------------------------------------------------
-        #
         with open(str(int_file_name)+'_discord_p', 'r') as f1, open(str(int_file_name)+'_discord_n', 'r') as f2:
             p_lines = f1.readlines()
             n_lines = f2.readlines()
         f1.close()
         f2.close()    
-        #
+        
         cfl_lines = []
         for i in p_lines:
             for j in n_lines:
         #        if ( i.strip().split()[0]==j.strip().split()[0] ) and ( i.strip().split()[1]==j.strip().split()[1] ) :
                 if i.strip() == j.strip():
                     cfl_lines.append(i)
-        #
+        
         # Split common lines
         cfl_split_p = []
         cfl_split_n = []
@@ -568,36 +555,29 @@ def exec_analyze(args):
                 cfl_split_p.append(cline)
             else:
                 cfl_split_n.append(cline)    
-        #    
+            
         with open(int_file_name+'_discord_pu', 'w') as tmp_pu:
-            #
             for line in p_lines:
                 if line not in cfl_lines: # not a duplicate
                     tmp_pu.write(line)
-            #
             tmp_pu.write(''.join(cfl_split_p))  # <-- common read split 
-            #
         tmp_pu.close()    
-        #
+        
         with open(int_file_name+'_discord_nu', 'w') as tmp_nu:
-            #
             for line in n_lines:
                 if line not in cfl_lines: # not a duplicate
                     tmp_nu.write(line)
-            #
             tmp_nu.write(''.join(cfl_split_n))  # <-- common read split
-            #
         tmp_nu.close()
-        #
+        
         # write common line to a file
         open(str(int_file_name)+'_discord_c', 'w').write(''.join(cfl_lines))
-        #
         output_file.write( 'Number of discordant reads at (+) end: ' + str( num_of_lines( int_file_name+'_discord_pu' ) ) + '\n' )
         output_file.write( 'Number of discordant reads at (-) end: ' + str( num_of_lines( int_file_name+'_discord_nu' ) ) + '\n' )
         # Removing duplicate lines done
+        
         #----------------------------------------------------------------------------------------------------------------------------
         # Call mate of a pair
-
         cnt_dm_p = 0
         if check_file( int_file_name+'_discord_pu' ) == True:
             file_discord_mate_p = open(str(int_file_name)+'_discord_mate_p.fa','w')
@@ -607,9 +587,7 @@ def exec_analyze(args):
                     if read.query_name == text_p.split()[0] and (int(read.flag) & 0x40) != (int(text_p.split()[1]) & 0x40): # 1 is first and 2nd is second
                         cnt_dm_p += 1
                         file_discord_mate_p.write('>' + str(cnt_dm_p) + ' ' + read.query_name + '\n' + read.query_sequence + '\n')
-
             file_discord_mate_p.close()
-
         cnt_dm_n = 0
         if check_file( int_file_name+'_discord_nu' ) == True:
             file_discord_mate_n = open(str(int_file_name)+'_discord_mate_n.fa','w')
@@ -619,20 +597,17 @@ def exec_analyze(args):
                     if read.query_name == text_n.split()[0] and (int(read.flag) & 0x40) != (int(text_n.split()[1]) & 0x40):
                         cnt_dm_n += 1
                         file_discord_mate_n.write('>' + str(cnt_dm_n) + ' ' + read.query_name + '\n' + read.query_sequence + '\n')
-
             file_discord_mate_n.close()
-
         output_file.write("Number of discordant mates for (+) end: " + str(cnt_dm_p)+'\n')
         output_file.write("Number of discordant mates for (-) end: " + str(cnt_dm_n)+'\n')
+        
         #-------------------------------------------------------------------------------------------------------------
         if args.flt_inp:
-            #
             if check_file( int_file_name+'_discord_mate_p.fa' ):
                 flt_discord( int_file_name+'_discord_mate_p.fa' )
-                #
             if check_file( int_file_name+'_discord_mate_n.fa' ):
                 flt_discord( int_file_name+'_discord_mate_n.fa' )
-                #
+                
         #---------------------------------------------------------------------------------------------------------------
         if cnt_dm_p > 0:
             #subprocess.run(['censor.ncbi' , int_file_name+'_discord_mate_p.fa' , '-lib' , te_type_file])
@@ -640,29 +615,26 @@ def exec_analyze(args):
         if cnt_dm_n > 0:
             #subprocess.run(['censor.ncbi' , int_file_name+'_discord_mate_n.fa' , '-lib' , te_type_file])
             run_censor(int_file_name+'_discord_mate_n.fa', te_type_file, log_FH, 'censor discord mate n: ' +int_file_name)
+            
         #--------------------------------------------------------------------------------------------------------------
         output_file.write("\nMapping information of mates of discordant reads\n------------------------------------------------\n")
-        #
         discord_read_p_flag = 'n'
         discord_read_n_flag = 'n'
-        #
         discord_read_p_flag, type_discord_p, output_write_lines = read_type_info('discord', 'p', int_file_name+'_discord_mate_p.fa.map', args )
         output_file.write(''.join(output_write_lines))
         del output_write_lines[:]
-        #
         discord_read_n_flag, type_discord_n, output_write_lines = read_type_info('discord', 'n', int_file_name+'_discord_mate_n.fa.map', args )
         output_file.write(''.join(output_write_lines))
         del output_write_lines[:]
-        #
         discord_class_flag = 'n'
         #fofn_ref_filename = dir_path + "/" + args.fofn_ref
         discord_class_flag, te_class_file, output_write_lines = te_type_setup( int_file_name+'_discord_mate_p.fa.map', \
                 int_file_name+'_discord_mate_n.fa.map', type_discord_p, type_discord_n, cnt_dm_p, cnt_dm_n, fofn_ref_realpath )
         output_file.write(''.join(output_write_lines))
         del output_write_lines[:]
-        #
         subprocess.run(['rm', '-rf', '*.fa.*', 'censor.ncbi.*', 'error.log', 'formatdb.log'])
         #call(['rm', '-rf', '*.fa.map', 'censor.ncbi.*', '*.log' ])    
+        
         #--------------------------------------------------------------------------------------------------------------
         #Type estimation for discordant mates
         if discord_class_flag == 'y':
@@ -670,10 +642,10 @@ def exec_analyze(args):
             #subprocess.run(['censor.ncbi' , int_file_name+'_discord_mate_n.fa' , '-lib' , te_class_file])
             run_censor(int_file_name+'_discord_mate_n.fa', te_class_file, log_FH, 'censor class discord mate n: ' +int_file_name)
             run_censor(int_file_name+'_discord_mate_p.fa', te_class_file, log_FH, 'censor class discord mate p: ' +int_file_name)
-            #
+            
             if check_file( int_file_name+'_discord_mate_p.fa.map' ) !=True or check_file( int_file_name+'_discord_mate_n.fa.map' ) !=True:
                 discord_class_flag = 'n'
-            #
+            
         if discord_class_flag == 'y':
             output_file.write("\nMapping information of discordant mates to TE class.\n---------------------------------------------------------\n")
 
@@ -721,25 +693,13 @@ def exec_analyze(args):
 
         output_file.close()
         del iterator_reads_list[:]
-
-    #sys.exit()
     samfile_idx.close()
+    
     #--------------------------------------------------------------------------------------------------------------
     # Write combined output file.
     log_FH.write("----------\n"  + "writing output files\n" + "----------\n")
     with open(args.output_file, 'w') as final_output:
-        #final_output.write("#Type\tChromosome\tInitial_Guess\tEstimated_insertion_point\tHetrozygous/Homozygous\t"
-        #    + "num_reads_forHet\tTSD_length\t(+)clipped_type\t(+)clipped_type_quality\t"
-        #    + "num_reads_supporting_(+)clipped_type\t%reads_supporting_(+)clipped_type\t(-)clipped_type\t"
-        #    + "(-)clipped_type_quality\tnum_reads_supporting_(-)clipped_type\tfrac_reads_supporting_(-)clipped_type\t"
-        #    + "Estimated_TE_class\tBoth_clipped_end_support\tEstimated_TE_Length(bp)\tgap_bw_ends\t"
-        #    + "num_pat_p\tnum_pat_n\t"
-        #    + "(+)discord_mate_type\t(+)discord_mate_type_quality\tnum_reads_supporting_(+)discord_mate_typet\t"
-        #    + "frac_reads_supporting_(+)discord_mate_type\t(-)discord_mate_type\t(-)discord_mate_type_quality\t"
-        #    + "num_reads_supporting_(-)discord_mate_type\tfrac_reads_supporting_(-)discord_mate_type\t"
-        #    + "Estimated_TE_class-discord\tBoth_end_discord_mate_support\tspecial_comment\n")
         final_output.write(output_header() + "\n")
-
         for lf_line in inp_file_lines:
             if lf_line.startswith('#'):
                 continue

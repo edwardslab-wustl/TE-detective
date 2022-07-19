@@ -12,72 +12,72 @@ from TEdetective.io_functions import eprint
 from TEdetective.general_functions import check_uniq_mapping, break_points_2d
 
 def exec_discover(args):
-    #
+    
     log_FH=open(args.log_file, 'w')
     dir_path = os.getcwd() #os.path.dirname(os.path.realpath(__file__))
     log_FH.write('Working directory: '+str(dir_path)+'\n')
-    #
+    
     preprocess_dir_realpath = os.path.realpath(args.preprocess_dir)
     log_FH.write('preprocessing/intermediate file directory: '+ preprocess_dir_realpath +'\n')
-    #
+    
     fofn_ref_realpath = os.path.realpath(args.fofn_ref)
     log_FH.write('fofn_ref file: '+ fofn_ref_realpath +'\n')
-    #
+    
     bam_full = os.path.realpath(args.bam_inp)
     log_FH.write('bam file name: '+str(bam_full)+'\n')
-    #
+    
     bam_short_name = bam_full.split('/')[-1][:-4]
     log_FH.write('bam short name: '+ bam_short_name +'\n')
-    #
+    
     insert_size = args.isz_inp
     log_FH.write('Insert size estimate: '+str(insert_size)+'\n')
-    #
+    
     discord_rd_clust_denst = args.drd_inp # <--change this variable name, confusing.
     log_FH.write('Number of reads in a cluster to call it insertion: '+str(discord_rd_clust_denst)+'\n')
-    #
+    
     read_length = args.rdl_inp
     log_FH.write('Average read length: '+str(read_length)+'\n')
-    #
-    coverage_cutoff    = args.cct_inp
+    
+    coverage_cutoff = args.cct_inp
     log_FH.write('Coverage cutoff to skip a region: '+str(coverage_cutoff)+'\n')
-    #
+    
     min_mapq = args.mpq_inp
     log_FH.write('minimum mapping quality: '+str(min_mapq)+'\n')
-    #
+    
     min_mapq_uniq = args.mpqu_inp
     log_FH.write('minimum mapping quality: '+str(min_mapq_uniq)+'\n')
-    #    
+        
     clipped_length = args.cll_inp
     log_FH.write('Minimum clipped length: '+str(clipped_length)+'\n')
-    #
+    
     log_FH.write('Writing initial predictions to: '+ args.output_file +'\n')
-    #
+    
     subprocess.run(['mkdir' , '-p' , preprocess_dir_realpath])
-    #
+    
     reference_genome = preprocess_dir_realpath+'/te_ref_type_bwa.fa'
     index_cmd = BwaIndexCommandline(infile=reference_genome, algorithm='bwtsw')
     index_cmd()
-    #
+    
     read_bam = preprocess_dir_realpath + '/'+bam_short_name+'_discord.bam'
     output_sai_file = preprocess_dir_realpath + '/aligned_reads.sai'
     read_group='@RG ID:foo  SM:bar'
     align_cmd = BwaAlignCommandline(reference=reference_genome, b='b', read_file=read_bam)
     align_cmd(stdout=output_sai_file)
-    #
+    
     output_sam_file = preprocess_dir_realpath + '/aligned_reads.sam'
     samse_cmd = BwaSamseCommandline(reference=reference_genome, read_file=read_bam, sai_file=output_sai_file)
     samse_cmd(stdout=output_sam_file)
-    #
+    
     read_bam_clipped = preprocess_dir_realpath+'/'+bam_short_name+'_clipped.bam'
     output_sai_file_clipped = preprocess_dir_realpath+ '/aligned_reads_clipped.sai'
     read_group='@RG ID:foo  SM:bar'
     align_cmd_clipped = BwaAlignCommandline(reference=reference_genome, b='b', read_file=read_bam_clipped)
     align_cmd_clipped(stdout=output_sai_file_clipped)
-    #
+    
     output_sam_file_clipped = preprocess_dir_realpath + '/aligned_reads_clipped.sam'
     samse_cmd_clipped = BwaSamseCommandline(reference=reference_genome, read_file=read_bam_clipped, sai_file=output_sai_file_clipped)
     samse_cmd_clipped(stdout=output_sam_file_clipped)    
-    #
+    
     ref_type_file_name = []
     with open(fofn_ref_realpath, 'r') as ref_type_file_file:
         for line in ref_type_file_file:
@@ -87,11 +87,11 @@ def exec_discover(args):
     dict_aof = {}
     for cnt_1 in range( len(ref_type_file_name) ):
         dict_aof[ref_type_file_name[cnt_1][0]] = []
-    #
+    
     with open(output_sam_file,'r') as output_sam_file_fl:
         output_sam_file_fl_lines = output_sam_file_fl.readlines()
     output_sam_file_fl.close
-    #
+    
     count_header_lines = 0
     for n,line in enumerate(output_sam_file_fl_lines):  #<<--- read it in ram
         if line.startswith('@'):
@@ -102,13 +102,13 @@ def exec_discover(args):
             except KeyError:
                 continue
     del output_sam_file_fl_lines[:]
-    #
+    
     for cnt_1 in range( len(ref_type_file_name) ):
         with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_ref-aligned_line-num_id.dat', 'w') as temp_fl:
             temp_fl.write('\n'.join(dict_aof[ref_type_file_name[cnt_1][0]]))    
         temp_fl.close
     dict_aof.clear()
-    #
+    
     ######
     dict_aofc = {}
     for cnt_1 in range( len(ref_type_file_name) ):
@@ -117,7 +117,7 @@ def exec_discover(args):
     with open(output_sam_file_clipped,'r') as output_sam_file_clipped_fl:
         output_sam_file_clipped_fl_lines = output_sam_file_clipped_fl.readlines()
     output_sam_file_clipped_fl.close()
-    #
+    
     count_header_lines = 0
     for n,line in enumerate(output_sam_file_clipped_fl_lines):
         if line.startswith('@'):
@@ -128,13 +128,13 @@ def exec_discover(args):
             except KeyError:
                 continue
     del output_sam_file_clipped_fl_lines[:]
-    #
+    
     for cnt_1 in range( len(ref_type_file_name) ):
         with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_clipped_ref-aligned_line-num_id.dat', 'w') as temp_fl:
             temp_fl.write('\n'.join(dict_aofc[ref_type_file_name[cnt_1][0]]))
         temp_fl.close
     dict_aofc.clear()
-    #
+    
     # Extract ids of mapped discordant reads.
     for cnt_1 in range( len(ref_type_file_name) ):
         line_number = 0
@@ -208,11 +208,9 @@ def exec_discover(args):
     id_index.build()
 
     for cnt_1 in range( len(ref_type_file_name) ):
-        ##
         with open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_read-bam_id_flag.dat' ,'r') as read_bam_dat:
             read_bam_dat_lines = read_bam_dat.readlines()
         read_bam_dat.close
-
         mate_out_file_line = []
         for bam_line in read_bam_dat_lines:
             iterator = id_index.find(bam_line.split()[0])
@@ -228,7 +226,6 @@ def exec_discover(args):
                         str(read.reference_name) + ' ' + str(read.reference_start) + ' ' + str(read.reference_end))
         del read_bam_dat_lines[:]
         read_bam_dat.close()
-
         mate_out_file = open(preprocess_dir_realpath+'/'+ref_type_file_name[cnt_1][0]+'_read-bam_mate_id_pos.dat', 'w')
         mate_out_file.write('\n'.join(mate_out_file_line))
         del mate_out_file_line[:]

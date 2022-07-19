@@ -69,7 +69,7 @@ def exec_nadiscover(args):
         dict_ref_bed = {}
         for items in ref_type_file_name:
             dict_ref_bed[items[0]] = []
-        #
+        
         with open(rmsk_bed, 'r') as rmsk_bed_file:
             rmsk_bed_file_lines = rmsk_bed_file.readlines()
         rmsk_bed_file.close()
@@ -113,7 +113,7 @@ def exec_nadiscover(args):
                     if pos_track + 1 < int((int(line.split()[1]))/10000):
                         dict_bed[chr_track+'_idx'][pos_track+1] = dict_bed[chr_track+'_idx'][pos_track]
                         pos_track = pos_track + 1
-        #
+        
         discord_pos_list = []
         discord_bam = preprocess_dir_realpath + '/'+bam_short_name+'_discord.bam'
         log_FH.write('Discordant bam file: '+discord_bam+'\n')

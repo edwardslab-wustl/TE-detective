@@ -29,11 +29,8 @@ def cgr_to_mpb(cigar_tup):
 
 
 def check_uniq_mapping( read, args ):
-
     write_flag = 'y'
-    
     if read.mapping_quality < args.mpq_inp:
-        #
         read_cgr_tup = read.cigartuples
         if read.is_reverse:
             read_cgr_tup = read_cgr_tup[::-1]
@@ -48,7 +45,6 @@ def check_uniq_mapping( read, args ):
                     secondary_maped_bases = cgr_to_mpb(cigar_to_tup(align_info.split(',')[2], 'n'))
                 if len(set(maped_bases).intersection(secondary_maped_bases)) > 5:
                     write_flag = 'n'
-
         if read.has_tag('SA'): # Chimeric alignment
             sa_tag_line = read.get_tag('SA')
             for i in range(0, len(sa_tag_line.split(';'))-1):
@@ -59,7 +55,6 @@ def check_uniq_mapping( read, args ):
                     sa_secondary_maped_bases = cgr_to_mpb(cigar_to_tup(sa_align_info.split(',')[3], 'n'))
                 if len(set(maped_bases).intersection(sa_secondary_maped_bases)) > 5:
                     write_flag = 'n'
-
     return( write_flag )
 
 

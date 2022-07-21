@@ -185,7 +185,11 @@ def exec_discover(args):
                     and (read.has_tag('XA') or read.has_tag('SA') or read.mapping_quality >= min_mapq)
                     and (read.mapping_quality >= min_mapq_uniq) ):
 
-                    write_flag = check_uniq_mapping( read, args )
+                    write_flag = 'n'
+                    if read.has_tag('ZU'):
+                        write_flag = read.get_tag('ZU')
+                    else:
+                        write_flag = check_uniq_mapping( read, args )
                     #eprint(line_number, read.query_name, write_flag)
                     if write_flag == 'y':
                         clipped_side = 'X'

@@ -35,13 +35,13 @@ def exec_preprocess(args):
 
     discord_bam = bam_short_name+'_discord.bam'
     clipped_bam = bam_short_name+'_clipped.bam'
-    clipped_bam_cmpl = bam_short_name+'_clipped_cmpl.bam'
+    #clipped_bam_cmpl = bam_short_name+'_clipped_cmpl.bam'
     subprocess.run(['mkdir' , '-p' , preprocess_dir_realpath ])
 
     samfile = pysam.AlignmentFile(bam_full, "rb")
     newsam_d = pysam.AlignmentFile(preprocess_dir_realpath + '/' + discord_bam, 'wb', template=samfile)
     newsam_c = pysam.AlignmentFile(preprocess_dir_realpath + '/' + clipped_bam, 'wb', template=samfile)
-    newsam_c_cmpl = pysam.AlignmentFile(preprocess_dir_realpath + '/' + clipped_bam_cmpl, 'wb', template=samfile)
+    #newsam_c_cmpl = pysam.AlignmentFile(preprocess_dir_realpath + '/' + clipped_bam_cmpl, 'wb', template=samfile)
 
     for read in samfile.fetch():
         if read.is_paired == True and read.is_proper_pair != True:
@@ -77,9 +77,13 @@ def exec_preprocess(args):
                 #            - read.cigartuples[-1][1]-1:read.infer_query_length()]
                 a.query_qualities = read.query_qualities[start:end]
                 a.set_tags(read.get_tags())
+                a.set_tag("ZS",'R')
+                write_flag = check_uniq_mapping( read, args )
+                a.set_tag("ZU",write_flag)
+                a.is_supplementary = read.is_supplementary
                 #eprint("top", a.cigar, a.cigarstring, str(len(a.query_sequence)), a.query_name)
                 newsam_c.write(a)
-                newsam_c_cmpl.write(read)
+                #newsam_c_cmpl.write(read)
             elif ( (read.cigartuples[0][0] == 4 ) 
                       and ( read.cigartuples[0][1] > clipped_length ) 
                       and ((read.cigartuples[-1][0] == 4 and read.cigartuples[-1][1] > 5) != True) ):
@@ -104,19 +108,23 @@ def exec_preprocess(args):
                 #a.query_qualities=read.query_qualities[0:read.cigartuples[0][1]-1]
                 #a.query_qualities=read.query_qualities[0:read.cigartuples[0][1]]
                 a.set_tags(read.get_tags())
+                a.set_tag("ZS",'L')
+                write_flag = check_uniq_mapping( read, args )
+                a.set_tag("ZU",write_flag)
+                a.is_supplementary = read.is_supplementary
                 #eprint("bot", a.cigarstring, str(len(a.query_sequence)), a.query_name)
                 newsam_c.write(a)
-                newsam_c_cmpl.write(read)
+                #newsam_c_cmpl.write(read)
     newsam_d.close()
     newsam_c.close()
-    newsam_c_cmpl.close()
+    #newsam_c_cmpl.close()
     samfile.close()
     pysam.index(preprocess_dir_realpath + '/' + discord_bam)
     pysam.index(preprocess_dir_realpath + '/' + clipped_bam)
-    pysam.index(preprocess_dir_realpath + '/' + clipped_bam_cmpl)
+    #pysam.index(preprocess_dir_realpath + '/' + clipped_bam_cmpl)
     log_FH.write('Created %s/%s\n' % (preprocess_dir_realpath,discord_bam))
     log_FH.write('Created %s/%s\n' % (preprocess_dir_realpath,clipped_bam))
-    log_FH.write('Created %s/%s\n' % (preprocess_dir_realpath,clipped_bam_cmpl))
+    #log_FH.write('Created %s/%s\n' % (preprocess_dir_realpath,clipped_bam_cmpl))
 
     ref_type_file_name = []
     with open(fofn_ref_realpath, 'r') as ref_type_file_file:
@@ -157,6 +165,8 @@ def preprocess_setup_arg_parser(parser):
         help='directory to store preprocessing output files (default: preprocessed_files)')
     parser.add_argument('--min_clipped_len', action='store', dest='cll_inp', type=int, default=25,
         help='Minimum clipped length(bp) (default: 25)')
+    parser.add_argument('--min_map_qual', action='store', dest='mpq_inp', type=int, default=30,
+        help='Minimum mapping quality (default: 30)')
     parser.add_argument('--log_file', action='store',
         dest='log_file', default='preprocess.log',
         help='run log file (default: preprocess.log)')

@@ -4,7 +4,7 @@ import pysam
 import numpy as np
 
 from TEdetective.general_functions import check_uniq_mapping, break_points_2d, pat_check, break_points
-from TEdetective.nadiscover_functions import alt_mapped_pos, write_pat_clipped_dat, write_pat_clipped_dat_new2, write_pat_clipped_dat_new
+from TEdetective.nadiscover_functions import alt_mapped_pos, write_pat_clipped_dat_new2b,write_pat_clipped_dat_new2
 from TEdetective.io_functions import eprint
 
 def exec_nadiscover(args):
@@ -57,7 +57,8 @@ def exec_nadiscover(args):
         pat_out_file = open(preprocess_dir_realpath+'/pat_clipped_read-bam_id_flag.dat','w')
         #pat_out_file_lines = write_pat_clipped_dat(read_bam_clipped, min_mapq_uniq, clipped_length, pat_out_file, pat_query_len, pat_mis_match, args)
         #pat_out_file_lines = write_pat_clipped_dat_new(bam_full, read_bam_clipped, min_mapq_uniq, clipped_length, pat_out_file, pat_query_len, pat_mis_match, args)
-        pat_out_file_lines = write_pat_clipped_dat_new2(bam_full, read_bam_clipped_cmpl, min_mapq_uniq, clipped_length, pat_out_file, pat_query_len, pat_mis_match, args)
+        #pat_out_file_lines = write_pat_clipped_dat_new2(bam_full, read_bam_clipped_cmpl, min_mapq_uniq, clipped_length, pat_out_file, pat_query_len, pat_mis_match, args)
+        pat_out_file_lines = write_pat_clipped_dat_new2b(read_bam_clipped, min_mapq_uniq, clipped_length, pat_out_file, pat_query_len, pat_mis_match, args)
         
     ref_type_file_name = []
     with open(fofn_ref_realpath, 'r') as ref_type_file_file:
@@ -131,12 +132,14 @@ def exec_nadiscover(args):
             
             samfile_clipped = pysam.AlignmentFile(clipped_bam, 'rb')
             for read in samfile_clipped.fetch():
-                #
                 if (read.is_supplementary != True) and ( read.has_tag('XA') or read.has_tag('SA') ) \
                     and ( read.mapping_quality >= min_mapq_uniq ):
-                    #
-                    write_flag = check_uniq_mapping( read, args )
-                    #
+                    #write_flag = check_uniq_mapping( read, args )
+                    write_flag = 'n'
+                    if read.has_tag('ZU'):
+                        write_flag = read.get_tag('ZU')
+                    else:
+                        write_flag = check_uniq_mapping( read, args )
                     if write_flag == 'y':
                         chrom, clp_start, clp_end = alt_mapped_pos( read, args )
                         clipped_pos_list.append( read.query_name +'\t'+ str(read.flag) +'\t'+ read.reference_name +'\t'+ \
@@ -152,7 +155,6 @@ def exec_nadiscover(args):
                     if len( range(max(int(items[3]), int(info[0])), min(int(items[4]), int(info[1]))+1) ) >=25: # atleast 25bp overlap
                         try:
                             dict_discord[info[2]].append(items[0] +'\t'+ items[1] +'\n')
-
                         except KeyError:
                             dict_discord[info[2]] = []
                             dict_discord[info[2]].append(items[0] +'\t'+ items[1] +'\n')

@@ -185,6 +185,46 @@ def write_pat_clipped_dat_new2(full_bam, read_bam_clipped_cmpl, min_mapq_uniq, c
         pat_out_file.close()
         return pat_out_file_lines
     
+def write_pat_clipped_dat_new2b(read_bam_clipped, min_mapq_uniq, clipped_length, pat_out_file, pat_query_len, pat_mis_match, args ):
+    pat_out_file_lines = []
+    samfile_clipped = pysam.AlignmentFile(read_bam_clipped, "rb")
+    for read in samfile_clipped.fetch():
+        if ( read.is_supplementary != True  
+             and ( read.has_tag('XA') or read.has_tag('SA') ) 
+             and  read.mapping_quality >= min_mapq_uniq ):
+            write_flag = 'n'
+            if read.has_tag('ZU'):
+                write_flag = read.get_tag('ZU')
+            else:
+                write_flag = check_uniq_mapping( read, args )
+            if write_flag == 'y':
+                pat_flag = 0
+                if read.has_tag('ZS'):
+                    clipped_side = read.get_tag('ZS')
+                    #query_sequence = 'tmp'
+                    #if clipped_side == 'R':
+                    #    start = read.infer_query_length() - read.cigartuples[-1][1] #matches preprocess
+                    #    end = read.infer_query_length() 
+                    #elif clipped_side == 'L':
+                    #    start = 0
+                    #    end = read.cigartuples[0][1]-1
+                    #query_sequence=read.query_sequence[start:end]
+                    query_sequence=read.query_sequence
+                    pat_flag, pat_type = pat_check(query_sequence, pat_query_len, pat_mis_match)
+                if pat_flag == 1:
+                    outLine = ' '.join([ read.query_name,
+                                        str(read.flag),
+                                        str(read.reference_name),
+                                        str(read.reference_start),
+                                        str(read.reference_end), 
+                                        clipped_side ])
+                    pat_out_file_lines.append(outLine)
+    samfile_clipped.close()
+    pat_out_file.write('\n'.join(pat_out_file_lines))
+    pat_out_file.close()
+    return pat_out_file_lines
+    
+    
 def write_pat_clipped_dat_new3(read_bam_clipped, read_bam_clipped_cmpl, min_mapq_uniq, clipped_length, pat_out_file, pat_query_len, pat_mis_match, args ):
         #PLACEHOLDER IF NEEDED, NOT USED OR TESTED
         pat_out_file_lines = []

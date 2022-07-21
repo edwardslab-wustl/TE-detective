@@ -33,7 +33,7 @@ def exec_extract_reads():
 		if read.is_paired == True and read.is_proper_pair != True:
 			newsam_d.write(read)
 	newsam_d.close()
-	#
+	pysam.index(discord_bam)
 	# extract region reads
 	extract_bam = bam_full.split('/')[-1][:-4]+'_extract.bam'
 	newsam = pysam.AlignmentFile(extract_bam, 'wb', template=samfile) 
@@ -46,13 +46,13 @@ def exec_extract_reads():
 			newsam.write(read)
 	newsam.close()
 	#call(['samtools', 'index' , extract_bam])
-#	pysam.index(extract_bam)
+	pysam.index(extract_bam)
 	#
 	# Sort extracted bam file
 	sorted_extracted_bam = extract_bam.split('/')[-1][:-4]+'_sorted.bam'
 	pysam.sort('-T', './tmp/aln.exted', '-o', sorted_extracted_bam, extract_bam)
-	call(['samtools', 'index' , sorted_extracted_bam])
-	#pysam.index(sorted_extracted_bam)	
+	#call(['samtools', 'index' , sorted_extracted_bam])
+	pysam.index(sorted_extracted_bam)	
 	#
 	# find mate in discordant bam file
 	extracted_discord_mate = extract_bam.split('/')[-1][:-4]+'_discord_mate.bam'
@@ -87,8 +87,8 @@ def exec_extract_reads():
 	pysam.merge('-f', extractd_rds_discord_mate_merged, sorted_extracted_bam, extracted_discord_mate_sorted)
 	#
 	#	print(extractd_rds_discord_mate_merged)
-	call(['samtools', 'index' , extractd_rds_discord_mate_merged])
-	#	pysam.index(extractd_rds_discord_mate_merged)
+	#call(['samtools', 'index' , extractd_rds_discord_mate_merged])
+	pysam.index(extractd_rds_discord_mate_merged)
 
 	# Remove Duplicates Avoid using picard for this purpose.
 	final_extracted_file = bam_full.split('/')[-1][:-4]+'_extracted_final.bam'
@@ -111,7 +111,8 @@ def exec_extract_reads():
 	samfile_emwd.close()
 	newsam_emwd.close()
 
-	call(['samtools', 'index' , final_extracted_file])
+	#call(['samtools', 'index' , final_extracted_file])
+	pysam.index(final_extracted_file)
 
 def exec_remove_reads():
 	bam_full = args.bam_inp

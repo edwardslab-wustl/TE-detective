@@ -95,8 +95,6 @@ def polymorph_filter_ceu_p(clipped_p, clipped_n, discord_p, discord_n, num_pat_p
     clipped_total = clipped_p + clipped_n
     discord_total = discord_p + discord_n
     num_pat_total = num_pat_n + num_pat_p
-    #if clipped_total >= 3:
-    #    returnVal = True
     if clipped_total >= 1 and (clipped_total + discord_total) >= 3:
         returnVal = True
     elif clipped_total >= 1 and (clipped_total + num_pat_total + discord_total) >= 5:

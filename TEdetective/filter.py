@@ -82,7 +82,7 @@ def filter_setup_arg_parser(parser):
         help="filter statistics output file (default: filter_stats.txt)")
     parser.add_argument('-f', '--filter', action='store', 
         dest='filter', default="ceu",
-        choices = ['ceu','custom','normal'],
+        choices = ['ceu','custom','normal','ceu_p'],
         help="polymorphic subtraction filtering criteria, see README.md for more info (default: ceu)")
     parser.add_argument('--ini_filter', action='store', 
         dest='ini_filter', default="ceu",

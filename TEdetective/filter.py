@@ -86,7 +86,7 @@ def filter_setup_arg_parser(parser):
         help="polymorphic subtraction filtering criteria, see README.md for more info (default: ceu)")
     parser.add_argument('--ini_filter', action='store', 
         dest='ini_filter', default="ceu",
-        choices = ['ceu','stringent','custom','normal'],
+        choices = ['ceu','stringent','custom','normal','ceu_p'],
         help="initial filtering criteria, see README.md for more info (default: ceu)")
     parser.add_argument('--qual_thresh', action='store', 
         dest='qual_thresh', default=0.85, type=float,

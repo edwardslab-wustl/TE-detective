@@ -116,6 +116,10 @@ def add_filter_data(filter_input, file_name, file_num, qual_threshold, filter, t
                 filterVal = flt_scr.polymorph_filter_ceu( filter_clipped_p[key], filter_clipped_n[key],
                                                   filter_discord_p[key], filter_discord_n[key],
                                                   filter_num_pat_p[key], filter_num_pat_n[key])
+            elif filter == 'ceu_p':
+                filterVal = flt_scr.polymorph_filter_ceu_p( filter_clipped_p[key], filter_clipped_n[key],
+                                                  filter_discord_p[key], filter_discord_n[key],
+                                                  filter_num_pat_p[key], filter_num_pat_n[key])
             elif filter == 'custom':
                 filterVal = flt_scr_cust.polymorph_filter_custom( filter_clipped_p[key], filter_clipped_n[key],
                                                   filter_discord_p[key], filter_discord_n[key],
@@ -133,8 +137,9 @@ def filter_input_file(fileName, filter, qual_threshold, te_type, no_polyA_info):
     input_header, input_clipped_n, input_clipped_p, input_discord_p, input_discord_n, input_num_pat_p, input_num_pat_n = read_results_file(fileName, qual_threshold, te_type, no_polyA_info)
     for key in input_clipped_n.keys():
         if filter == 'ceu':
-            #eprint(fileName, ",", key)
             filterVal = flt_scr.initial_ins_filter_ceu(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key], input_num_pat_p[key], input_num_pat_n[key])
+        elif filter == 'ceu_p':
+            filterVal = flt_scr.initial_ins_filter_ceu_p(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key], input_num_pat_p[key], input_num_pat_n[key])
         elif filter == 'stringent':
             filterVal = flt_scr.initial_ins_filter_stringent(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key], input_num_pat_p[key], input_num_pat_n[key])
         elif filter == 'custom':

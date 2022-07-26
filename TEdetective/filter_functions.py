@@ -28,7 +28,8 @@ def write_results(results, filter_cnt, file_name, out_file):
                     line = line.strip()
                     line_data = line.split()
                     chrom = line_data[1]
-                    ini_pos = line_data[2]
+                    #ini_pos = line_data[2]
+                    ini_pos = line_data[3]
                     key = chrom + '-' + ini_pos
                     filterVal = check_filters( results[key], filter_cnt)
                     if filterVal == False:
@@ -83,7 +84,8 @@ def calc_filter_results(file_name, filter_cnt, filter_results):
                 line = line.strip()
                 line_data = line.split()
                 chrom = line_data[1]
-                ini_pos = line_data[2]
+                #ini_pos = line_data[2]
+                ini_pos = line_data[3]
                 key = chrom + '-' + ini_pos
                 total_initial_predictions += 1
                 ini_filter_pass = False
@@ -167,7 +169,8 @@ def read_results_file(fileName, quality_threshold, te_type, no_polyA_info):
             elif not line.startswith("#"):
                 line_data = line.strip().split()
                 chrom = line_data[1]
-                ini_pos = line_data[2]
+                #ini_pos = line_data[2]
+                ini_pos = line_data[3]
                 key = chrom + '-' + ini_pos
                 base_coord = 20
                 if no_polyA_info=='True' or no_polyA_info == True:
@@ -243,7 +246,8 @@ def add_filter_existing_data (filter_input, rmsk_file, file_name, te_type):
                 line = line.strip()
                 line_data = line.split()
                 chrom = line_data[1]
-                ini_pos = int(line_data[2])
+                #ini_pos = int(line_data[2])
+                ini_pos = int(line_data[3])
                 guess_pos = int(line_data[3])
                 key = chrom + '-' + str(ini_pos)
                 idx = int(float(ini_pos)/float(index_size))
@@ -301,7 +305,8 @@ def read_results_file_index (fileName, index_size):
                 te_id += 1
                 line_data = line.strip().split()
                 chrom = line_data[1]
-                ini_pos = line_data[2]
+                #ini_pos = line_data[2]
+                ini_pos = line_data[3]
                 est_pos = line_data[3]
                 if est_pos != 'NA' and est_pos != 'na':
                     pos = est_pos

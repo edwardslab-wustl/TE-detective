@@ -140,10 +140,10 @@ dmypy.json
 #other files
 .DS_Store
 .vscode/
-filter_output.txt*
-filter_stats.txt
+./filter_output.txt*
+./filter_stats.txt
 example_data/final_results*.txt
 example_data/rmsk_hg19.bed
 example_data_2/*
 example_data_3/*
-initial_predictions_noalign.txt
+./initial_predictions_noalign.txt

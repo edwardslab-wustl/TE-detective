@@ -147,3 +147,7 @@ example_data/rmsk_hg19.bed
 example_data_2/*
 example_data_3/*
 ./initial_predictions_noalign.txt
+filter_output.txt
+filter_output.txt.mask
+filter_stats.txt
+initial_predictions_noalign.txt

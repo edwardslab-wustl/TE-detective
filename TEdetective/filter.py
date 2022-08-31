@@ -34,7 +34,7 @@ def exec_filter(args):
     if args.bed_screen:
         if args.verbose > 0:
             eprint("filtering all " + args.te_type + " with bed file: " + args.bed_screen) 
-        filter_results = flt_fun.add_filter_existing_data(filter_results, args.bed_screen, args.input_file, args.te_type)
+        filter_results = flt_fun.add_filter_existing_data(filter_results, args.bed_screen, args.input_file, args.te_type, args.te_dist)
         filter_cnt += 1
         filter_file_names[filter_cnt] = "in_existing_" + args.te_type
     if args.filter_alt_chrom:
@@ -86,8 +86,10 @@ def filter_setup_arg_parser(parser):
         help="polymorphic subtraction filtering criteria, see README.md for more info (default: ceu)")
     parser.add_argument('--ini_filter', action='store', 
         dest='ini_filter', default="ceu",
-        choices = ['ceu','stringent','custom','normal','ceu_p'],
+        choices = ['ceu','stringent','custom','normal','ceu_p','new'],
         help="initial filtering criteria, see README.md for more info (default: ceu)")
+    parser.add_argument('--te_dist', action='store', dest='te_dist', type=int, default=0, 
+        help='Filter out predicted insertions that fall within this distance of TE insertion in provided bed file (default: 0)')
     parser.add_argument('--qual_thresh', action='store', 
         dest='qual_thresh', default=0.85, type=float,
         help="initial filter quality threshold for clipped and discordant read alignments. (default: 0.85)")

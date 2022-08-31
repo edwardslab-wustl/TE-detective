@@ -146,8 +146,10 @@ def filter_input_file(fileName, filter, qual_threshold, te_type, no_polyA_info):
             filterVal = flt_scr.initial_ins_filter_stringent(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key], input_num_pat_p[key], input_num_pat_n[key])
         elif filter == 'custom':
             filterVal = flt_scr_cust.initial_ins_filter_custom(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key], input_num_pat_p[key], input_num_pat_n[key])
+        elif filter == 'new': 
+            filterVal = flt_scr.initial_ins_filter_new(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key], input_num_pat_p[key], input_num_pat_n[key])
         else: 
-            filterVal = flt_scr.initial_ins_filter(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key])
+            filterVal = flt_scr.initial_ins_filter(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key], input_num_pat_p[key], input_num_pat_n[key])
         filter_input[key] = [filterVal]
     return filter_input
 
@@ -234,7 +236,7 @@ def add_filter_other_results(filter_input, file_name, insert_size, read_length):
         filter_input[key].append(filterVal)
     return filter_input
      
-def add_filter_existing_data (filter_input, rmsk_file, file_name, te_type):
+def add_filter_existing_data (filter_input, rmsk_file, file_name, te_type, te_dist):
     index_size = 50000
     filter_dict,te_info = read_rmsk_file(rmsk_file, te_type,index_size)
     with open(file_name, 'r') as FH:
@@ -260,7 +262,7 @@ def add_filter_existing_data (filter_input, rmsk_file, file_name, te_type):
                                 if te_start > te_stop:
                                     te_start = te_info[te_id][1]
                                     te_stop = te_info[te_id][0]
-                                if (te_start <= ini_pos and ini_pos <= te_stop):
+                                if (te_start - te_dist <= ini_pos and ini_pos <= te_stop + te_dist):
                                     filterVal = True
                             elif filterVal == True:
                                 break

@@ -22,6 +22,35 @@ def initial_ins_filter(clipped_p, clipped_n, discord_p, discord_n, num_pat_p, nu
     elif discord_total >= 10:
         returnVal = True
     return returnVal
+
+def initial_ins_filter_new(clipped_p, clipped_n, discord_p, discord_n, num_pat_p, num_pat_n):
+    returnVal = False
+    clipped_total = clipped_p + clipped_n
+    discord_total = discord_p + discord_n
+    num_pat_total = num_pat_n + num_pat_p
+    if clipped_total >= 3:
+        returnVal = True
+    elif clipped_total + discord_total >= 5 and clipped_total >= 1:
+        returnVal = True
+    elif discord_total >= 10:
+        returnVal = True
+    return returnVal
+
+
+def initial_ins_filter_new_2(clipped_p, clipped_n, discord_p, discord_n, num_pat_p, num_pat_n):
+    returnVal = False
+    clipped_total = clipped_p + clipped_n
+    discord_total = discord_p + discord_n
+    num_pat_total = num_pat_n + num_pat_p
+    if clipped_total >= 3:
+        returnVal = True
+    elif clipped_total + discord_total >= 7 and clipped_total >= 2:
+        returnVal = True
+    elif discord_total >= 25:
+        returnVal = True
+    return returnVal
+ 
+ 
  
 def initial_ins_filter_ceu(clipped_p, clipped_n, discord_p, discord_n, num_pat_p, num_pat_n):
     returnVal = False

@@ -61,7 +61,10 @@ def exec_discover(args):
     read_bam = preprocess_dir_realpath + '/'+bam_short_name+'_discord.bam'
     output_sai_file = preprocess_dir_realpath + '/aligned_reads.sai'
     read_group='@RG ID:foo  SM:bar'
-    align_cmd = BwaAlignCommandline(reference=reference_genome, b='b', read_file=read_bam)
+    if args.te_type == 'ALU':
+        align_cmd = BwaAlignCommandline(reference=reference_genome, n=10, b='b', read_file=read_bam)
+    else:
+        align_cmd = BwaAlignCommandline(reference=reference_genome, b='b', read_file=read_bam)
     align_cmd(stdout=output_sai_file)
     
     output_sam_file = preprocess_dir_realpath + '/aligned_reads.sam'
@@ -71,7 +74,10 @@ def exec_discover(args):
     read_bam_clipped = preprocess_dir_realpath+'/'+bam_short_name+'_clipped.bam'
     output_sai_file_clipped = preprocess_dir_realpath+ '/aligned_reads_clipped.sai'
     read_group='@RG ID:foo  SM:bar'
-    align_cmd_clipped = BwaAlignCommandline(reference=reference_genome, b='b', read_file=read_bam_clipped)
+    if args.te_type == 'ALU':
+        align_cmd_clipped = BwaAlignCommandline(reference=reference_genome, n=10, l=15, b='b', read_file=read_bam_clipped)
+    else:
+        align_cmd_clipped = BwaAlignCommandline(reference=reference_genome, b='b', read_file=read_bam_clipped)
     align_cmd_clipped(stdout=output_sai_file_clipped)
     
     output_sam_file_clipped = preprocess_dir_realpath + '/aligned_reads_clipped.sam'
@@ -305,6 +311,9 @@ def discover_setup_arg_parser(parser):
     parser.add_argument('-p', '--preprocess_dir', action='store',
         dest='preprocess_dir', default='preprocessed_files',
         help='directory used to store preprocessing output files (default: preprocessed_files)')
+    parser.add_argument('-t', '--te_type', action='store', 
+        dest='te_type', default='LINE', 
+        help="TE type used to set bwa alignment parameters (default: LINE)")
     parser.add_argument('--insert_size_est', action='store', dest='isz_inp', type=int, default=340, 
         help='Insert size estimate (default: 340)')
     parser.add_argument('--read_length', action='store', dest='rdl_inp', type=int, default=150, 

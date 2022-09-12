@@ -148,7 +148,7 @@ Clone and install with pip:
     TE_detective filter -i ../NA12878/final_results_NA12878.txt --bed_screen ../rmsk_hg19.bed --filter ceu --pm_qual_thresh 0.8 --te_type LINE -o FINAL_RESULTS.NA12878.txt
     TE_detective filter -i ../NA12891/final_results_NA12891.txt --bed_screen ../rmsk_hg19.bed --filter ceu --pm_qual_thresh 0.8 --te_type LINE -o FINAL_RESULTS.NA12891.txt
     TE_detective filter -i ../NA12892/final_results_NA12892.txt --bed_screen ../rmsk_hg19.bed --filter ceu --pm_qual_thresh 0.8 --te_type LINE -o FINAL_RESULTS.NA12892.txt
-    TE_detective filter -i ../NA12878/final_results_NA12878.txt --results_screen_files FINAL_RESULTS.NA12891.txt,FINAL_RESULTS.NA12892.txt --bed_screen ../rmsk_hg19.bed --filter ceu --pm_qual_thresh 0.8 --te_type LINE -o FINAL_RESULTS.NORM.txt --insert_size_est 439 --read_length 0
+    TE_detective filter -i ../NA12878/final_results_NA12878.txt --results_screen_files FINAL_RESULTS.NA12891.txt,FINAL_RESULTS.NA12892.txt --bed_screen ../rmsk_hg19.bed --filter ceu --pm_qual_thresh 0.8 --te_type LINE -o FINAL_RESULTS.NORM.txt --insert_size_est 383 --read_length 0
 
   
   results from insertion prediction using polymorphic subtraction module are in: FINAL_RESULTS.PM.txt 

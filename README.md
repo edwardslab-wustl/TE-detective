@@ -113,6 +113,7 @@ Clone and install with pip:
     TE_detective cluster2d -i $PATH_TO_FILE/NA12878_hg19_sorted.bam -r ../ref_fofn --read_length 100 --insert_size_est 383
     TE_detective nadiscover -i $PATH_TO_FILE/NA12878_hg19_sorted.bam -r ../ref_fofn -o initial_predictions_NA12878.txt --polyA --read_length 100 --insert_size_est 383 --discord_cluster_dens 10 --coverage_cutoff 608
     TE_detective analyze -i $PATH_TO_FILE/NA12878_hg19_sorted.bam  -r ../ref_fofn -o final_results_NA12878.txt --inp initial_predictions_NA12878.txt --read_length 100 --insert_size_est 383
+    TE_detective filter -i final_results_NA12878.txt -b  ../rmsk_hg19.bed
 
   3. Insertion prediction in one parent (NA12891).
 
@@ -122,6 +123,7 @@ Clone and install with pip:
     TE_detective cluster2d -i $PATH_TO_FILE/NA12891_hg19_sorted.bam -r ../ref_fofn --read_length 100 --insert_size_est 439
     TE_detective nadiscover -i $PATH_TO_FILE/NA12891_hg19_sorted.bam -r ../ref_fofn -o initial_predictions_NA12891.txt --polyA --read_length 100 --insert_size_est 439 --discord_cluster_dens 10 --coverage_cutoff 504
     TE_detective analyze -i $PATH_TO_FILE/NA12891_hg19_sorted.bam  -r ../ref_fofn -o final_results_NA12891.txt --inp initial_predictions_NA12878.txt --read_length 100 --insert_size_est 439
+    TE_detective filter -i final_results_NA12891.txt -b  ../rmsk_hg19.bed
 
   4. Insertion prediction in other parent (NA12892).
 
@@ -131,6 +133,7 @@ Clone and install with pip:
     TE_detective cluster2d -i $PATH_TO_FILE/NA12892_hg19_sorted.bam -r ../ref_fofn --read_length 100 --insert_size_est 439
     TE_detective nadiscover -i $PATH_TO_FILE/NA12892_hg19_sorted.bam -r ../ref_fofn -o initial_predictions_NA12892.txt --polyA --read_length 100 --insert_size_est 439 --discord_cluster_dens 10 --coverage_cutoff 504
     TE_detective analyze -i $PATH_TO_FILE/NA12892_hg19_sorted.bam  -r ../ref_fofn -o final_results_NA12892.txt --inp initial_predictions_NA12878.txt --read_length 100 --insert_size_est 439
+    TE_detective filter -i final_results_NA12892.txt -b  ../rmsk_hg19.bed
 
   5. Insertion prediciton in child using polymorphic subtraction:
     We use the bam and preprocessed files from the parents to analyze the initial predictions from the child. Then we apply the ceu filter sets as well as filter for annotated TEs.

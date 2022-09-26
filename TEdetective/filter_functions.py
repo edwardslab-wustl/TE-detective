@@ -28,8 +28,8 @@ def write_results(results, filter_cnt, file_name, out_file):
                     line = line.strip()
                     line_data = line.split()
                     chrom = line_data[1]
-                    #ini_pos = line_data[2]
-                    ini_pos = line_data[3]
+                    ini_pos = line_data[2]
+                    #ini_pos = line_data[3]
                     key = chrom + '-' + ini_pos
                     filterVal = check_filters( results[key], filter_cnt)
                     if filterVal == False:
@@ -84,8 +84,8 @@ def calc_filter_results(file_name, filter_cnt, filter_results):
                 line = line.strip()
                 line_data = line.split()
                 chrom = line_data[1]
-                #ini_pos = line_data[2]
-                ini_pos = line_data[3]
+                ini_pos = line_data[2]
+                #ini_pos = line_data[3]
                 key = chrom + '-' + ini_pos
                 total_initial_predictions += 1
                 ini_filter_pass = False
@@ -118,8 +118,8 @@ def add_filter_data(filter_input, file_name, file_num, qual_threshold, filter, t
                 filterVal = flt_scr.polymorph_filter_ceu( filter_clipped_p[key], filter_clipped_n[key],
                                                   filter_discord_p[key], filter_discord_n[key],
                                                   filter_num_pat_p[key], filter_num_pat_n[key])
-            elif filter == 'ceu_p':
-                filterVal = flt_scr.polymorph_filter_ceu_p( filter_clipped_p[key], filter_clipped_n[key],
+            elif filter == 'ceu_alu':
+                filterVal = flt_scr.polymorph_filter_ceu_alu( filter_clipped_p[key], filter_clipped_n[key],
                                                   filter_discord_p[key], filter_discord_n[key],
                                                   filter_num_pat_p[key], filter_num_pat_n[key])
             elif filter == 'custom':
@@ -140,8 +140,8 @@ def filter_input_file(fileName, filter, qual_threshold, te_type, no_polyA_info):
     for key in input_clipped_n.keys():
         if filter == 'ceu':
             filterVal = flt_scr.initial_ins_filter_ceu(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key], input_num_pat_p[key], input_num_pat_n[key])
-        elif filter == 'ceu_p':
-            filterVal = flt_scr.initial_ins_filter_ceu_p(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key], input_num_pat_p[key], input_num_pat_n[key])
+        elif filter == 'ceu_alu':
+            filterVal = flt_scr.initial_ins_filter_ceu_alu(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key], input_num_pat_p[key], input_num_pat_n[key])
         elif filter == 'stringent':
             filterVal = flt_scr.initial_ins_filter_stringent(input_clipped_p[key], input_clipped_n[key], input_discord_p[key], input_discord_n[key], input_num_pat_p[key], input_num_pat_n[key])
         elif filter == 'custom':
@@ -171,8 +171,8 @@ def read_results_file(fileName, quality_threshold, te_type, no_polyA_info):
             elif not line.startswith("#"):
                 line_data = line.strip().split()
                 chrom = line_data[1]
-                #ini_pos = line_data[2]
-                ini_pos = line_data[3]
+                ini_pos = line_data[2]
+                #ini_pos = line_data[3]
                 key = chrom + '-' + ini_pos
                 base_coord = 20
                 if no_polyA_info=='True' or no_polyA_info == True:
@@ -248,8 +248,8 @@ def add_filter_existing_data (filter_input, rmsk_file, file_name, te_type, te_di
                 line = line.strip()
                 line_data = line.split()
                 chrom = line_data[1]
-                #ini_pos = int(line_data[2])
-                ini_pos = int(line_data[3])
+                ini_pos = int(line_data[2])
+                #ini_pos = int(line_data[3])
                 guess_pos = int(line_data[3])
                 key = chrom + '-' + str(ini_pos)
                 idx = int(float(ini_pos)/float(index_size))
@@ -307,8 +307,8 @@ def read_results_file_index (fileName, index_size):
                 te_id += 1
                 line_data = line.strip().split()
                 chrom = line_data[1]
-                #ini_pos = line_data[2]
-                ini_pos = line_data[3]
+                ini_pos = line_data[2]
+                #ini_pos = line_data[3]
                 est_pos = line_data[3]
                 if est_pos != 'NA' and est_pos != 'na':
                     pos = est_pos

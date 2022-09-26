@@ -23,7 +23,7 @@ def exec_filter(args):
             filter_file_names[filter_cnt] = file_name
             if args.verbose > 0:
                 eprint("reading filter file: " + file_name) 
-            filter_results = flt_fun.add_filter_data(filter_results, file_name, filter_cnt, args.pm_qual_thresh, args.filter, args.te_type,args.no_polyA_info)
+            filter_results = flt_fun.add_filter_data(filter_results, file_name, filter_cnt, args.pm_qual_thresh, args.pm_filter, args.te_type,args.no_polyA_info)
     if args.results_screen_file_list != 'None':
         for file_name in args.results_screen_file_list.split(','):
             filter_cnt += 1
@@ -80,13 +80,13 @@ def filter_setup_arg_parser(parser):
     parser.add_argument('--stats_file', action='store', 
         dest='stats_file', default="filter_stats.txt",
         help="filter statistics output file (default: filter_stats.txt)")
-    parser.add_argument('-f', '--filter', action='store', 
-        dest='filter', default="ceu",
-        choices = ['ceu','custom','normal','ceu_p'],
+    parser.add_argument('-f', '--pm_filter', action='store', 
+        dest='pm_filter', default="ceu",
+        choices = ['ceu','custom','normal','ceu_alu'],
         help="polymorphic subtraction filtering criteria, see README.md for more info (default: ceu)")
     parser.add_argument('--ini_filter', action='store', 
         dest='ini_filter', default="ceu",
-        choices = ['ceu','stringent','custom','normal','ceu_p','new'],
+        choices = ['ceu','stringent','custom','normal','ceu_alu','new'],
         help="initial filtering criteria, see README.md for more info (default: ceu)")
     parser.add_argument('--te_dist', action='store', dest='te_dist', type=int, default=0, 
         help='Filter out predicted insertions that fall within this distance of TE insertion in provided bed file (default: 0)')

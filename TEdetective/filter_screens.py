@@ -1,4 +1,4 @@
-# from TEdetective.io_functions import eprint
+from TEdetective.io_functions import eprint
 
  #FILTER INFO
 #        if total_clipped_rd >= 3 or ( (total_clipped_rd >= 1) and ( (total_clipped_rd_wpat+total_discord_rd) >= 5) ) or ( total_discord_rd >= 10 ): # L1base Sim
@@ -106,20 +106,21 @@ def polymorph_filter_ceu(clipped_p, clipped_n, discord_p, discord_n, num_pat_p, 
         returnVal = True
     return returnVal
  
-def initial_ins_filter_ceu_p(clipped_p, clipped_n, discord_p, discord_n, num_pat_p, num_pat_n):
+def initial_ins_filter_ceu_alu(clipped_p, clipped_n, discord_p, discord_n, num_pat_p, num_pat_n):
     returnVal = False
     clipped_total = clipped_p + clipped_n
     discord_total = discord_p + discord_n
     num_pat_total = num_pat_n + num_pat_p
-    if clipped_total >= 5:
+    if clipped_total >= 7: #5
         returnVal = True
-    elif clipped_total + discord_total >= 7 and clipped_total >= 3:
+    elif clipped_total + discord_total + num_pat_total >= 10 and clipped_total >= 5: #10,3
         returnVal = True
-    elif discord_total >= 10:
+    elif discord_total >= 25:
         returnVal = True
+    #eprint('filter:',clipped_total,discord_total,num_pat_total,returnVal)
     return returnVal
- 
-def polymorph_filter_ceu_p(clipped_p, clipped_n, discord_p, discord_n, num_pat_p, num_pat_n):
+        
+def polymorph_filter_ceu_alu(clipped_p, clipped_n, discord_p, discord_n, num_pat_p, num_pat_n):
     returnVal = False
     clipped_total = clipped_p + clipped_n
     discord_total = discord_p + discord_n
@@ -128,5 +129,41 @@ def polymorph_filter_ceu_p(clipped_p, clipped_n, discord_p, discord_n, num_pat_p
         returnVal = True
     elif clipped_total >= 1 and (clipped_total + num_pat_total + discord_total) >= 5:
         returnVal = True
+    elif (clipped_total + num_pat_total + discord_total) >= 3 and discord_total >= 2:
+        returnVal = True
     return returnVal
+
+#def initial_ins_filter_ceu_p(clipped_p, clipped_n, discord_p, discord_n, num_pat_p, num_pat_n):
+#    returnVal = False
+#    clipped_total = clipped_p + clipped_n
+#    discord_total = discord_p + discord_n
+#    num_pat_total = num_pat_n + num_pat_p
+#    if clipped_total >= 3:
+#        returnVal = True
+#    elif clipped_total + discord_total >= 5 and clipped_total >= 2:
+#        returnVal = True
+        
+#def initial_ins_filter_ceu_p(clipped_p, clipped_n, discord_p, discord_n, num_pat_p, num_pat_n):
+#    returnVal = False
+#    clipped_total = clipped_p + clipped_n
+#    discord_total = discord_p + discord_n
+#    num_pat_total = num_pat_n + num_pat_p
+#    if clipped_total >= 5:
+#        returnVal = True
+#    elif clipped_total + discord_total >= 7 and clipped_total >= 3:
+#        returnVal = True
+#    elif discord_total >= 10:
+#        returnVal = True
+#    return returnVal
  
+ 
+#def polymorph_filter_ceu_p(clipped_p, clipped_n, discord_p, discord_n, num_pat_p, num_pat_n):
+#    returnVal = False
+#    clipped_total = clipped_p + clipped_n
+#    discord_total = discord_p + discord_n
+#    num_pat_total = num_pat_n + num_pat_p
+#    if clipped_total >= 1 and (clipped_total + discord_total) >= 3:
+#        returnVal = True
+#    elif clipped_total >= 1 and (clipped_total + num_pat_total + discord_total) >= 5:
+#        returnVal = True
+#    return returnVal

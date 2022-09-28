@@ -98,8 +98,8 @@ def filter_setup_arg_parser(parser):
         help="initial filter quality threshold for clipped and discordant read alignments. (default: 0.75)")
     parser.add_argument('--insert_size_est', action='store', dest='insert_size', type=int, default=340, 
         help='insert size estimate (default: 340)')
-    parser.add_argument('--read_length', action='store', dest='read_length', type=int, default=100, 
-        help='read length (default: 100)')
+    parser.add_argument('--read_length', action='store', dest='read_length', type=int, default=0, 
+        help='length to subtract on distance from results_scre (default: 0)')
     parser.add_argument('--no_polyA_info', action='store', dest='no_polyA_info', default=False, 
         help='for backward compatibility with some old results files. (default: False)')
     parser.add_argument('-v', '--verbose', action='store', 

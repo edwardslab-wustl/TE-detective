@@ -14,7 +14,14 @@ def exec_filter(args):
         eprint("reading input file: " + args.input_file) 
     if args.verbose > 0:
         eprint("filtering input file.") 
-    filter_results = flt_fun.filter_input_file(args.input_file, args.ini_filter, args.qual_thresh, args.te_type,args.no_polyA_info)
+    if args.input_file.endswith(".vcf"):
+        input_vcf_flag = True
+    else: 
+        input_vcf_flag = False
+    if input_vcf_flag:
+        filter_results = flt_fun.filter_input_file_vcf(args.input_file)
+    else:
+        filter_results = flt_fun.filter_input_file(args.input_file, args.ini_filter, args.qual_thresh, args.te_type,args.no_polyA_info)
     filter_cnt = 0   
     filter_file_names = dict()
     if args.screen_file_list != 'None':
@@ -30,11 +37,17 @@ def exec_filter(args):
             filter_file_names[filter_cnt] = file_name
             if args.verbose > 0:
                 eprint("reading filter file: " + file_name) 
-            filter_results = flt_fun.add_filter_other_results(filter_results, file_name, args.insert_size, args.read_length)
+            vcf_flag = False
+            if file_name.endswith(".vcf"):
+                vcf_flag = True
+            filter_results = flt_fun.add_filter_other_results(filter_results, file_name, args.insert_size, args.read_length, vcf_flag)
     if args.bed_screen:
         if args.verbose > 0:
             eprint("filtering all " + args.te_type + " with bed file: " + args.bed_screen) 
-        filter_results = flt_fun.add_filter_existing_data(filter_results, args.bed_screen, args.input_file, args.te_type, args.te_dist)
+        if input_vcf_flag:
+            filter_results = flt_fun.add_filter_existing_data_vcf(filter_results, args.bed_screen, args.input_file, args.te_type, args.te_dist)
+        else:
+            filter_results = flt_fun.add_filter_existing_data(filter_results, args.bed_screen, args.input_file, args.te_type, args.te_dist)
         filter_cnt += 1
         filter_file_names[filter_cnt] = "in_existing_" + args.te_type
     if args.filter_alt_chrom:
@@ -45,10 +58,10 @@ def exec_filter(args):
         filter_file_names[filter_cnt] = "alt_chrom"
     if args.verbose > 0:
         eprint("writing results")
-    total_initial_pass,total_pass,total_not_found,total_initial_predictions,total_filtered,results = flt_fun.calc_filter_results(args.input_file, filter_cnt, filter_results)
+    total_initial_pass,total_pass,total_not_found,total_initial_predictions,total_filtered,results = flt_fun.calc_filter_results(args.input_file, filter_cnt, filter_results, input_vcf_flag)
     flt_fun.write_stats(total_initial_pass,total_pass,total_not_found,total_initial_predictions,total_filtered,filter_file_names,args.stats_file)
     flt_fun.write_results_mask(results,filter_cnt,filter_file_names,args.output_file + ".mask")
-    total_pass_all_filters = flt_fun.write_results(filter_results,filter_cnt,args.input_file,args.output_file)
+    total_pass_all_filters = flt_fun.write_results(filter_results,filter_cnt,args.input_file,args.output_file,input_vcf_flag)
     if args.verbose > 0:
         eprint("total_passing_all_filters: " + str(total_pass_all_filters))
     return

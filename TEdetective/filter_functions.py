@@ -17,7 +17,7 @@ def write_results_mask(results, filter_cnt, filter_file_names, out_file):
             fh.write(results[key] + "\n")
     return
 
-def write_results(results, filter_cnt, file_name, out_file):
+def write_results(results, filter_cnt, file_name, out_file, vcf_flag):
     total_pass = 0
     with open(out_file, 'w') as out_fh:
         with open(file_name, 'r') as in_fh:
@@ -27,9 +27,13 @@ def write_results(results, filter_cnt, file_name, out_file):
                 else:
                     line = line.strip()
                     line_data = line.split()
-                    chrom = line_data[1]
-                    ini_pos = line_data[2]
-                    #ini_pos = line_data[3]
+                    if vcf_flag:
+                        chrom = line_data[0]
+                        ini_pos = line_data[1]
+                    else:
+                        chrom = line_data[1]
+                        ini_pos = line_data[2]
+                        #ini_pos = line_data[3]
                     key = chrom + '-' + ini_pos
                     filterVal = check_filters( results[key], filter_cnt)
                     if filterVal == False:
@@ -65,7 +69,7 @@ def write_stats(total_initial_pass,total_pass,total_not_found,total_initial_pred
     return
             
                 
-def calc_filter_results(file_name, filter_cnt, filter_results):
+def calc_filter_results(file_name, filter_cnt, filter_results, vcf_flag):
     not_found_val = 'NA'
     total_initial_predictions = 0
     total_not_found = 0
@@ -81,31 +85,36 @@ def calc_filter_results(file_name, filter_cnt, filter_results):
         for line in FH:
             line_count += 1
             if line_count > 1:
-                line = line.strip()
-                line_data = line.split()
-                chrom = line_data[1]
-                ini_pos = line_data[2]
-                #ini_pos = line_data[3]
-                key = chrom + '-' + ini_pos
-                total_initial_predictions += 1
-                ini_filter_pass = False
-                polymorph_filter = False
-                out_line = "\t".join([line_data[0],chrom,ini_pos]) 
-                if key in filter_results:
-                    out_line += "\t" + "\t".join([str(x) for x in filter_results[key]])
-                    for i,val in enumerate(filter_results[key]):
-                        if i == 0 and val == True:
-                            ini_filter_pass = True
-                            total_initial_pass += 1
-                        elif val == True:
-                            polymorph_filter = True
-                            total_filtered[i] += 1
-                    if ini_filter_pass == True and polymorph_filter == False:
-                        total_pass += 1
-                else:
-                    out_line += "\t" + not_found_val
-                    total_not_found += 1
-                results[key] = out_line
+                if not line.startswith("#"):
+                    line = line.strip()
+                    line_data = line.split()
+                    if vcf_flag:
+                        chrom = line_data[0]
+                        ini_pos = line_data[1]
+                    else:
+                        chrom = line_data[1]
+                        ini_pos = line_data[2]
+                        #ini_pos = line_data[3]
+                    key = chrom + '-' + ini_pos
+                    total_initial_predictions += 1
+                    ini_filter_pass = False
+                    polymorph_filter = False
+                    out_line = "\t".join([line_data[0],chrom,ini_pos]) 
+                    if key in filter_results:
+                        out_line += "\t" + "\t".join([str(x) for x in filter_results[key]])
+                        for i,val in enumerate(filter_results[key]):
+                            if i == 0 and val == True:
+                                ini_filter_pass = True
+                                total_initial_pass += 1
+                            elif val == True:
+                                polymorph_filter = True
+                                total_filtered[i] += 1
+                        if ini_filter_pass == True and polymorph_filter == False:
+                            total_pass += 1
+                    else:
+                        out_line += "\t" + not_found_val
+                        total_not_found += 1
+                    results[key] = out_line
     return total_initial_pass,total_pass,total_not_found,total_initial_predictions,total_filtered, results
  
 
@@ -153,6 +162,19 @@ def filter_input_file(fileName, filter, qual_threshold, te_type, no_polyA_info):
         filter_input[key] = [filterVal]
     return filter_input
 
+def filter_input_file_vcf(fileName):
+    filter_input = defaultdict(list)
+    with open(fileName, 'r') as FH:
+        line_count = 0
+        for line in FH:
+            line_count += 1
+            if not line.startswith("#"):
+                line_data = line.strip().split()
+                chrom = line_data[0]
+                pos = line_data[1]
+                key = chrom + '-' + pos
+                filter_input[key] = [True]
+    return filter_input
 
 def read_results_file(fileName, quality_threshold, te_type, no_polyA_info):
     results_clipped_p = dict()
@@ -210,11 +232,14 @@ def add_filter_alt_chrom(filter_input):
         filter_input[key].append(filterVal)
     return filter_input, count
 
-def add_filter_other_results(filter_input, file_name, insert_size, read_length):  
+def add_filter_other_results(filter_input, file_name, insert_size, read_length, vcf_flag):  
     index_size = 10000
     #insert_size = int(insert_size)
     #read_length = int(read_length)
-    filter_dict,te_info = read_results_file_index(file_name, index_size)
+    if vcf_flag == True:
+        filter_dict,te_info = read_results_file_index_vcf(file_name, index_size)
+    else:
+        filter_dict,te_info = read_results_file_index(file_name, index_size)
     for key in filter_input.keys():
         filterVal = False
         chrom = key.split("-")[0]
@@ -251,6 +276,41 @@ def add_filter_existing_data (filter_input, rmsk_file, file_name, te_type, te_di
                 ini_pos = int(line_data[2])
                 #ini_pos = int(line_data[3])
                 guess_pos = int(line_data[3])
+                key = chrom + '-' + str(ini_pos)
+                idx = int(float(ini_pos)/float(index_size))
+                for index in [idx - 1, idx, idx + 1]:
+                    if (chrom,index) in filter_dict:
+                        for te_id in filter_dict[(chrom,index)]:
+                            if filterVal == False:
+                                te_start = te_info[te_id][0]
+                                te_stop = te_info[te_id][1]
+                                if te_start > te_stop:
+                                    te_start = te_info[te_id][1]
+                                    te_stop = te_info[te_id][0]
+                                if (te_start - te_dist <= ini_pos and ini_pos <= te_stop + te_dist):
+                                    filterVal = True
+                            elif filterVal == True:
+                                break
+                    if filterVal == True:
+                        break
+                filter_input[key].append(filterVal)
+    return filter_input
+
+def add_filter_existing_data_vcf (filter_input, rmsk_file, file_name, te_type, te_dist):
+    index_size = 50000
+    filter_dict,te_info = read_rmsk_file(rmsk_file, te_type,index_size)
+    with open(file_name, 'r') as FH:
+        line_count = 0
+        for line in FH:
+            filterVal = False
+            line_count += 1
+            if line_count > 1 and not line.startswith("#"):
+                line = line.strip()
+                line_data = line.split()
+                chrom = line_data[0]
+                ini_pos = int(line_data[1])
+                #ini_pos = int(line_data[3])
+                guess_pos = int(line_data[1])
                 key = chrom + '-' + str(ini_pos)
                 idx = int(float(ini_pos)/float(index_size))
                 for index in [idx - 1, idx, idx + 1]:
@@ -314,6 +374,28 @@ def read_results_file_index (fileName, index_size):
                     pos = est_pos
                 else:
                     pos = ini_pos
+                index = int(float(pos) / float(index_size))
+                te_info[te_id] = int(pos)
+                if (chrom,index) in filter_dict:
+                    filter_dict[(chrom,index)].append(te_id)
+                else:
+                    filter_dict[(chrom,index)] = [te_id]
+    return filter_dict, te_info
+
+
+def read_results_file_index_vcf (fileName, index_size):
+    filter_dict = defaultdict(list)
+    te_info = defaultdict(list)
+    te_id = 0
+    with open(fileName, 'r') as FH:
+        line_count = 0
+        for line in FH:
+            line_count += 1
+            if not line.startswith("#"):
+                te_id += 1
+                line_data = line.strip().split()
+                chrom = line_data[0]
+                pos = line_data[1]
                 index = int(float(pos) / float(index_size))
                 te_info[te_id] = int(pos)
                 if (chrom,index) in filter_dict:

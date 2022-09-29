@@ -77,7 +77,9 @@ def setup_parsers(parser):
     sp_analyze = analyze_setup_arg_parser(sp_analyze)
 
     filter_desc=str("Filter module to filter predictions from nadiscover " +
-        "based on read support, existing TEs, and polymorphic subtraction")
+        "or discover modules based on read support, existing TEs, and polymorphic subtraction." +
+        "supports .vcf files for input, and screening against (not for polymorphic subtraction)." +
+        "If you provide .vcf input files, the initial filtering support criteria are ignored.")
     sp_filter = subparsers.add_parser('filter',
         help=filter_desc, description=filter_desc)
     sp_filter = filter_setup_arg_parser(sp_filter)

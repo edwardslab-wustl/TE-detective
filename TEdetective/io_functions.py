@@ -139,6 +139,7 @@ def te_type_setup(file_name_p, file_name_n, type_p, type_n, cnt_p, cnt_n, fofn_r
                 if type_p[0][0] == line.split()[0]:
                     te_class_file = line.split()[1]
                     break
+    #te_class_file = os.path.realpath(te_class_file)
     return(flag_value, te_class_file, output_file_lines)
 
 

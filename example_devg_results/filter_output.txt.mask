@@ -1,6 +1,0 @@
-Type	Chr	initial_guess	pass_initial_ins_filter	in_existing_LINE_filter	alt_chrom_filter
-LINE	chr1	79398600	True	False	False
-LINE	chr10	83233080	True	False	False
-LINE	chr15	35820420	True	False	False
-LINE	chr17	79125480	True	False	False
-LINE	chr4	75311641	True	False	False

@@ -1,6 +1,0 @@
-total_initial_predictions: 5
-total_not_found: 0
-initial predictions passing base filter: 5
-initial predictions found in in_existing_LINE: 0
-initial predictions found in alt_chrom: 0
-Total passing all filters: 5

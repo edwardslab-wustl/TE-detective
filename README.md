@@ -20,6 +20,8 @@
      *  pysam
      *  biopython
 
+   Installation files for NCBI blast and Censor can be found in the externals directory. We recommend using Anaconda to install the relevant python packages.
+
 ## Installation
 Clone and install with pip:
 
@@ -68,8 +70,10 @@ Space- or tab-delimited file specifying the repeat to be examined (e.g. LINE) an
 The first field is the repeat name. The second field is a fasta file containing the reference sequences for the repeat element. We recomend specifying the full path, but if the file can't be found the code will then search the directory the ref_fofn file is in as well as the current working directory for the fasta file. Reference sequences of repeat elements can be obtained from [Repbase](https://www.girinst.org/server/RepBase/index.php) or other resources. See example file ref_fofn in the example_data folder.
 
 
-#### 3. bed formatted file of known repeat locations corresponding to the genome version used for alignment (optional, but recommended. Only used for filtering)
-You can download the repeatmasker track data from the [UCSC Genome Browser](https://hgdownload.soe.ucsc.edu/downloads.html) and filter with something like:
+#### 3. bed formatted file of known TE locations (optional) 
+   This file is only used in the **filter** step. While optional we highly recommend using it to filter on known TEs to reduce false positives. Be sure to use the appropriate file with coordinates corresponding to the genome version used for alignment. 
+   
+   You can download the repeatmasker track data from the [UCSC Genome Browser](https://hgdownload.soe.ucsc.edu/downloads.html) and filter with something like:
 
 ```	
 zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed

@@ -52,6 +52,7 @@ Clone and install with pip:
     1. BAM file (required)
 	preferably prepared using following alignment command:
 	bwa mem -M -Y -R $RG_LINE ref.fa test_1.fq test_2.fq | samtools view -b -S - > test_ref.bam
+	bam file will be indexed in the preprocess script, if it hasn't been already
 
     2. ref_fofn file (refquired)
 	Reference file specifying repeat to be examined (e.g. LINE) and location of Reference sequence of repeat elements:
@@ -69,7 +70,6 @@ Clone and install with pip:
 ### Results files 
 These are the default file names. Output file names can be changed by the user.
 
-````
     1. initial_predictions.txt is the list of initial TE insertion predictions after the discover step, along with a value for the initial amount of clipped and discordant read support found
 	
     2. initial_predictions_noalign.txt is the list of revised initial TE insertion predictions after the nadiscover step
@@ -84,7 +84,7 @@ These are the default file names. Output file names can be changed by the user.
     
     7. filter_stats.txt basic stats on how many insertion predictions passed each filter
 
-````
+
 ### Simple example
 
 ````

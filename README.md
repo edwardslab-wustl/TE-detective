@@ -47,79 +47,100 @@ Clone and install with pip:
 ## Usage
 
 ### Input files
+#### 1. BAM file (required)
+preferably prepared using following alignment command:
+	
+```
+bwa mem -M -Y -R $RG_LINE ref.fa test_1.fq test_2.fq | samtools view -b -S - > test_ref.bam
+```
+	
+You can pre-index the file with samtools, or the bam file will be indexed in the preprocess script, if it hasn't been already.
 
-````
-    1. BAM file (required)
-	preferably prepared using following alignment command:
-	bwa mem -M -Y -R $RG_LINE ref.fa test_1.fq test_2.fq | samtools view -b -S - > test_ref.bam
-	bam file will be indexed in the preprocess script, if it hasn't been already
 
-    2. ref_fofn file (refquired)
-	Reference file specifying repeat to be examined (e.g. LINE) and location of Reference sequence of repeat elements:
-	file can be space- or tab-delimited
-	The first field is the repeat name
-	The second field is a fasta file containing the reference sequences for the repeat element. We recomend specifying the full path, but if the file can't be found the code will then search the directory the ref_fofn file is in as well as the current working directory for the fasta file.
-	Reference sequences of repeat elements can be obtained from Repbase(https://www.girinst.org/server/RepBase/index.php) or other resources.
-	See example file ref_fofn in the example_data folder.
+#### 2. ref_fofn file (required)
+Space- or tab-delimited file specifying the repeat to be examined (e.g. LINE) and location of a fasta file with its corresponding reference sequences:
+The first field is the repeat name. The second field is a fasta file containing the reference sequences for the repeat element. We recomend specifying the full path, but if the file can't be found the code will then search the directory the ref_fofn file is in as well as the current working directory for the fasta file. Reference sequences of repeat elements can be obtained from [Repbase](https://www.girinst.org/server/RepBase/index.php) or other resources. See example file ref_fofn in the example_data folder.
 
-    3. bed formatted file of known repeat locations corresponding to the genome version used for alignment (optional, but recommended. Only used for filtering)
-	You can download the repeatmasker track data from the [UCSC Genome Browser](https://hgdownload.soe.ucsc.edu/downloads.html) and filter with something like:
-	zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed
 
-````
+#### 3. bed formatted file of known repeat locations corresponding to the genome version used for alignment (optional, but recommended. Only used for filtering)
+You can download the repeatmasker track data from the [UCSC Genome Browser](https://hgdownload.soe.ucsc.edu/downloads.html) and filter with something like:
+
+```	
+zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed
+```
+
 ### Results files 
 These are the default file names. Output file names can be changed by the user.
 
-    1. initial_predictions.txt is the list of initial TE insertion predictions after the discover step, along with a value for the initial amount of clipped and discordant read support found
+* #### initial_predictions.txt 
+
+   List of initial TE insertion predictions after the **discover** step, along with a value for the initial amount of clipped and discordant read support found
 	
-    2. initial_predictions_noalign.txt is the list of revised initial TE insertion predictions after the nadiscover step
+* #### initial_predictions_noalign.txt
+
+   List of revised initial TE insertion predictions after the **nadiscover** step
     
-    3. recluster_initial_predictions.txt is the revised list of initial TE insertion predictions after the cluster2D step
+* #### recluster_initial_predictions.txt 
+
+   Revised list of initial TE insertion predictions after the **cluster2D** step
     
-    4. final_results.tsv is results of realignment during the analyze step, this file will have an entry for every initial prediction, along with detailed information concerning the support for each insertion. This result is prior to any filtering. See the column headers for details.
+* #### final_results.tsv 
+
+   Results of realignment during the **analyze** step, this file will have an entry for every initial prediction, along with detailed information concerning the support for each insertion. This result is prior to any filtering. See the column headers for details.
     
-    5. filter_output.txt is the final filtered output. See column headers for details.
+* #### filter_output.txt 
+
+   The final filtered output from the **filter** step. See column headers for details.
     
-    6. filter_output.txt.mask shows which filter each initial prediction failed or passed.
+* #### filter_output.txt.mask 
+
+   Shows which filter each initial prediction failed or passed in the **filter** step
     
-    7. filter_stats.txt basic stats on how many insertion predictions passed each filter
+* #### filter_stats.txt 
+
+   Basic stats on how many insertion predictions passed each filter in the **filter** step
 
 
 ### Simple example
 
-````
+```
     tar -xzf TEdetective_example.tar.gz
     cd TEdetective_example/example_data
-    
-    Then either:
-    
-    sh run_example.sh
-    
-    or 
-    
-    TE_detective preprocess -i test_sim.bam -r ref_fofn 
-    TE_detective discover -i test_sim.bam -r ref_fofn 
-    TE_detective nadiscover -i test_sim.bam -r ref_fofn --polyA --discord_cluster_dens 5  
-    TE_detective analyze -i test_sim.bam -r ref_fofn --inp initial_predictions.txt 
-    TE_detective cluster2d -i test_sim.bam -r ref_fofn 
-    TE_detective filter -i final_results.tsv --bed rmsk_ucsc_mm10.bed
+```
 
-    You can compare results to the files in TEdetective_example/example_results  
-
+   Then either:
+   
+   ``` 
+   sh run_example.sh
+   ```
     
-````
+   or
+    
+   ```
+   TE_detective preprocess -i test_sim.bam -r ref_fofn 
+   TE_detective discover -i test_sim.bam -r ref_fofn 
+   TE_detective nadiscover -i test_sim.bam -r ref_fofn --polyA --discord_cluster_dens 5  
+   TE_detective analyze -i test_sim.bam -r ref_fofn --inp initial_predictions.txt 
+   TE_detective cluster2d -i test_sim.bam -r ref_fofn 
+   TE_detective filter -i final_results.tsv --bed rmsk_ucsc_mm10.bed
+   ```
+    
+   You can compare results to the files in TEdetective_example/example_results  
+
+  
+
 
 ### CEU-Trio example
 
   Setup and assumptions:
 
-    - In your working directory ($DIR) you need four subdirectories: one for each sample, and then one for polymorphic analysis (NA12878, NA12891, NA12892, polymorph)
+   - In your working directory ($DIR) you need four subdirectories: one for each sample, and then one for polymorphic analysis (NA12878, NA12891, NA12892, polymorph)
 
-    - You have downloaded, aligned and sorted the bam file for each of the three individuals using the instructions above. Referred to as NA12878_hg19_sorted.bam, NA12891_hg19_sorted.bam, and NA12892_hg19_sorted.bam below.
+   - You have downloaded, aligned and sorted the bam file for each of the three individuals using the instructions above. Referred to as NA12878_hg19_sorted.bam, NA12891_hg19_sorted.bam, and NA12892_hg19_sorted.bam below.
 
-    - Create a file called ref_fofn in $DIR that has a single line with the repeat element and location (complete path) of a fasta file for the repeat element of interest. See above and/or example ref_fofn file in example_data.
+   - Create a file called ref_fofn in $DIR that has a single line with the repeat element and location (complete path) of a fasta file for the repeat element of interest. See above and/or example ref_fofn file in example_data.
 
-    - obtain a bed formatted file of annotated TE entries. Called rmsk_hg19.bed below. See info above.
+   - obtain a bed formatted file of annotated TE entries. Called rmsk_hg19.bed below. See info above.
 
   1. General set up
 
@@ -179,9 +200,9 @@ These are the default file names. Output file names can be changed by the user.
     TE_detective filter -i ../NA12878/final_results_NA12878.txt --results_screen_files FINAL_RESULTS.NA12891.txt,FINAL_RESULTS.NA12892.txt --bed_screen ../rmsk_hg19.bed --filter ceu --pm_qual_thresh 0.8 --te_type LINE -o FINAL_RESULTS.NORM.txt --insert_size_est 383
 
   
-  results from insertion prediction using polymorphic subtraction module are in: FINAL_RESULTS.PM.txt 
+  The final results from insertion prediction using polymorphic subtraction are in: FINAL_RESULTS.PM.txt 
   
-  results from insertion prediction using normal subtraction are in: FINAL_RESULTS.NORM.txt 
+  The final results from insertion prediction using normal subtraction are in: FINAL_RESULTS.NORM.txt 
 
 
 
@@ -190,6 +211,7 @@ These are the default file names. Output file names can be changed by the user.
 [Censor](http://www.girinst.org/censor/index.php) is distributed under the GPL license.  See details in [Kohany et. al. Bioinformatics 2006](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-7-474).
 
 [NCBI Blast](https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download) is freely available to the public for use as a "United States Government Work".  See details [here](https://www.ncbi.nlm.nih.gov/IEB/ToolBox/CPP_DOC/lxr/source/scripts/projects/blast/LICENSE).
+
 
 ### Detailed usage for each command/module
 

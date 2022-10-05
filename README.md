@@ -66,7 +66,8 @@ Clone and install with pip:
 	zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed
 
 ````
-### Results files (defaults, output file names can be changed by the user)
+### Results files 
+These are the default file names. Output file names can be changed by the user.
 
 ````
     1. initial_predictions.txt is the list of initial TE insertion predictions after the discover step, along with a value for the initial amount of clipped and discordant read support found

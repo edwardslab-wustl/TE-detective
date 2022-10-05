@@ -163,7 +163,7 @@ These are the default file names. Output file names can be changed by the user.
    cp $PATH_TO_FILE/rmsk_hg19.bed $DIR
 ```
 
-  2. Insertion prediction in child (NA12878).
+  2. Insertion prediction in child (NA12878)
 
 ```
    cd $DIR/NA12878/
@@ -175,7 +175,7 @@ These are the default file names. Output file names can be changed by the user.
    TE_detective filter -i final_results_NA12878.txt -b  ../rmsk_hg19.bed
 ```
 
-  3. Insertion prediction in one parent (NA12891).
+  3. Insertion prediction in one parent (NA12891)
 
 ```
    cd $DIR/NA12891/
@@ -187,7 +187,7 @@ These are the default file names. Output file names can be changed by the user.
    TE_detective filter -i final_results_NA12891.txt -b  ../rmsk_hg19.bed
 ```
 
-  4. Insertion prediction in other parent (NA12892).
+  4. Insertion prediction in other parent (NA12892)
 
 ```
    cd $DIR/NA12892/
@@ -199,7 +199,7 @@ These are the default file names. Output file names can be changed by the user.
    TE_detective filter -i final_results_NA12892.txt -b  ../rmsk_hg19.bed
 ```
 
-  5. Insertion prediciton in child using polymorphic subtraction:
+  5. Insertion prediciton in child using polymorphic subtraction
    
    We use the bam and preprocessed files from the parents to analyze the initial predictions from the child. Then we apply the ceu filter sets as well as filter for annotated TEs.
 
@@ -211,7 +211,7 @@ These are the default file names. Output file names can be changed by the user.
    TE_detective filter -i ../NA12878/final_results_NA12878.txt -s final_results_NA12878_NA12891.txt,final_results_NA12878_NA12892.txt --bed_screen ../rmsk_hg19.bed --filter ceu --pm_qual_thresh 0.8 --te_type LINE -o FINAL_RESULTS.PM.txt
 ```
 
-  6. Insertion prediction in child using overlap:
+  6. Insertion prediction in child using overlap
   
    We predict final TE insertions in the child and parents using the ceu filter set as well as filter for annotated TEs. We then filter all TEs from the child that are within insert_size_est of a TE predicted in either parent.
 

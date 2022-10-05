@@ -38,6 +38,10 @@ def exec_preprocess(args):
     #clipped_bam_cmpl = bam_short_name+'_clipped_cmpl.bam'
     subprocess.run(['mkdir' , '-p' , preprocess_dir_realpath ])
 
+    if not os.path.exists(bam_full + ".bai"):
+        log_FH.write("can't find index file for " + bam_full + ", making now\n")
+        pysam.index(bam_full)
+        
     samfile = pysam.AlignmentFile(bam_full, "rb")
     newsam_d = pysam.AlignmentFile(preprocess_dir_realpath + '/' + discord_bam, 'wb', template=samfile)
     newsam_c = pysam.AlignmentFile(preprocess_dir_realpath + '/' + clipped_bam, 'wb', template=samfile)

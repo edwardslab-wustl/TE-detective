@@ -66,7 +66,24 @@ Clone and install with pip:
 	zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed
 
 ````
+### Results files (defaults, output file names can be changed by the user)
 
+````
+    1. initial_predictions.txt is the list of initial TE insertion predictions after the discover step, along with a value for the initial amount of clipped and discordant read support found
+	
+    2. initial_predictions_noalign.txt is the list of revised initial TE insertion predictions after the nadiscover step
+    
+    3. recluster_initial_predictions.txt is the revised list of initial TE insertion predictions after the cluster2D step
+    
+    4. final_results.tsv is results of realignment during the analyze step, this file will have an entry for every initial prediction, along with detailed information concerning the support for each insertion. This result is prior to any filtering. See the column headers for details.
+    
+    5. filter_output.txt is the final filtered output. See column headers for details.
+    
+    6. filter_output.txt.mask shows which filter each initial prediction failed or passed.
+    
+    7. filter_stats.txt basic stats on how many insertion predictions passed each filter
+
+````
 ### Simple example
 
 ````

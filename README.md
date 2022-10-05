@@ -38,10 +38,9 @@ Clone and install with pip:
    Be sure the following are added to your PATH:
 
 ```
-   /opt/conda/bin
+   /opt/anaconda3/bin/
    /usr/local/bwa
    /usr/local/blast-2.2.26/bin
-   /usr/local/utils
 ```
 
    Set the environmental variable:

@@ -32,13 +32,13 @@ Clone and install with pip:
 
    [TE-Detective Docker image](https://hub.docker.com/r/edwardslab/te-detective)
 ````
-	Be sure the following are add to your PATH:
+	Be sure the following are added to your PATH:
 		/opt/conda/bin
 		/usr/local/bwa/
 		/usr/local/blast-2.2.26/bin
 		/usr/local/utils/
 
-	Please set the environmental variable:
+	Set the environmental variable:
 		BLASTDIR=/usr/local/blast-2.2.26/bin
 ````
 
@@ -49,19 +49,19 @@ Clone and install with pip:
 ### Input files
 
 ````
-    1. BAM file
+    1. BAM file (required)
 	preferably prepared using following alignment command:
 	bwa mem -M -Y -R $RG_LINE ref.fa test_1.fq test_2.fq | samtools view -b -S - > test_ref.bam
 
-    2. ref_fofn file
+    2. ref_fofn file (refquired)
 	Reference file specifying repeat to be examined (e.g. LINE) and location of Reference sequence of repeat elements:
 	file can be space- or tab-delimited
-	first field is the repeat name
-	second field is the full path to a fasta file containing the reference sequences for the repeat element
+	The first field is the repeat name
+	The second field is a fasta file containing the reference sequences for the repeat element. We recomend specifying the full path, but if the file can't be found the code will then search the directory the ref_fofn file is in as well as the current working directory for the fasta file.
 	Reference sequences of repeat elements can be obtained from Repbase(https://www.girinst.org/server/RepBase/index.php) or other resources.
 	See example file ref_fofn in the example_data folder.
 
-    3. bed formatted file of known repeat locations corresponding to the genome version used for alignment.
+    3. bed formatted file of known repeat locations corresponding to the genome version used for alignment (optional, but recommended. Only used for filtering)
 	You can download the repeatmasker track data from the [UCSC Genome Browser](https://hgdownload.soe.ucsc.edu/downloads.html) and filter with something like:
 	zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed
 
@@ -70,7 +70,15 @@ Clone and install with pip:
 ### Simple example
 
 ````
-    cd example_data
+    tar -xzf TEdetective_example.tar.gz
+    cd TEdetective_example/example_data
+    
+    Then either:
+    
+    sh run_example.sh
+    
+    or 
+    
     TE_detective preprocess -i test_sim.bam -r ref_fofn 
     TE_detective discover -i test_sim.bam -r ref_fofn 
     TE_detective nadiscover -i test_sim.bam -r ref_fofn --polyA --discord_cluster_dens 5  
@@ -78,10 +86,9 @@ Clone and install with pip:
     TE_detective cluster2d -i test_sim.bam -r ref_fofn 
     TE_detective filter -i final_results.tsv --bed rmsk_ucsc_mm10.bed
 
-    or 
+    You can compare results to the files in TEdetective_example/example_results  
 
-    cd example_data
-    sh run_example.sh
+    
 ````
 
 ### CEU-Trio example

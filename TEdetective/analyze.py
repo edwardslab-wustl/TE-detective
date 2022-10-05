@@ -2,7 +2,7 @@ import os, subprocess
 import pysam
 from TEdetective.io_functions import check_file, read_type_info, te_type_setup, read_class_info, get_class, print_tup, num_of_lines, output_header, eprint
 from TEdetective.general_functions import break_points, check_uniq_mapping, calc_length
-from TEdetective.analyze_functions import find_clipped_ends,flt_discord, analysis_pat_check, run_censor
+from TEdetective.analyze_functions import find_clipped_ends,flt_discord, analysis_pat_check, run_censor, fix_te_sequence_file_path
 
 
 def exec_analyze(args):
@@ -311,23 +311,9 @@ def exec_analyze(args):
         len_calc_flag = 'n'
         len_calc_flag, te_class_file, output_write_lines = te_type_setup( int_file_name+'_reads_p.fa.map', \
             int_file_name+'_reads_n.fa.map', type_clipped_p, type_clipped_n, cnt_rd_p, cnt_rd_n, fofn_ref_realpath)
+        te_class_file = fix_te_sequence_file_path(te_class_file, dir_path, fofn_ref_realpath, log_FH)
         output_file.write(''.join(output_write_lines))
         del output_write_lines[:]
-        if not os.path.exists(te_class_file):
-            tmp_file1 = os.path.realpath(te_class_file)
-            tmp_file2 = dir_path + "/" + te_class_file
-            tmp_file3 = os.path.dirname(fofn_ref_realpath) + "/" + te_class_file
-            if os.path.exists(tmp_file1):
-                te_class_file = tmp_file1
-            elif os.path.exists(tmp_file2):
-                te_class_file = tmp_file2
-            elif os.path.exists(tmp_file3):
-                te_class_file = tmp_file3
-            elif te_class_file != 'none':
-                eprint("can't find file ", te_class_file, " from input file ", fofn_ref_realpath)
-                eprint (tmp_file1)
-                eprint (tmp_file2)
-                eprint (tmp_file3)
         
         # Remove intermediate files
         subprocess.run(['rm' , '-rf' , '*.fa.*' , 'censor.ncbi.*' , 'error.log' , 'formatdb.log'])
@@ -645,6 +631,7 @@ def exec_analyze(args):
         #fofn_ref_filename = dir_path + "/" + args.fofn_ref
         discord_class_flag, te_class_file, output_write_lines = te_type_setup( int_file_name+'_discord_mate_p.fa.map', \
                 int_file_name+'_discord_mate_n.fa.map', type_discord_p, type_discord_n, cnt_dm_p, cnt_dm_n, fofn_ref_realpath )
+        te_class_file = fix_te_sequence_file_path(te_class_file, dir_path, fofn_ref_realpath, log_FH)
         output_file.write(''.join(output_write_lines))
         del output_write_lines[:]
         subprocess.run(['rm', '-rf', '*.fa.*', 'censor.ncbi.*', 'error.log', 'formatdb.log'])

@@ -12,6 +12,24 @@ def run_censor (fasta_file, library_file, log_FH, message):
     result = subprocess.run(command, stderr = log_FH, stdout = log_FH)
     return
 
+def fix_te_sequence_file_path (te_class_file, dir_path, fofn_ref_realpath, log_FH):
+    tmp_file1 = os.path.realpath(te_class_file)
+    tmp_file2 = dir_path + "/" + te_class_file
+    tmp_file3 = os.path.dirname(fofn_ref_realpath) + "/" + te_class_file
+    if os.path.exists(tmp_file1):
+        te_class_file = tmp_file1
+    elif os.path.exists(tmp_file2):
+        te_class_file = tmp_file2
+    elif os.path.exists(tmp_file3):
+        te_class_file = tmp_file3
+    elif te_class_file != 'none':
+        log_FH.write("can't find file " + te_class_file+ " from input file "+ fofn_ref_realpath + "\n")
+        log_FH.write(tmp_file1 + "\n")
+        log_FH.write(tmp_file2 + "\n")
+        log_FH.write(tmp_file3 + "\n")
+    log_FH.write("Using rep file: " + te_class_file + "\n")
+    return te_class_file
+
 def analysis_pat_check( inp_fa_file, inp_fa_map_file ):
     with open(inp_fa_file, 'r') as fa_file:
         fa_file_lines = fa_file.readlines()

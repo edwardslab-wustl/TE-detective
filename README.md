@@ -203,6 +203,7 @@ These are the default file names. Output file names can be changed by the user.
    
    We use the bam and preprocessed files from the parents to analyze the initial predictions from the child. Then we apply the ceu filter sets as well as filter for annotated TEs.
 
+
 ```	
    cd $DIR/polymorph	
    TE_detective analyze -i $PATH_TO_FILE/NA12891_hg19_sorted.bam -r ../ref_fofn -o final_results_NA12878_NA12891.txt --inp ../NA12878/initial_predictions_NA12878.txt --read_length 100 --insert_size_est 439 -p ../NA12891/preprocessed_files --log_file analyze.91.log
@@ -213,6 +214,8 @@ These are the default file names. Output file names can be changed by the user.
   6. Insertion prediction in child using overlap:
   
    We predict final TE insertions in the child and parents using the ceu filter set as well as filter for annotated TEs. We then filter all TEs from the child that are within insert_size_est of a TE predicted in either parent.
+
+
 ```
    TE_detective filter -i ../NA12878/final_results_NA12878.txt --bed_screen ../rmsk_hg19.bed --filter ceu --pm_qual_thresh 0.8 --te_type LINE -o FINAL_RESULTS.NA12878.txt
    TE_detective filter -i ../NA12891/final_results_NA12891.txt --bed_screen ../rmsk_hg19.bed --filter ceu --pm_qual_thresh 0.8 --te_type LINE -o FINAL_RESULTS.NA12891.txt

@@ -33,7 +33,7 @@ Clone and install with pip:
 
 ## Docker Image
 
-   [TE-Detective Docker image](https://hub.docker.com/r/edwardslab/te-detective)
+   [TE-Detective Docker image](https://hub.docker.com/r/edwardslab/tedetective)
 
    Be sure the following are added to your PATH:
 

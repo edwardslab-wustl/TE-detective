@@ -23,11 +23,12 @@
 ## Installation
 Clone and install with pip:
 
-````
-    git clone https://github.com/edwardslab-wustl/TE-detective.git
-    cd TE-detective
-    pip install .
-````
+```
+   git clone https://github.com/edwardslab-wustl/TE-detective.git
+   cd TE-detective
+   pip install .
+```
+
 ## Docker Image
 
    [TE-Detective Docker image](https://hub.docker.com/r/edwardslab/te-detective)
@@ -110,20 +111,20 @@ These are the default file names. Output file names can be changed by the user.
 
    Then either:
    
-   ``` 
-   sh run_example.sh
-   ```
+``` 
+  sh run_example.sh
+```
     
    or
     
-   ```
-   TE_detective preprocess -i test_sim.bam -r ref_fofn 
-   TE_detective discover -i test_sim.bam -r ref_fofn 
-   TE_detective nadiscover -i test_sim.bam -r ref_fofn --polyA --discord_cluster_dens 5  
-   TE_detective analyze -i test_sim.bam -r ref_fofn --inp initial_predictions.txt 
-   TE_detective cluster2d -i test_sim.bam -r ref_fofn 
-   TE_detective filter -i final_results.tsv --bed rmsk_ucsc_mm10.bed
-   ```
+```
+  TE_detective preprocess -i test_sim.bam -r ref_fofn 
+  TE_detective discover -i test_sim.bam -r ref_fofn 
+  TE_detective nadiscover -i test_sim.bam -r ref_fofn --polyA --discord_cluster_dens 5  
+  TE_detective analyze -i test_sim.bam -r ref_fofn --inp initial_predictions.txt 
+  TE_detective cluster2d -i test_sim.bam -r ref_fofn 
+  TE_detective filter -i final_results.tsv --bed rmsk_ucsc_mm10.bed
+```
     
    You can compare results to the files in TEdetective_example/example_results  
 

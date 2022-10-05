@@ -745,7 +745,7 @@ def analyze_setup_arg_parser (parser):
         help='directory used to store preprocessing output files (default: preprocessed_files)')
     parser.add_argument('-o', '--output_file', action='store',
         dest='output_file', default='final_results.tsv',
-        help='Tab-delimited output file of potential TE insertions(default: final_resutls.tsv)')
+        help='Tab-delimited output file of potential TE insertions(default: final_results.tsv)')
     parser.add_argument('--read_length', action='store', dest='rdl_inp', type=int, default=150, 
         help='Average read length (default: 150)')
     parser.add_argument('--min_clipped_len', action='store', dest='cll_inp', type=int, default=25, 

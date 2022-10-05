@@ -32,16 +32,21 @@ Clone and install with pip:
 ## Docker Image
 
    [TE-Detective Docker image](https://hub.docker.com/r/edwardslab/te-detective)
-````
-	Be sure the following are added to your PATH:
-		/opt/conda/bin
-		/usr/local/bwa/
-		/usr/local/blast-2.2.26/bin
-		/usr/local/utils/
 
-	Set the environmental variable:
-		BLASTDIR=/usr/local/blast-2.2.26/bin
-````
+   Be sure the following are added to your PATH:
+
+```
+   /opt/conda/bin
+   /usr/local/bwa
+   /usr/local/blast-2.2.26/bin
+   /usr/local/utils
+```
+
+   Set the environmental variable:
+
+```
+BLASTDIR=/usr/local/blast-2.2.26/bin
+```
 
 
 

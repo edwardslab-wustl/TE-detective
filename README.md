@@ -115,31 +115,31 @@ zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed
 ## Results files 
 These are the default file names. Output file names can be changed by the user.
 
-* #### initial_predictions.txt 
-
+   #### initial_predictions.txt
+   
    List of initial TE insertion predictions after the **discover** step, along with a value for the initial amount of clipped and discordant read support found
 	
-* #### initial_predictions_noalign.txt
+   #### initial_predictions_noalign.txt
 
    List of revised initial TE insertion predictions after the **nadiscover** step
     
-* #### recluster_initial_predictions.txt 
+   #### recluster_initial_predictions.txt 
 
    Revised list of initial TE insertion predictions after the **cluster2D** step
     
-* #### final_results.tsv 
+   #### final_results.tsv 
 
    Results of realignment during the **analyze** step, this file will have an entry for every initial prediction, along with detailed information concerning the support for each insertion. This result is prior to any filtering. See the column headers for details.
     
-* #### filter_output.txt 
+   #### filter_output.txt 
 
    The final filtered output from the **filter** step. See column headers for details.
     
-* #### filter_output.txt.mask 
+   #### filter_output.txt.mask 
 
    Shows which filter each initial prediction failed or passed in the **filter** step
     
-* #### filter_stats.txt 
+   #### filter_stats.txt 
 
    Basic stats on how many insertion predictions passed each filter in the **filter** step
 
@@ -175,7 +175,9 @@ These are the default file names. Output file names can be changed by the user.
 
 ## Polymorphic Subtraction Example
 
-  This uses data from one of the CEU-trios. Setup and assumptions:
+  This uses data from one of the CEU-trios to identify TE insertions found in the child, but not in either parent.
+  
+  #### 1. Input files and assumptions
 
    - In your working directory ($DIR) you need four subdirectories: one for each sample, and then one for polymorphic analysis (NA12878, NA12891, NA12892, polymorph)
 
@@ -185,7 +187,7 @@ These are the default file names. Output file names can be changed by the user.
 
    - obtain a bed formatted file of annotated TE entries. Called rmsk_hg19.bed below. See info above.
 
-  1. General set up
+  #### 2. General set up
 
 ```
    mkdir -p $DIR/NA12878
@@ -196,7 +198,7 @@ These are the default file names. Output file names can be changed by the user.
    cp $PATH_TO_FILE/rmsk_hg19.bed $DIR
 ```
 
-  2. Insertion prediction in child (NA12878)
+  #### 3. Insertion prediction in child (NA12878)
 
 ```
    cd $DIR/NA12878/
@@ -207,7 +209,7 @@ These are the default file names. Output file names can be changed by the user.
    TE_detective filter -i final_results_NA12878.txt -b  ../rmsk_hg19.bed
 ```
 
-  3. Insertion prediction in one parent (NA12891)
+  #### 4. Insertion prediction in one parent (NA12891)
 
 ```
    cd $DIR/NA12891/
@@ -218,7 +220,7 @@ These are the default file names. Output file names can be changed by the user.
    TE_detective filter -i final_results_NA12891.txt -b  ../rmsk_hg19.bed
 ```
 
-  4. Insertion prediction in other parent (NA12892)
+  #### 5. Insertion prediction in other parent (NA12892)
 
 ```
    cd $DIR/NA12892/
@@ -229,8 +231,7 @@ These are the default file names. Output file names can be changed by the user.
    TE_detective filter -i final_results_NA12892.txt -b  ../rmsk_hg19.bed
 ```
 
-  5. Insertion prediciton in child using polymorphic subtraction
-   
+  #### 6. Insertion prediciton in child using polymorphic subtraction<br>
    We use the bam and preprocessed files from the parents to analyze the initial predictions from the child. Then we apply the ceu filter sets as well as filter for annotated TEs.
 
 
@@ -241,8 +242,7 @@ These are the default file names. Output file names can be changed by the user.
    TE_detective filter -i ../NA12878/final_results_NA12878.txt -s final_results_NA12878_NA12891.txt,final_results_NA12878_NA12892.txt --bed_screen ../rmsk_hg19.bed --filter ceu --pm_qual_thresh 0.8 --te_type LINE -o FINAL_RESULTS.PM.txt
 ```
 
-  6. Insertion prediction in child using overlap
-  
+  #### 7. Insertion prediction in child using overlap<br>
    We predict final TE insertions in the child and parents using the ceu filter set as well as filter for annotated TEs. We then filter all TEs from the child that are within insert_size_est of a TE predicted in either parent.
 
 

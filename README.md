@@ -69,14 +69,29 @@ Space- or tab-delimited file specifying the repeat to be examined (e.g. LINE) an
 The first field is the repeat name. The second field is a fasta file containing the reference sequences for the repeat element. We recomend specifying the full path, but if the file can't be found the code will then search the directory the ref_fofn file is in as well as the current working directory for the fasta file. Reference sequences of repeat elements can be obtained from [Repbase](https://www.girinst.org/server/RepBase/index.php) or other resources. See example file ref_fofn in the example_data folder.
 
 
-#### 3. bed formatted file of known TE locations (optional) 
-   This file is only used in the **filter** step. While optional we highly recommend using it to filter on known TEs to reduce false positives. Be sure to use the appropriate file with coordinates corresponding to the genome version used for alignment. 
+#### 3. bed formatted file of known TE locations
+   Be sure to use the appropriate file with coordinates corresponding to the genome version used for alignment. 
    
    You can download the repeatmasker track data from the [UCSC Genome Browser](https://hgdownload.soe.ucsc.edu/downloads.html) and filter with something like:
 
 ```	
 zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed
 ```
+
+### General analysis workflow
+   1. **TE_detective preprocess**: extracts discordant and clipped reads from the bam file, sets up other files needed for the analysis 
+   2. **TE_detective discover**: determines an initial set of predictions that have discordant and clipped read support greater than the --discord_cluster_dens
+   3. **TE_detective nadiscover**: performs some initial alignments, and determines poly A/T information
+   4. **TE_detective analyze**: performs realignment around each initial insertion prediction. Calculates the number of discordant, clipped, and poly A/T reads.
+   5. **TE_detective filter**: filters the initial set of predictions based on read support, existing TEs, polymorphic subtraction, or TE insertions predictions from another sample
+   6. **TE_detective cluster2d**: optional module to quickly repreform the **discover** step using a different --discord_cluster_dens
+
+
+### Polymorphic subtraction workflow (e.g. subtract parental insertions from a child)
+   1. Perform general analysis workflow on each sample
+   2. Run **TE_detective analyze** using the insertion predictions from the child, but specififying the preprocessing directories for the parent (run for each parent). This identifies potential support for an insertion in the parent at the predicted insertion points in the child.
+   3. Run **TE_detective filter** specifying to filter based on the output(s) from the prior step.
+
 
 ### Results files 
 These are the default file names. Output file names can be changed by the user.
@@ -168,7 +183,6 @@ These are the default file names. Output file names can be changed by the user.
    cd $DIR/NA12878/
    TE_detective preprocess -i $PATH_TO_FILE/NA12878_hg19_sorted.bam -r ../ref_fofn
    TE_detective discover -i $PATH_TO_FILE/NA12878_hg19_sorted.bam -r ../ref_fofn --read_length 100 --insert_size_est 383 --coverage_cutoff 608
-   TE_detective cluster2d -i $PATH_TO_FILE/NA12878_hg19_sorted.bam -r ../ref_fofn --read_length 100 --insert_size_est 383
    TE_detective nadiscover -i $PATH_TO_FILE/NA12878_hg19_sorted.bam -r ../ref_fofn -o initial_predictions_NA12878.txt --polyA --read_length 100 --insert_size_est 383 --discord_cluster_dens 10 --coverage_cutoff 608
    TE_detective analyze -i $PATH_TO_FILE/NA12878_hg19_sorted.bam  -r ../ref_fofn -o final_results_NA12878.txt --inp initial_predictions_NA12878.txt --read_length 100 --insert_size_est 383
    TE_detective filter -i final_results_NA12878.txt -b  ../rmsk_hg19.bed
@@ -180,7 +194,6 @@ These are the default file names. Output file names can be changed by the user.
    cd $DIR/NA12891/
    TE_detective preprocess -i $PATH_TO_FILE/NA12891_hg19_sorted.bam -r ../ref_fofn
    TE_detective discover -i $PATH_TO_FILE/NA12891_hg19_sorted.bam -r ../ref_fofn --read_length 100 --insert_size_est 439 --coverage_cutoff 504
-   TE_detective cluster2d -i $PATH_TO_FILE/NA12891_hg19_sorted.bam -r ../ref_fofn --read_length 100 --insert_size_est 439
    TE_detective nadiscover -i $PATH_TO_FILE/NA12891_hg19_sorted.bam -r ../ref_fofn -o initial_predictions_NA12891.txt --polyA --read_length 100 --insert_size_est 439 --discord_cluster_dens 10 --coverage_cutoff 504
    TE_detective analyze -i $PATH_TO_FILE/NA12891_hg19_sorted.bam  -r ../ref_fofn -o final_results_NA12891.txt --inp initial_predictions_NA12878.txt --read_length 100 --insert_size_est 439
    TE_detective filter -i final_results_NA12891.txt -b  ../rmsk_hg19.bed
@@ -192,7 +205,6 @@ These are the default file names. Output file names can be changed by the user.
    cd $DIR/NA12892/
    TE_detective preprocess -i $PATH_TO_FILE/NA12892_hg19_sorted.bam -r ../ref_fofn
    TE_detective discover -i $PATH_TO_FILE/NA12892_hg19_sorted.bam -r ../ref_fofn --read_length 100 --insert_size_est 439 --coverage_cutoff 504
-   TE_detective cluster2d -i $PATH_TO_FILE/NA12892_hg19_sorted.bam -r ../ref_fofn --read_length 100 --insert_size_est 439
    TE_detective nadiscover -i $PATH_TO_FILE/NA12892_hg19_sorted.bam -r ../ref_fofn -o initial_predictions_NA12892.txt --polyA --read_length 100 --insert_size_est 439 --discord_cluster_dens 10 --coverage_cutoff 504
    TE_detective analyze -i $PATH_TO_FILE/NA12892_hg19_sorted.bam  -r ../ref_fofn -o final_results_NA12892.txt --inp initial_predictions_NA12878.txt --read_length 100 --insert_size_est 439
    TE_detective filter -i final_results_NA12892.txt -b  ../rmsk_hg19.bed

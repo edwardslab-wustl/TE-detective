@@ -84,14 +84,18 @@ zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed
 ```
 
 ## Definitions
-![Scheme_v3a-small.png](images/Scheme_v3a-small.png)
+   **Clipped read**: Sequencing read where part only part maps to the genome. The other part could either not map to the genome or map else where.
+   **Discordant read**: Paired sequencing reads from the same DNA fragment where one read maps to the genome and the other read either maps to another region of the genome or in the wrong orientation. I.e. reads that are not in proper paired alignments.
+   
+   Clipped and Discordant reads could come from a TE insertion, a genomic rearrangement or alteration, or from various sequencing or library construction artifacts.
+   
+<img src="images/Scheme_v3a-small.png" width="350">
 
-*Figure 1: Schematic representation of transposable element insertions.*
+
 
 ## General Analysis Workflow
-![Scheme_v2](images/Scheme_v2.png)
+<img src="images/Scheme_v3b-small.png" width="500">
 
-*Figure 2: TE-Detective approach and modules.*
 
    1. **TE_detective preprocess**: extracts discordant and clipped reads from the bam file, sets up other files needed for the analysis 
    2. **TE_detective discover**: determines an initial set of predictions that have discordant and clipped read support greater than the --discord_cluster_dens

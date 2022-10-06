@@ -1,21 +1,20 @@
-# TEdetective
+# TE-detective
 
-![Scheme_v1](images/Scheme_v1.png)
-
-*Figure 1: Schematic representation of transposable element insertions.*
+TE-detective is a package for detecting transposable element (TE) insertions in short read sequecing data such as produced by Illumina sequencers. We have benchmarked it using data from both mouse and human genomes.
 
 
 ## Table of Contents
 **[Requirements](#requirements)**<br>
 **[Installation](#installation)**<br>
 **[Docker Image](#docker-image)**<br>
+**[Definitions](#definitions)**<br>
 **[Input Files](#input-files)**<br>
 **[General Analysis Workflow](#general-analysis-workflow)**<br>
 **[Results Files](#results-files)**<br>
 **[Simple Example](#simple-example)**<br>
-**[Polymorphic Subtraction Example](#ps-example)**<br>
-**[Detailed Usage For Each Command](#detailed-usage)**<br>
-**[License Information for Externals](#license-info-externals)**<br>
+**[Polymorphic Subtraction Example](#polymorphic-subtraction-example)**<br>
+**[Detailed Usage For Each Command](#detailed-usage-for-each-command)**<br>
+**[License Information for Externals](#license-information-for-externals)**<br>
 
 ```````
 ```````
@@ -86,6 +85,11 @@ The first field is the repeat name. The second field is a fasta file containing 
 ```	
 zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed
 ```
+
+## Definitions
+![Scheme_v1](images/Scheme_v1.png)
+
+*Figure 1: Schematic representation of transposable element insertions.*
 
 ## General Analysis Workflow
 ![Scheme_v2](images/Scheme_v2.png)

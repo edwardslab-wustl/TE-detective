@@ -84,7 +84,7 @@ zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed
 ```
 
 ## Definitions
-![Scheme_v1](images/Scheme_v1.png)
+![Scheme_v3a-small.png](images/Scheme_v3a-small.png)
 
 *Figure 1: Schematic representation of transposable element insertions.*
 

@@ -4,12 +4,22 @@
 
 *Figure 1: Schematic representation of transposable element insertions.*
 
+
+## Table of Contents
+**[Requirements](#requirements)**<br>
+**[Installation](#installation)**<br>
+**[Docker Image](#docker-image)**<br>
+**[Input Files](#input-files)**<br>
+**[General Analysis Workflow](#general-analysis-workflow)**<br>
+**[Results Files](#results-files)**<br>
+**[Simple Example](#simple-example)**<br>
+**[Polymorphic Subtraction Example](#ps-example)**<br>
+**[Detailed Usage For Each Command](#detailed-usage)**<br>
+**[License Information for Externals](#license-info-externals)**<br>
+
 ```````
 ```````
 
-![Scheme_v2](images/Scheme_v2.png)
-
-*Figure 2: TE-Detective approach and modules.*
 
 ## Requirements
  * [NCBI blast](https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download)
@@ -51,9 +61,8 @@ BLASTDIR=/usr/local/blast-2.2.26/bin
 
 
 
-## Usage
 
-### Input files
+## Input Files
 #### 1. BAM file (required)
 preferably prepared using following alignment command:
 	
@@ -78,7 +87,11 @@ The first field is the repeat name. The second field is a fasta file containing 
 zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed
 ```
 
-### General analysis workflow
+## General Analysis Workflow
+![Scheme_v2](images/Scheme_v2.png)
+
+*Figure 2: TE-Detective approach and modules.*
+
    1. **TE_detective preprocess**: extracts discordant and clipped reads from the bam file, sets up other files needed for the analysis 
    2. **TE_detective discover**: determines an initial set of predictions that have discordant and clipped read support greater than the --discord_cluster_dens
    3. **TE_detective nadiscover**: performs some initial alignments, and determines poly A/T information
@@ -93,7 +106,7 @@ zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed
    3. Run **TE_detective filter** specifying to filter based on the output(s) from the prior step.
 
 
-### Results files 
+## Results files 
 These are the default file names. Output file names can be changed by the user.
 
 * #### initial_predictions.txt 
@@ -125,7 +138,7 @@ These are the default file names. Output file names can be changed by the user.
    Basic stats on how many insertion predictions passed each filter in the **filter** step
 
 
-### Simple example
+## Simple Example
 
 ```
     tar -xzf TEdetective_example.tar.gz
@@ -154,9 +167,9 @@ These are the default file names. Output file names can be changed by the user.
   
 
 
-### CEU-Trio example
+## Polymorphic Subtraction Example
 
-  Setup and assumptions:
+  This uses data from one of the CEU-trios. Setup and assumptions:
 
    - In your working directory ($DIR) you need four subdirectories: one for each sample, and then one for polymorphic analysis (NA12878, NA12891, NA12892, polymorph)
 
@@ -241,13 +254,13 @@ These are the default file names. Output file names can be changed by the user.
 
 
 
-## License information for externals
+## License Information for Externals
 [Censor](http://www.girinst.org/censor/index.php) is distributed under the GPL license.  See details in [Kohany et. al. Bioinformatics 2006](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-7-474).
 
 [NCBI Blast](https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download) is freely available to the public for use as a "United States Government Work".  See details [here](https://www.ncbi.nlm.nih.gov/IEB/ToolBox/CPP_DOC/lxr/source/scripts/projects/blast/LICENSE).
 
 
-### Detailed usage for each command/module
+## Detailed Usage for Each Command
 
 ````
 

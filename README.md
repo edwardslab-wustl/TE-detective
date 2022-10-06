@@ -84,12 +84,13 @@ zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed
 ```
 
 ## Definitions
-   **Clipped read**: Sequencing read where part only part maps to the genome. The other part could either not map to the genome or map else where.
-   **Discordant read**: Paired sequencing reads from the same DNA fragment where one read maps to the genome and the other read either maps to another region of the genome or in the wrong orientation. I.e. reads that are not in proper paired alignments.
+   **Clipped read**: Sequencing read where part only part maps to the genome. The other part could either not map to the genome or map else where.<br>
    
-   Clipped and Discordant reads could come from a TE insertion, a genomic rearrangement or alteration, or from various sequencing or library construction artifacts.
+   **Discordant read**: Paired sequencing reads from the same DNA fragment where one read maps to the genome and the other read either maps to another region of the genome or in the wrong orientation. I.e. reads that are not in proper paired alignments.<br>
    
-<img src="images/Scheme_v3a-small.png" width="350">
+   Clipped and discordant reads could come from a TE insertion, a genomic rearrangement or alteration, or from various sequencing or library construction artifacts.
+   
+<img src="images/Scheme_v3a-small.png" width="300">
 
 
 
@@ -102,7 +103,7 @@ zcat rmsk.txt.gz | awk '{print $6"\t"$7"\t"$8"\t"$12;}' > rmsk_hg19.bed
    3. **TE_detective nadiscover**: performs some initial alignments, and determines poly A/T information
    4. **TE_detective analyze**: performs realignment around each initial insertion prediction. Calculates the number of discordant, clipped, and poly A/T reads.
    5. **TE_detective filter**: filters the initial set of predictions based on read support, existing TEs, polymorphic subtraction, or TE insertions predictions from another sample
-   6. **TE_detective cluster2d**: optional module to quickly repreform the **discover** step using a different --discord_cluster_dens
+   6. **TE_detective cluster2d**: optional module to quickly repreform the **discover** step using a different cutoff for read support with the --discord_cluster_dens parameter
 
 
 ### Polymorphic subtraction workflow (e.g. subtract parental insertions from a child)

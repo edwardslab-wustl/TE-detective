@@ -1,6 +1,6 @@
 # TE-detective
 
-TE-detective is a package for detecting transposable element (TE) insertions in short read sequecing data such as produced by Illumina sequencers. We have benchmarked it using data from both mouse and human genomes.
+TE-detective identifies transposable element (TE) insertions in short read sequecing data such as produced by Illumina sequencers. We have benchmarked it using data from both mouse and human genomes.
 
 
 ## Table of Contents
@@ -15,9 +15,6 @@ TE-detective is a package for detecting transposable element (TE) insertions in 
 **[Polymorphic Subtraction Example](#polymorphic-subtraction-example)**<br>
 **[Detailed Usage For Each Command](#detailed-usage-for-each-command)**<br>
 **[License Information for Externals](#license-information-for-externals)**<br>
-
-```````
-```````
 
 
 ## Requirements
